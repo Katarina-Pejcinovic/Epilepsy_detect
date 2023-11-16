@@ -24,7 +24,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
 
   # CNN
 
-  # rnn_pred = rnn_model(data, labels, val_data, parameters)
+  # rnn_pred = rnn_model(train_data, train_labels, validation_data, parameters)
 
 
   ## Compare using F2 scoring (beta > 1 gives more weight to recall)

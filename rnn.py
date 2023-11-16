@@ -10,45 +10,44 @@ Original file is located at
 # Commented out IPython magic to ensure Python compatibility.
 # %cd  /content/gdrive/Shareddrives/BE_223A_Seizure_Project/Code/
 
-def rnn_model(data, labels, val_data, parameters):
-  def rnn_model(eeg_array, label, val_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
-    for id in len(eeg_array):
-      X = eeg_array[id]
-      y = np.array(label[id])
+def rnn_model(eeg_array, label, val_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
+  for id in len(eeg_array):
+    X = eeg_array[id]
+    y = np.array(label[id])
 
-      # Convert values to numpy arrays
-      X = X.T
+    # Convert values to numpy arrays
+    X = X.T
 
-      # Reshape data
-      X_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
+    # Reshape data
+    X_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
 
-      # Create the model
-      n_timesteps = X.shape[1]
-      learning_rate = learning_rate
-      gradient_threshold = 1
-      opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
+    # Create the model
+    n_timesteps = X.shape[1]
+    learning_rate = learning_rate
+    gradient_threshold = 1
+    opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
 
-      model = Sequential()
-      model.add(
-        Bidirectional(LSTM(200, return_sequences=False), input_shape=X.shape))  # (None, N_channels, N_timesteps)
-      model.add(Dense(32, activation='relu'))
-      model.add(Dropout(0.2))
-      model.add(Dense(32, activation='relu'))
-      model.add(Dense(1, activation='sigmoid'))
+    model = Sequential()
+    model.add(
+      Bidirectional(LSTM(200, return_sequences=False), input_shape=X.shape))  # (None, N_channels, N_timesteps)
+    model.add(Dense(32, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
 
-      model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+    model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
-      history = model.fit(
-        X_reshaped,
-        y,
-        batch_size=batch_size,
-        epochs=epochs)
+    history = model.fit(
+      X_reshaped,
+      y,
+      batch_size=batch_size,
+      epochs=epochs)
 
-    predictions = []
-    for id2 in len(val_data):
-      X = val_data[id2]
-      X = X.T
-      X_test_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
-      prediction = model.predict(X_test_reshaped)
-      predictions.append(prediction)
-    return predictions
+  predictions = []
+  for id2 in len(val_data):
+    X = val_data[id2]
+    X = X.T
+    X_test_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
+    prediction = model.predict(X_test_reshaped)
+    predictions.append(prediction)
+  return predictions
