@@ -402,3 +402,4 @@ class EEGPipeline:
 root_directory = '/Users/andresmichel/Documents/EGG data /v2.0.0'
 pipeline = EEGPipeline(root_directory)
 pipeline.load_edf_csv_pairs(partition='dev', n_files=10)
+
