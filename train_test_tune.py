@@ -12,9 +12,105 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV, GroupKFold
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.cluster import KMeans
+from xgboost import XGBClassifier
 import pandas as pd
 from sklearn.datasets import make_classification
 import umap.umap_ as umap
+
+def create_svc_pipeline(group_kfold):
+
+  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
+
+  param_grid = {
+      'umap__n_components':[5, 10],
+      # 'umap__n_neighbors':[5, 10],
+      # 'svc__kernel':['linear', 'rbf'],
+      'svc__C':[1, 10],
+    }
+
+  # Parameter search
+  param_search = GridSearchCV(
+          estimator = pipeline,
+          param_grid = param_grid,
+          n_jobs=1,
+          scoring="accuracy",
+          cv=group_kfold,
+          verbose=2
+        )
+  
+  return param_search
+
+
+def create_rf_pipeline(group_kfold):
+  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
+
+  param_grid = {
+      'umap__n_components':[5, 10],
+      # 'umap__n_neighbors':[5, 10],
+      'randomforestclassifier__n_estimators':[10, 100],
+      # 'randomforestclassifier__min_samples_leaf':[1, 5],
+      # 'randomforestclassifier__max_features':[25, 50],
+    }
+
+  # Parameter search
+  param_search = GridSearchCV(
+          estimator = pipeline,
+          param_grid = param_grid,
+          n_jobs=1,
+          scoring="accuracy",
+          cv=group_kfold,
+          verbose=2
+        )
+
+  return param_search
+
+
+def create_kmeans_pipeline(group_kfold):
+  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), KMeans(n_clusters=2, n_init='auto'))
+
+  param_grid = {
+      'umap__n_components':[5, 10],
+      # 'umap__n_neighbors':[5, 10],
+      # 'kmeans__n_clusters':[2, 3],
+      'kmeans__init':['k-means++', 'random'],
+    }
+
+  # Parameter search
+  param_search = GridSearchCV(
+          estimator = pipeline,
+          param_grid = param_grid,
+          n_jobs=1,
+          scoring="accuracy",
+          cv=group_kfold,
+          verbose=2
+        )
+
+  return param_search
+
+
+def create_xg_pipeline(group_kfold):
+  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
+
+  param_grid = {
+      'umap__n_components':[5, 10],
+      # 'umap__n_neighbors':[5, 10],
+      # 'kmeans__n_clusters':[2, 3],
+      'xgbclassifier__max_depth':[2, 5],
+      # 'xgbclassifier__n_estimators': [50, 100],
+      # 'xgbclassifier__learning_rate': [0.01, 0.1],
+    }
+  
+  param_search = GridSearchCV(
+          estimator = pipeline,
+          param_grid = param_grid,
+          n_jobs=1,
+          scoring="accuracy",
+          cv=group_kfold,
+          verbose=2
+        )
+
+  return param_search
 
 def train_test_tune(data, labels, groups):
   # Reshape data
@@ -43,66 +139,50 @@ def train_test_tune(data, labels, groups):
   ## Create pipelines
 
   ## SVC
-  # svc_pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
+  svc_param_search = create_svc_pipeline(group_kfold)
+  svc_param_search.fit(data_reshape, labels, groups=groups)
 
-  # svc_param_grid = {
-  #     'umap__n_components':[5, 10],
-  #     'umap__n_neighbors':[5, 10],
-  #     'svc__kernel':['linear', 'rbf'],
-  #     'svc__C':[1, 10],
-  #   }
-
-  # # Parameter search
-  # svc_param_search = GridSearchCV(
-  #         estimator = svc_pipeline,
-  #         param_grid = svc_param_grid,
-  #         n_jobs=1,
-  #         scoring="accuracy",
-  #         cv=group_kfold,
-  #         verbose=2
-  #       )
-
-  # svc_param_search.fit(data_reshape, labels, groups=groups)
-
-  # svc_best_params = svc_param_search.best_params_
-  # svc_results = pd.DataFrame(svc_param_search.cv_results_)
-  # svc_params = svc_results[['param_umap__n_components', 'param_svc__C', 'mean_test_score']]
+  svc_best_params = svc_param_search.best_params_
+  svc_results = pd.DataFrame(svc_param_search.cv_results_)
+  svc_params = svc_results[['param_umap__n_components', 'param_svc__C', 'mean_test_score']]
 
   ## RF
-  rf_pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
-
-  rf_param_grid = {
-      'umap__n_components':[5, 10],
-      # 'umap__n_neighbors':[5, 10],
-      'randomforestclassifier__n_estimators':[10, 100],
-      # 'randomforestclassifier__min_samples_leaf':[1, 5],
-      # 'randomforestclassifier__max_features':[25, 50],
-    }
-
-  # Parameter search
-  rf_param_search = GridSearchCV(
-          estimator = rf_pipeline,
-          param_grid = rf_param_grid,
-          n_jobs=1,
-          scoring="accuracy",
-          cv=group_kfold,
-          verbose=2
-        )
-
+  rf_param_search = create_rf_pipeline(group_kfold)
   rf_param_search.fit(data_reshape, labels, groups=groups)
 
   rf_best_params = rf_param_search.best_params_
   rf_results = pd.DataFrame(rf_param_search.cv_results_)
   rf_params = rf_results[['param_umap__n_components', 'param_randomforestclassifier__n_estimators', 'mean_test_score']]
 
+  ## K Means
+  kmeans_param_search = create_kmeans_pipeline(group_kfold)
+  kmeans_param_search.fit(data_reshape, labels, groups=groups)
+
+  kmeans_best_params = kmeans_param_search.best_params_
+  kmeans_results = pd.DataFrame(kmeans_param_search.cv_results_)
+  kmeans_params = kmeans_results[['param_umap__n_components', 'param_kmeans__init', 'mean_test_score']]
+
+  ## XG Boost
+  xg_param_search = create_xg_pipeline(group_kfold)
+  xg_param_search.fit(data_reshape, labels, groups=groups)
+
+  xg_best_params = xg_param_search.best_params_
+  xg_results = pd.DataFrame(xg_param_search.cv_results_)
+  xg_params = xg_results[['param_umap__n_components', 'param_xgbclassifier__max_depth', 'mean_test_score']]
+
+  ## Results
   print('Cross validate to determine optimal feature selection and model hyperparameters')
 
   # return all of best parameters of each model as a multidimensional list
   parameters = [['kernel', 'C', 'gamma', 'degree'], ['n_estimators', 'min_samples_leaf', 'max_features'],
                 ['_covariance_type'], ['n_clusters'], ['n_components', 'n_neighbors', 'min_dist', 'metrics']]
 
-  return rf_params, rf_best_params
+  params_full = [svc_params, rf_params, kmeans_params, xg_params]
+  params_best = [svc_best_params, rf_best_params, kmeans_best_params, xg_best_params]
 
+  return params_full, params_best
+
+# Run with fake test data
 patients = 5
 files = 5*patients
 channels = 2
@@ -111,10 +191,8 @@ data = np.random.rand(files, channels, features)
 labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
 groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
 
-data_reshape = np.reshape(data, (files, channels*features));
-print(data_reshape.shape)
-
+# Return list of pd dataframes that contain every combo of parameters + mean_test_score
+# Return list of dict for each model with the best parameters
 [params, best_params] = train_test_tune(data, labels, groups)
 
-print(params)
-print(best_params)
+print('Done')
