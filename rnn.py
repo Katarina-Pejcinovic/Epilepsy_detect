@@ -10,10 +10,11 @@ Original file is located at
 # Commented out IPython magic to ensure Python compatibility.
 # %cd  /content/gdrive/Shareddrives/BE_223A_Seizure_Project/Code/
 
+
 def rnn_model(eeg_array, label, val_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
-  for id in len(eeg_array):
+  for id in range(0,len(eeg_array)):
     X = eeg_array[id]
-    y = np.array(label[id])
+    y = np.array([label[id]])
 
     # Convert values to numpy arrays
     X = X.T
@@ -29,7 +30,7 @@ def rnn_model(eeg_array, label, val_data, learning_rate=0.001, gradient_threshol
 
     model = Sequential()
     model.add(
-      Bidirectional(LSTM(200, return_sequences=False), input_shape=X.shape))  # (None, N_channels, N_timesteps)
+        Bidirectional(LSTM(200, return_sequences=False), input_shape=X.shape))  # (None, N_channels, N_timesteps)
     model.add(Dense(32, activation='relu'))
     model.add(Dropout(0.2))
     model.add(Dense(32, activation='relu'))
@@ -44,7 +45,7 @@ def rnn_model(eeg_array, label, val_data, learning_rate=0.001, gradient_threshol
       epochs=epochs)
 
   predictions = []
-  for id2 in len(val_data):
+  for id2 in range(0,len(val_data)):
     X = val_data[id2]
     X = X.T
     X_test_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
