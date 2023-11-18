@@ -55,7 +55,7 @@ def svm_model(data, labels, val_data, svm_param):
   svm_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = svm_model.predict(X_test)
+  y_pred = svm_model.predict_proba(X_test)
 
   return y_pred
 
@@ -89,7 +89,7 @@ def random_forest_model(data, labels, val_data, rf_param):
   rf_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = rf_model.predict(X_test)
+  y_pred = rf_model.predict_proba(X_test)
 
   return y_pred
 
@@ -120,7 +120,7 @@ def xg_boost_model(data, labels, val_data, xg_param):
   xg_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = xg_model.predict(X_test)
+  y_pred = xg_model.predict_proba(X_test)
 
   return y_pred
 
@@ -151,8 +151,6 @@ def kmeans_model(data, labels, val_data, kmeans_param):
   kmeans_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = kmeans_model.predict(X_test)
+  y_pred = kmeans_model.predict_proba(X_test)
 
   return y_pred
-
-  print(f"K-Means Accuracy: ")
