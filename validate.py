@@ -54,7 +54,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
 
   results_f2_score = [svm_f2_score, rf_f2_score, hmm_f2_score, kmeans_f2_score, cnn_f2_score, rnn_f2_score]
 
-  print("The model with the highest f2 score is" max(results_f2_score, key=lambda x: x))
+  print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
 
   confusion_matrices = [svm_cm,rf_cm,hmm_c,kmeans_cm,cnn_cm,rnn_cm]
 

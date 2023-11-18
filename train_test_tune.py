@@ -34,7 +34,7 @@ def create_svc_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring="balanced_accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -58,7 +58,7 @@ def create_rf_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring="balanced_accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -81,7 +81,7 @@ def create_kmeans_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring="balanced_accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -105,7 +105,7 @@ def create_xg_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring="balanced_accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -182,17 +182,17 @@ def train_test_tune(data, labels, groups):
 
   return params_full, params_best
 
-# Run with fake test data
-patients = 5
-files = 5*patients
-channels = 2
-features = 10
-data = np.random.rand(files, channels, features)
-labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
-groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
+# # Run with fake test data
+# patients = 5
+# files = 5*patients
+# channels = 2
+# features = 10
+# data = np.random.rand(files, channels, features)
+# labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+# groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
 
-# Return list of pd dataframes that contain every combo of parameters + mean_test_score
-# Return list of dict for each model with the best parameters
-[params, best_params] = train_test_tune(data, labels, groups)
+# # Return list of pd dataframes that contain every combo of parameters + mean_test_score
+# # Return list of dict for each model with the best parameters
+# [params, best_params] = train_test_tune(data, labels, groups)
 
-print('Done')
+# print('Done')
