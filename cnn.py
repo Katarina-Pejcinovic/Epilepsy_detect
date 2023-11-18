@@ -8,7 +8,8 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
 def run_CNN(data, labels):
-# Define the CNN architecture
+  
+#CNN architecture
   class SimpleCNN(nn.Module):
       def __init__(self):
           super(SimpleCNN, self).__init__()
@@ -73,19 +74,7 @@ def run_CNN(data, labels):
 
   # Instantiate the model
   model_instance = SimpleCNN()
+  print("model successfully created")
   return model_instance
 
-
-#try to run the function 
-edf_data = mne.io.read_raw_edf('aaaaaajy_s001_t000.edf', preload=True)
-multichannel_data, time = edf_data[:, :]
-print("boo")
-print(multichannel_data.shape) #33 by 437500
-print(time.shape)
-#combined_array = np.hstack((multichannel_data, time))
-labels = [1]
-print(multichannel_data)
-model = run_CNN(multichannel_data, labels)
-model.load_state_dict(torch.load('simple_cnn_model.pth'))
-print(model.eval())
-
+print("Nick is cute")
