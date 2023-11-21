@@ -181,8 +181,9 @@ eval_tuning(data, labels, groups)
 
 ### Deep Learning
 
-def eval_rnn(data, labels, val_data, parameters):
-  predictions = rnn_model(data,labels, val_data,parameters)
+def eval_rnn(data, labels, val_data, test_data, learning_rate, gradient_threshold=1, batch_size=32, epochs=2):
+  predictions = rnn_model(data,labels, val_data, test_data, learning_rate, gradient_threshold, batch_size, epochs)
+  
   return predictions
 
 
