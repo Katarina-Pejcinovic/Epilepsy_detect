@@ -1,9 +1,0 @@
-This explains how to read in a cnn model for validation 
-
-There is a file called simple_cnn_model.pth in the github. This is an instance of 
-the model created when you run run_cnn() function in cnn.py. You can laod this 
-model with model.load_state_dict(torch.load('simple_cnn_model.pth')), where you replace 
-model with whatever the variable name is of the call of run_cnn(). For eaxmple, 
-
-model = run_CNN(multichannel_data, labels)
-model.load_state_dict(torch.load('simple_cnn_model.pth'))
