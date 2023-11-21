@@ -11,10 +11,11 @@ Original file is located at
 # %cd  /content/gdrive/Shareddrives/BE_223A_Seizure_Project/Code/
 
 
-def rnn_model(eeg_array, label, val_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
+def rnn_model(eeg_array, label, val_data, test_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
   for id in range(0,len(eeg_array)):
     X = eeg_array[id]
     y = np.array([label[id]])
+
 
     # Convert values to numpy arrays
     X = X.T
@@ -38,15 +39,20 @@ def rnn_model(eeg_array, label, val_data, learning_rate=0.001, gradient_threshol
 
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
+    X_val, y_val = val_data[id]
+    X_val = X_val.T
+    X_val_reshaped = X_val.reshape((1, X_val.shape[0], X_val.shape[1]))
+    
     history = model.fit(
       X_reshaped,
       y,
       batch_size=batch_size,
-      epochs=epochs)
+      epochs=epochs,
+      validation_data=(X_val_reshaped, y_val))
 
   predictions = []
-  for id2 in range(0,len(val_data)):
-    X = val_data[id2]
+  for id2 in range(0,len(test_data)):
+    X = test_data[id2]
     X = X.T
     X_test_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
     prediction = model.predict(X_test_reshaped)
