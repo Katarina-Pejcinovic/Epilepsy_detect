@@ -1,7 +1,7 @@
 # Epilepsy_detection
 Pipeline that takes in EEG signals and outputs the optimal machine learning method for epilepsy detection
 
-## Beta Version:
+## Beta Version by 12/1:
 - Run in batch execution
 - Run with a directory of data (subset of overall data set that will be used)
 - FULL PIPELINE NEEDS TO RUN
