@@ -7,36 +7,50 @@ import numpy as np
 from sklearn.metrics import roc_curve
 import matplotlib as plt
 from cnn import *
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix
 
-#create training datset
-edf_data = mne.io.read_raw_edf('aaaaaebo_s001_t000.edf', preload=True)
-multichannel_data_train, time = edf_data[:, :]
+# #create training datset
+# edf_data = mne.io.read_raw_edf('aaaaaebo_s001_t000.edf', preload=True)
+# train_data, time = edf_data[:, :]
+# #create valdiation datset
+# edf_data = mne.io.read_raw_edf('aaaaaebo_s001_t000.edf', preload=True)
+# test_data, time = edf_data[:, :]
 
-#create valdiation datset
-edf_data = mne.io.read_raw_edf('aaaaaebo_s001_t000.edf', preload=True)
-multichannel_data_test, time = edf_data[:, :]
-
-print(multichannel_data_train.shape) #33 by 437500
-print(multichannel_data_test.shape)
-# print(time.shape)
-#combined_array = np.hstack((multichannel_data, time))
-print("array")
-labels = np.array([1])
-val_labels = np.array([1])
-
-#labels, predictions = run_CNN(multichannel_data_train, labels, multichannel_data_test, val_labels)
-print("something")
-# Generate fake data
-train_data = np.random.rand(100, 41, 1, 318750).astype(np.float32)
-test_data = np.random.rand(50, 41, 1, 318750).astype(np.float32)
-
-# Generate fake labels
+# Example usage:
+train_data = np.random.randn(100, 3, 128, 128)
 train_labels = np.random.randint(0, 2, size=(100,))
-test_labels = np.random.randint(0, 2, size=(50,))
+test_data = np.random.randn(20, 3, 128, 128)
+test_labels = np.random.randint(0, 2, size=(20))
 
-print("Starting")
-predictions = run_CNN(train_data, train_labels, test_data, test_labels)
-print('predictions', predictions)
+model_instance, predictions = run_CNN(train_data, train_labels, test_data)
+print("test_predictions", predictions)
+
+'''evaluate the effectiveness of the model'''
+def evaluate_model(true_labels, predicted_labels):
+
+    # Compute accuracy
+    accuracy = accuracy_score(true_labels, predicted_labels)
+    print(f"Accuracy: {accuracy:.4f}")
+
+    # Compute precision, recall, and F1 score
+    precision = precision_score(true_labels, predicted_labels)
+    recall = recall_score(true_labels, predicted_labels)
+    f1 = f1_score(true_labels, predicted_labels)
+
+    print(f"Precision: {precision:.4f}")
+    print(f"Recall: {recall:.4f}")
+    print(f"F1 Score: {f1:.4f}")
+
+    # Compute confusion matrix
+    cm = confusion_matrix(true_labels, predicted_labels)
+    print("Confusion Matrix:")
+    print(cm)
+
+# Call the evaluation function
+print("test labels", test_labels, "\npredictions", len(predictions))
+evaluate_model(test_labels, predictions)
+
+
 
 # Example usage:
 # predictions = run_CNN(train_data, train_labels, test_data, test_labels)
