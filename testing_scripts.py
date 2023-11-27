@@ -55,14 +55,14 @@ import tempfile
 # Import processing functions
 
 # Now, you can import your module
-from dataset import *
+from preprocessing.dataset import *
 
-from classical_ml_models import *
-from get_features import *
-from train_test_tune import *
-from cnn import *
-from rnn import *
-from validate import *
+from classical_ML.classical_ml_models import *
+from classical_ML.get_features import *
+from classical_ML.train_test_tune import *
+from deep_learning.cnn import *
+from deep_learning.rnn import *
+from validation.validate import *
 
 # In the future this will be a full folder, but for now it will be one edf file
 
