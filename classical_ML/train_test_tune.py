@@ -176,13 +176,13 @@ def train_test_tune(data, labels, groups):
   rf_results = pd.DataFrame(rf_param_search.cv_results_)
   rf_params = rf_results[['param_umap__n_components', 'param_randomforestclassifier__n_estimators', 'mean_test_score']]
 
-  # ## K Means
-  # kmeans_param_search = create_kmeans_pipeline(group_kfold)
-  # kmeans_param_search.fit(data_reshape, labels, groups=groups)
+  ## K Means
+  kmeans_param_search = create_kmeans_pipeline(group_kfold)
+  kmeans_param_search.fit(data_reshape, labels, groups=groups)
 
-  # kmeans_best_params = kmeans_param_search.best_params_
-  # kmeans_results = pd.DataFrame(kmeans_param_search.cv_results_)
-  # kmeans_params = kmeans_results[['param_umap__n_components', 'param_kmeans__init', 'mean_test_score']]
+  kmeans_best_params = kmeans_param_search.best_params_
+  kmeans_results = pd.DataFrame(kmeans_param_search.cv_results_)
+  kmeans_params = kmeans_results[['param_umap__n_components', 'param_kmeans__init', 'mean_test_score']]
 
   ## GMM
   gmm_param_search = create_gmm_pipeline(group_kfold)
@@ -203,12 +203,9 @@ def train_test_tune(data, labels, groups):
   ## Results
   print('Cross validate to determine optimal feature selection and model hyperparameters')
 
-  # return all of best parameters of each model as a multidimensional list
-  parameters = [['kernel', 'C', 'gamma', 'degree'], ['n_estimators', 'min_samples_leaf', 'max_features'],
-                ['_covariance_type'], ['n_clusters'], ['n_components', 'n_neighbors', 'min_dist', 'metrics']]
-
-  params_full = [svc_params, rf_params, kmeans_params, xg_params]
-  params_best = [svc_best_params, rf_best_params, kmeans_best_params, xg_best_params]
+  # Return all of best parameters of each model as a multidimensional list
+  params_full = [svc_params, rf_params, kmeans_params, xg_params, gmm_params]
+  params_best = [svc_best_params, rf_best_params, kmeans_best_params, xg_best_params, gmm_best_params]
 
   return params_full, params_best
 

@@ -13,6 +13,8 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
   from sklearn.metrics import fbeta_score
   from sklearn.metrics import confusion_matrix
 
+  y_true = validation_labels
+
   svm_params = parameters[0]
   rf_params = parameters[1]
   kmeans_params = parameters[2]
@@ -80,18 +82,3 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
     print(f"Precision: {precision:.2f}")
     print(f"Accuracy: {accuracy:.2f}")
     print(f"Recall: {recall:.2f}")
-
-
-
-import sys
-
-# print the original sys.path
-print('Original sys.path:', sys.path)
-
-# append a new directory to sys.path
-sys.path.append('/Epilepsy_detect/')
-
-# print the updated sys.path
-print('Updated sys.path:', sys.path)
-
-from classical_ML.classical_ml_models import *
