@@ -12,7 +12,7 @@ val_label = np.random.randint(2, size=50)
 test_label = np.random.randint(2, size=50)
 
 #test
-preds = rnn_model(train, train_label, val, val_label, test)
+preds = rnn_model(train, train_label, test)
 
 #confusion matrix
 print(confusion_matrix(test_label,preds))
