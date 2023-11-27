@@ -16,7 +16,6 @@ from sklearn.cluster import KMeans
 from sklearn.mixture import GaussianMixture
 from xgboost import XGBClassifier
 import pandas as pd
-from sklearn.datasets import make_classification
 import umap.umap_ as umap
 
 def create_svc_pipeline(group_kfold):
@@ -24,7 +23,7 @@ def create_svc_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
   param_grid = {
-      'umap__n_components':[5, 10],
+      'umap__n_components':[5, 8],
       'umap__n_neighbors':[5, 10],
       'svc__kernel':['linear', 'rbf'],
       'svc__C':[1, 10],
@@ -47,7 +46,7 @@ def create_rf_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
-      'umap__n_components':[5, 10],
+      'umap__n_components':[5, 8],
       'umap__n_neighbors':[5, 10],
       'randomforestclassifier__n_estimators':[10, 100],
       'randomforestclassifier__min_samples_leaf':[1, 5],
@@ -67,33 +66,33 @@ def create_rf_pipeline(group_kfold):
   return param_search
 
 
-# def create_kmeans_pipeline(group_kfold):
-#   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), KMeans(n_clusters=2, n_init='auto'))
+def create_kmeans_pipeline(group_kfold):
+  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), KMeans(n_clusters=2, n_init='auto'))
 
-#   param_grid = {
-#       'umap__n_components':[5, 10],
-#       'umap__n_neighbors':[5, 10],
-#       'kmeans__n_clusters':[2, 3],
-#       'kmeans__init':['k-means++', 'random'],
-#     }
+  param_grid = {
+      'umap__n_components':[5, 8],
+      'umap__n_neighbors':[5, 10],
+      'kmeans__n_clusters':[2, 3],
+      'kmeans__init':['k-means++', 'random'],
+    }
 
-#   # Parameter search
-#   param_search = GridSearchCV(
-#           estimator = pipeline,
-#           param_grid = param_grid,
-#           n_jobs=1,
-#           scoring="balanced_accuracy",
-#           cv=group_kfold,
-#           verbose=2
-#         )
+  # Parameter search
+  param_search = GridSearchCV(
+          estimator = pipeline,
+          param_grid = param_grid,
+          n_jobs=1,
+          scoring="balanced_accuracy",
+          cv=group_kfold,
+          verbose=2
+        )
 
-#   return param_search
+  return param_search
 
 def create_gmm_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture())
 
   param_grid = {
-      'umap__n_components':[5, 10],
+      'umap__n_components':[5, 8],
       'umap__n_neighbors':[5, 10],
       'gaussianmixture__n_components':[2, 3],
       'gaussianmixture__init_params':['k-means++', 'random'],
@@ -116,7 +115,7 @@ def create_xg_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-      'umap__n_components':[5, 10],
+      'umap__n_components':[5, 8],
       'umap__n_neighbors':[5, 10],
       'xgbclassifier__max_depth':[2, 5],
       'xgbclassifier__n_estimators': [50, 100],
