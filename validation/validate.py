@@ -25,10 +25,11 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
 
   # CNN
 
+  # RNN
   rnn_pred = rnn_model(train_data, train_labels, validation_data)
 
 
-  ## Compare using F2 scoring (beta > 1 gives more weight to recall)
+  # Compare using F2 scoring (beta > 1 gives more weight to recall)
   svm_f2_score = fbeta_score(y_true, svm_pred, average='weighted', beta=2)
   rf_f2_score = fbeta_score(y_true, rf_pred, average='weighted', beta=2)
   hmm_f2_score = fbeta_score(y_true, hmm_pred, average='weighted', beta=2)
@@ -44,7 +45,12 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
   cnn_cm = confusion_matrix(y_true, cnn_pred)
   rnn_cm = confusion_matrix(y_true, rnn_pred)
 
-  #Compare using ROC curves
+  # F2 Highest Score
+  results_f2_score = [svm_f2_score, rf_f2_score, hmm_f2_score, kmeans_f2_score, cnn_f2_score, rnn_f2_score]
+  print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
+
+
+  # Compare using ROC curves
   for i in [svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]:
     fpr, tpr, _ = roc_curve(y_true, i)
     roc_auc = auc(fpr, tpr)
@@ -59,11 +65,8 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
     plt.legend(loc="lower right")
     plt.show()
 
-  results_f2_score = [svm_f2_score, rf_f2_score, hmm_f2_score, kmeans_f2_score, cnn_f2_score, rnn_f2_score]
-
-  print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
-
-  confusion_matrices = [svm_cm,rf_cm,hmm_c,kmeans_cm,cnn_cm,rnn_cm]
+  # Confusion matrices
+  confusion_matrices = [svm_cm,rf_cm,hmm_cm,kmeans_cm,cnn_cm,rnn_cm]
 
   for matrix in confusion_matrices:
     true_positives = matrix[1][1]
@@ -81,3 +84,4 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
     print(f"Precision: {precision:.2f}")
     print(f"Accuracy: {accuracy:.2f}")
     print(f"Recall: {recall:.2f}")
+

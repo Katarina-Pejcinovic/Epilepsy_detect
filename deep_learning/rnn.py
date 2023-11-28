@@ -54,6 +54,7 @@ def rnn_model(eeg_array, label, test_data, learning_rate=0.001, gradient_thresho
       validation_data=(X_val_reshaped, y_val))
 
   predictions = []
+  preds_proba_obj = []
   for id2 in range(0,len(test_data)):
     X = test_data[id2]
     X = X.T
@@ -61,4 +62,5 @@ def rnn_model(eeg_array, label, test_data, learning_rate=0.001, gradient_thresho
     prediction = model.predict(X_test_reshaped)
     predictions.append(prediction)
     preds_proba = model.predict_proba(X_test_reshaped)[:, 1]
-  return predictions, preds_proba
+    preds_proba_obj.append(preds_proba)
+  return predictions, preds_proba_obj
