@@ -60,4 +60,5 @@ def rnn_model(eeg_array, label, test_data, learning_rate=0.001, gradient_thresho
     X_test_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
     prediction = model.predict(X_test_reshaped)
     predictions.append(prediction)
-  return predictions
+    preds_proba = model.predict_proba(X_test_reshaped)[:, 1]
+  return predictions, preds_proba
