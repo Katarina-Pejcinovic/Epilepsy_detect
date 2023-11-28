@@ -48,11 +48,14 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
   # F2 Highest Score
   results_f2_score = [svm_f2_score, rf_f2_score, hmm_f2_score, kmeans_f2_score, cnn_f2_score, rnn_f2_score]
   print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
-
+  with open('figure_list.txt', 'a') as f:
+     f.write(f"The model with the highest f2 score is {max(results_f2_score, key=lambda x: x)}")
 
   # Compare using ROC curves
-  for i in [svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]:
-    fpr, tpr, _ = roc_curve(y_true, i)
+  model_names = ['SVM', 'Random Forest', 'HMM', 'KMeans', 'CNN', 'RNN']
+
+  for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
+    fpr, tpr, _ = roc_curve(y_true, pred)
     roc_auc = auc(fpr, tpr)
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = {:.2f})'.format(roc_auc))
@@ -61,14 +64,17 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curve for', i)
+    plt.title('Receiver Operating Characteristic (ROC) Curve for',model_names[i])
     plt.legend(loc="lower right")
     plt.show()
+    plt.savefig("{}_roc_auc.jpg".format(model_names[i]))
+    with open('figure_list.txt', 'a') as f:
+        f.write('{}_roc_auc.jpg\n'.format(model_names[i]))
 
   # Confusion matrices
   confusion_matrices = [svm_cm,rf_cm,hmm_cm,kmeans_cm,cnn_cm,rnn_cm]
 
-  for matrix in confusion_matrices:
+  for i, matrix in enumerate(confusion_matrices):
     true_positives = matrix[1][1]
     false_positives = matrix[0][1]
     false_negatives = matrix[1][0]
@@ -84,4 +90,11 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
     print(f"Precision: {precision:.2f}")
     print(f"Accuracy: {accuracy:.2f}")
     print(f"Recall: {recall:.2f}")
+
+    with open('figure_list.txt', 'a') as f:
+        f.write(model_names[i])
+        f.write(matrix)
+        f.write(f'Precision: {precision}')
+        f.write(f'Precision: {accuracy}')
+        f.write(f'Precision: {recall}')
 
