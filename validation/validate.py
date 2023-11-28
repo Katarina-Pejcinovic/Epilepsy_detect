@@ -23,13 +23,13 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
 
   ## Run models
 
-  svm_pred = svm_model(data, labels, val_data, svm_params)
+  [svm_results, svm_pred] = svm_model(data, labels, val_data, svm_params)
 
-  rf_pred = random_forest_model(data, labels, val_data, rf_params)
+  [rf_results, rf_pred] = random_forest_model(data, labels, val_data, rf_params)
 
-  gmm_pred = gmm_model(data, labels, val_data, gmm_params)
+  [xg_restuls, xg_pred] = xg_boost_model(data, labels, val_data, xg_params)
 
-  xg_pred = xg_boost_model(data, labels, val_data, xg_params)
+  [gmm_results, gmm_pred] = gmm_model(data, labels, val_data, gmm_params)
 
   # CNN
 

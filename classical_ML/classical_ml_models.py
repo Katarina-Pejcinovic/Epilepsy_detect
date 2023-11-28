@@ -57,7 +57,7 @@ def svm_model(data, labels, val_data, svm_param):
   # Pipeline w/ UMAP + SVM
 
   # Create UMAP object
-  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='hamming')
+  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='euclidean')
 
   # Turn data into z-scores
   scl = StandardScaler()
@@ -73,13 +73,11 @@ def svm_model(data, labels, val_data, svm_param):
   svm_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = svm_model.predict_proba(X_test)
+  y_pred_proba = svm_model.predict_proba(X_test)
+  y_pred = svm_model.predict(X_test)
 
-  return y_pred
+  return y_pred, y_pred_proba
 
-  # Calculate the accuracy
-  # accuracy = accuracy_score(y_test, y_pred)
-  # print(f"SVM Accuracy: {accuracy}")
 
 def random_forest_model(data, labels, val_data, rf_param):
 
@@ -112,7 +110,7 @@ def random_forest_model(data, labels, val_data, rf_param):
   # Pipeline w/ UMAP + RF
 
   # Create UMAP object
-  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='hamming')
+  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='euclidean')
 
   # Turn data into z-scores
   scl = StandardScaler()
@@ -128,7 +126,58 @@ def random_forest_model(data, labels, val_data, rf_param):
   rf_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = rf_model.predict_proba(X_test)
+  y_pred_proba = rf_model.predict_proba(X_test)
+  y_pred = rf_model.predict(X_test)
+
+  return y_pred, y_pred_proba
+
+def kmeans_model(data, labels, val_data, kmeans_param):
+
+  # PARAMETERS: n_clusters, init
+  # {'kmeans__init': 'k-means++', 'kmeans__n_clusters': 2, 'umap__n_components': 10, 'umap__n_neighbors': 10},
+  kmeans_init = kmeans_param["kmeans__init"]
+  kmeans_clusters = kmeans_param["kmeans__n_clusters"]
+  umap_components = kmeans_param["umap__n_components"]
+  umap_neighbors = kmeans_param["umap__n_neighbors"]
+
+  # Reshape data
+  num_files = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+
+  num_files_val = val_data.shape[0]
+  num_channels_val = val_data.shape[1]
+  num_features_val = val_data.shape[2]
+
+  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+
+  X_train = data_reshape
+  y_train = labels
+  X_test = val_data_reshape
+
+  # Pipeline w/ UMAP + K Means
+
+  # Create UMAP object
+  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='euclidean')
+
+  # Turn data into z-scores
+  scl = StandardScaler()
+  X_train = scl.fit_transform(X_train)
+  X_test = scl.fit_transform(X_test)
+
+  # Data has been reduced into two features from four
+  X_train = reducer.fit_transform(X_train)
+  X_test = reducer.fit_transform(X_test)
+
+  # Train the model
+  kmeans_model = KMeans(n_clusters=kmeans_clusters, init=kmeans_init, n_init=10)
+  kmeans_model.fit(X_train, y_train)
+
+  # Make predictions
+  # y_pred_proba = kmeans_model.predict_proba(X_test)
+  y_pred = kmeans_model.predict(X_test)
 
   return y_pred
 
@@ -164,7 +213,7 @@ def xg_boost_model(data, labels, val_data, xg_param):
   # Pipeline w/ UMAP + XG Boost
 
   # Create UMAP object
-  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='hamming')
+  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='euclidean')
 
   # Turn data into z-scores
   scl = StandardScaler()
@@ -180,59 +229,11 @@ def xg_boost_model(data, labels, val_data, xg_param):
   xg_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = xg_model.predict_proba(X_test)
+  y_pred_proba = xg_model.predict_proba(X_test)
+  y_pred = xg_model.predict(X_test)
 
-  return y_pred
+  return y_pred, y_pred_proba
 
-
-def kmeans_model(data, labels, val_data, kmeans_param):
-
-  # PARAMETERS: n_clusters, init
-  # {'kmeans__init': 'k-means++', 'kmeans__n_clusters': 2, 'umap__n_components': 10, 'umap__n_neighbors': 10},
-  kmeans_init = kmeans_param["kmeans__init"]
-  kmeans_clusters = kmeans_param["kmeans__n_clusters"]
-  umap_components = kmeans_param["umap__n_components"]
-  umap_neighbors = kmeans_param["umap__n_neighbors"]
-
-  # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
-
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
-
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
-
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
-
-  X_train = data_reshape
-  y_train = labels
-  X_test = val_data_reshape
-
-  # Pipeline w/ UMAP + K Means
-
-  # Create UMAP object
-  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='hamming')
-
-  # Turn data into z-scores
-  scl = StandardScaler()
-  X_train = scl.fit_transform(X_train)
-  X_test = scl.fit_transform(X_test)
-
-  # Data has been reduced into two features from four
-  X_train = reducer.fit_transform(X_train)
-  X_test = reducer.fit_transform(X_test)
-
-  # Train the model
-  kmeans_model = KMeans(n_clusters=kmeans_clusters, init=kmeans_init)
-  kmeans_model.fit(X_train, y_train)
-
-  # Make predictions
-  y_pred = kmeans_model.predict_proba(X_test)
-
-  return y_pred
 
 def gmm_model(data, labels, val_data, gmm_param):
 
@@ -259,10 +260,10 @@ def gmm_model(data, labels, val_data, gmm_param):
   y_train = labels
   X_test = val_data_reshape
 
-  # Pipeline w/ UMAP + K Means
+  # Pipeline w/ UMAP + Gaussian Mixture
 
   # Create UMAP object
-  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='hamming')
+  reducer = umap.UMAP(n_components=umap_components, n_neighbors=umap_neighbors, min_dist=0.1, metric='euclidean')
 
   # Turn data into z-scores
   scl = StandardScaler()
@@ -278,35 +279,7 @@ def gmm_model(data, labels, val_data, gmm_param):
   gmm_model.fit(X_train, y_train)
 
   # Make predictions
-  y_pred = gmm_model.predict_proba(X_test)
+  y_pred_proba = gmm_model.predict_proba(X_test)
+  y_pred = gmm_model.predict(X_test)
 
-  return y_pred
-
-
-# # TEST with fake data
-# patients = 5
-# files = 5*patients
-# channels = 30
-# features = 21
-# data = np.random.rand(files, channels, features)
-# labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
-# groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
-
-# patients_val = 2
-# files_val = 5*patients_val
-# val_data = np.random.rand(files_val, channels, features)
-
-# test_params = [{'svc__C': 10, 'svc__kernel': 'linear', 'umap__n_components': 5, 'umap__n_neighbors': 5}, 
-#                {'randomforestclassifier__max_features': 25, 'randomforestclassifier__min_samples_leaf': 5, 
-#                 'randomforestclassifier__n_estimators': 100, 'umap__n_components': 5, 'umap__n_neighbors': 5}, 
-#                 {'kmeans__init': 'k-means++', 'kmeans__n_clusters': 2, 'umap__n_components': 5, 'umap__n_neighbors': 10}, 
-#                 {'umap__n_components': 5, 'umap__n_neighbors': 5, 'xgbclassifier__learning_rate': 0.1, 'xgbclassifier__max_depth': 5, 'xgbclassifier__n_estimators': 50},
-#                 {'gaussianmixture__init_params': 'k-means++', 'gaussianmixture__n_components': 2, 'umap__n_components': 5, 'umap__n_neighbors': 10}]
-
-# gmm_pred = gmm_model(data,labels,val_data, test_params[4])
-# svm_pred = svm_model(data, labels, val_data, test_params[0])
-# rf_pred = random_forest_model(data, labels, val_data, test_params[1])
-# # k_pred = kmeans_model(data, labels, val_data, test_params[2])
-# xg_pred = xg_boost_model(data, labels, val_data, test_params[3])
-
-# print('finished')
+  return y_pred, y_pred_proba

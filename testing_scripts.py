@@ -32,6 +32,7 @@ from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.cluster import KMeans
 from xgboost import XGBClassifier
+from sklearn.mixture import GaussianMixture
 from sklearn.datasets import make_classification
 import umap.umap_ as umap
 
@@ -56,7 +57,6 @@ import tempfile
 
 # Now, you can import your module
 from preprocessing.dataset import *
-
 from classical_ML.classical_ml_models import *
 from classical_ML.get_features import *
 from classical_ML.train_test_tune import *
