@@ -45,12 +45,19 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
   rnn_cm = confusion_matrix(y_true, rnn_pred)
 
   #Compare using ROC curves
-  #svm_roc = roc_auc(y_true, svm_pred)
-  #rf_roc = roc_auc(y_true, rf_pred)
-  #hmm_roc = roc_auc(y_true, hmm_pred)
-  #kmeans_roc = roc_auc(y_true, kmeans_pred)
-  #cnn_roc = roc_auc(y_true, cnn_pred)
-  #rnn_roc = roc_auc(y_true, rnn_pred)
+  for i in [svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]:
+    fpr, tpr, _ = roc_curve(y_true, i)
+    roc_auc = auc(fpr, tpr)
+    plt.figure()
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = {:.2f})'.format(roc_auc))
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve for', i)
+    plt.legend(loc="lower right")
+    plt.show()
 
   results_f2_score = [svm_f2_score, rf_f2_score, hmm_f2_score, kmeans_f2_score, cnn_f2_score, rnn_f2_score]
 
