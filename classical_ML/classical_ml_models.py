@@ -239,7 +239,6 @@ def gmm_model(data, labels, val_data, gmm_param):
   # PARAMETERS: n_clusters, init
   # {gaussianmixture__init_params=k-means++, gaussianmixture__n_components=2, umap__n_components=5, umap__n_neighbors=10},
   gmm_init = gmm_param["gaussianmixture__init_params"]
-  gmm_components = gmm_param["gaussianmixture__n_components"]
   umap_components = gmm_param["umap__n_components"]
   umap_neighbors = gmm_param["umap__n_neighbors"]
 
@@ -275,7 +274,7 @@ def gmm_model(data, labels, val_data, gmm_param):
   X_test = reducer.fit_transform(X_test)
 
   # Train the model
-  gmm_model = GaussianMixture(n_components=gmm_components, init_params=gmm_init)
+  gmm_model = GaussianMixture(n_components=2, init_params=gmm_init)
   gmm_model.fit(X_train, y_train)
 
   # Make predictions

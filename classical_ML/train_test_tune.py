@@ -89,12 +89,11 @@ def create_kmeans_pipeline(group_kfold):
   return param_search
 
 def create_gmm_pipeline(group_kfold):
-  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture())
+  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
       'umap__n_components':[5, 8],
       'umap__n_neighbors':[5, 10],
-      'gaussianmixture__n_components':[2, 3],
       'gaussianmixture__init_params':['k-means++', 'random'],
     }
 
@@ -165,7 +164,8 @@ def train_test_tune(data, labels, groups):
 
   svc_best_params = svc_param_search.best_params_
   svc_results = pd.DataFrame(svc_param_search.cv_results_)
-  svc_params = svc_results[['param_umap__n_components', 'param_svc__C', 'mean_test_score']]
+  svc_params = svc_results[['param_umap__n_components', 'param_umap__n_neighbors',
+                            'param_svc__C', 'param_svc__kernel', 'mean_test_score']]
 
   ## RF
   rf_param_search = create_rf_pipeline(group_kfold)
@@ -173,7 +173,9 @@ def train_test_tune(data, labels, groups):
 
   rf_best_params = rf_param_search.best_params_
   rf_results = pd.DataFrame(rf_param_search.cv_results_)
-  rf_params = rf_results[['param_umap__n_components', 'param_randomforestclassifier__n_estimators', 'mean_test_score']]
+  rf_params = rf_results[['param_umap__n_components', 'param_umap__n_neighbors',
+                          'param_randomforestclassifier__n_estimators', 'param_randomforestclassifier__min_samples_leaf',
+                          'param_randomforestclassifier__max_features', 'mean_test_score']]
 
   ## K Means
   kmeans_param_search = create_kmeans_pipeline(group_kfold)
@@ -181,7 +183,8 @@ def train_test_tune(data, labels, groups):
 
   kmeans_best_params = kmeans_param_search.best_params_
   kmeans_results = pd.DataFrame(kmeans_param_search.cv_results_)
-  kmeans_params = kmeans_results[['param_umap__n_components', 'param_kmeans__init', 'mean_test_score']]
+  kmeans_params = kmeans_results[['param_umap__n_components', 'param_umap__n_neighbors',
+                                  'param_kmeans__init', 'param_kmeans__n_clusters','mean_test_score']]
 
   ## GMM
   gmm_param_search = create_gmm_pipeline(group_kfold)
@@ -189,7 +192,8 @@ def train_test_tune(data, labels, groups):
 
   gmm_best_params = gmm_param_search.best_params_
   gmm_results = pd.DataFrame(gmm_param_search.cv_results_)
-  gmm_params = gmm_results[['param_umap__n_components', 'param_gmm__init_params', 'mean_test_score']]
+  gmm_params = gmm_results[['param_umap__n_components', 'param_umap__n_neighbors',
+                            'param_gaussianmixture__init_params', 'mean_test_score']]
 
   ## XG Boost
   xg_param_search = create_xg_pipeline(group_kfold)
@@ -197,7 +201,9 @@ def train_test_tune(data, labels, groups):
 
   xg_best_params = xg_param_search.best_params_
   xg_results = pd.DataFrame(xg_param_search.cv_results_)
-  xg_params = xg_results[['param_umap__n_components', 'param_xgbclassifier__max_depth', 'mean_test_score']]
+  xg_params = xg_results[['param_umap__n_components', 'param_umap__n_neighbors',
+                          'param_xgbclassifier__n_estimators', 'param_xgbclassifier__max_depth', 
+                          'param_xgbclassifier__learning_rate', 'mean_test_score']]
 
   ## Results
   print('Cross validate to determine optimal feature selection and model hyperparameters')
