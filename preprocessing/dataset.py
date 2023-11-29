@@ -350,7 +350,7 @@ class EEGDataPair:
         
         if label == "epilepsy_edf":
             label = "Epilepsy"
-            else
+        else:
             label = "No Epilepsy"
          
 

@@ -1,4 +1,3 @@
-
 import mne
 import pandas as pd
 import numpy as np
@@ -37,26 +36,38 @@ import io
 import tempfile
 import sys
 
+# Batch Processing
+from batch_processing import data_file_batch
+
+if __name__ == "__main__":
+    print('Running sample file')
+    data_file_path = 'data/aaaaaebo_s001_t000.edf'
+else:
+    print('Running batch file(s)')
+    data_file_path = data_file_batch
+
+
 nSamples = 8000 # number of samples per segment
 fs = 400 # sampling rate in Hz
 wavelet_name = 'db1' # name of discrete mother wavelet used in Discrete Wavelet Transform
 # In the future this will be a full folder, but for now it will be one edf file
 
 #practive training data 
-data_file_path  = 'data/aaaaaebo_s001_t000.edf'
+# data_file_path  = 'data/aaaaaebo_s001_t000.edf'
 labels = [0]
 
 #import functions from other files 
-from preprocessing import *
-from classical_ML.classical_ml_models import *
-from classical_ML.get_features import *
-from classical_ML.train_test_tune import *
-from deep_learning.cnn import *
-from deep_learning.rnn import *
-from validate import *
+# from preprocessing import *
+# from classical_ML.classical_ml_models import *
+# from classical_ML.get_features import *
+# from classical_ML.train_test_tune import *
+# from deep_learning.cnn import *
+# from deep_learning.rnn import *
+# from validation.validate import *
 
 '''Preprocessing'''
-data_file_path = "aaaaaanr_s001_t001.edf"
+# data_file_path = "aaaaaanr_s001_t001.edf"
+data_file_path = data_path
 eeg_data_pair = EEGDataPair(data_file_path)
 
 # Store the original raw for visualization
