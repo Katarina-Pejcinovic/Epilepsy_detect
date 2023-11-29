@@ -36,6 +36,15 @@ import io
 import tempfile
 import sys
 
+#import functions from other files 
+from preprocessing import *
+from classical_ML.classical_ml_models import *
+from classical_ML.get_features import *
+from classical_ML.train_test_tune import *
+from deep_learning.cnn import *
+from deep_learning.rnn import *
+from validation.validate import *
+
 # Batch Processing
 from batch_processing import data_file_batch
 
@@ -55,15 +64,6 @@ wavelet_name = 'db1' # name of discrete mother wavelet used in Discrete Wavelet 
 #practive training data 
 # data_file_path  = 'data/aaaaaebo_s001_t000.edf'
 labels = [0]
-
-#import functions from other files 
-# from preprocessing import *
-# from classical_ML.classical_ml_models import *
-# from classical_ML.get_features import *
-# from classical_ML.train_test_tune import *
-# from deep_learning.cnn import *
-# from deep_learning.rnn import *
-# from validation.validate import *
 
 '''Preprocessing'''
 # data_file_path = "aaaaaanr_s001_t001.edf"
