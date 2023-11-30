@@ -22,6 +22,8 @@ train_labels = np.random.randint(0, 2, size=(100,))
 test_data = np.random.randn(20, 3, 128, 128)
 test_labels = np.random.randint(0, 2, size=(20))
 
+
+
 model_instance, predictions, output = run_CNN(train_data, train_labels, test_data, test_labels)
 print(output)
 
