@@ -18,9 +18,9 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import numpy as np
 
 # Generate random 2D numpy arrays for training and testing
-train_data = np.random.randn(100, 128, 128)
+train_data = np.random.randn(100, 12, 12)
 train_labels = np.random.randint(0, 2, size=(100,))
-test_data = np.random.randn(20, 128, 128)
+test_data = np.random.randn(20, 12, 12)
 test_labels = np.random.randint(0, 2, size=(20,))
 
 # Run the CNN
@@ -63,5 +63,3 @@ def evaluate_model(true_labels, predicted_labels):
 
 # Call the evaluation function
 evaluate_model(test_labels, predictions)
-
-
