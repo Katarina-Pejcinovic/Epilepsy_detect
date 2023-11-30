@@ -73,10 +73,9 @@ def eval_tuning(data, labels, groups):
 
 # Run with fake test data
 patients = 5
-files = 5*patients
-channels = 2
+channels = 5*patients
 features = 10
-data = np.random.rand(files, channels, features)
+data = np.random.rand(channels, features)
 labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
 groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
 

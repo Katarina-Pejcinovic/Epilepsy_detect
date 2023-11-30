@@ -152,7 +152,8 @@ def train_test_tune(data, labels, groups):
   num_features = data.shape[2]
   num_patients = np.size(np.unique(groups))
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  data_reshape = data
 
   group_kfold = GroupKFold(n_splits=num_patients)
 
