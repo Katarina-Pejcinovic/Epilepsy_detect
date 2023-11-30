@@ -114,6 +114,24 @@ labels = np.array([1])
 model = run_CNN(multichannel_data_train, labels)
 
 '''RNN'''
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, roc_curve, auc
+import tensorflow as tf
+from tensorflow.keras.datasets import imdb
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import LSTM
+from tensorflow.keras.layers import Embedding
+from tensorflow.keras.preprocessing import sequence
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.optimizers import Adam
+from tensorflow.keras.layers import Input
+from tensorflow.keras.layers import Bidirectional
+from tensorflow.keras.layers import Dropout
+import pandas as pd
+from tensorflow.keras.utils import to_categorical
+
 data = [0,1,2]
 labels = [1,0,0]
 val_data = [0,1,0]
