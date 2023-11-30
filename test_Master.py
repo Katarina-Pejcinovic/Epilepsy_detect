@@ -31,16 +31,21 @@ print(features_four.shape)
 
 #this is what is sent to the cnn, rnn, and classical 
 training = np.append(features_one, features_two, axis =0)
-testing = np.append(features_three, features_four, axis =0 )
+#training_2 = np.append(training, training, training, training)
+testing = np.append(features_three, features_four, axis =0)
+#testing_2 = np.append(testing, testing, testing, testing)
 print(training.shape, testing.shape)
 
 labels_train = np.append(np.ones(16), np.zeros(16), axis =0)
 labels_test = labels_train
 
-patient_ids_train = np.append(np.ones(16), np.ones(16)*2)
-patient_ids_test = np.append(np.ones(16)*3, np.ones(16)*4)
+patient_ids_train = np.concatenate((np.ones(8),np.ones(8)*2, np.ones(8)*3, np.ones(8)*4))
+patient_ids_test = np.concatenate((np.ones(8)*5, np.ones(8)*6, np.ones(8)*7, np.ones(8)*8))
 print(patient_ids_train)
 
+from classical_ML.train_test_tune import * 
 
+param_table, best_params = train_test_tune(training, labels_train, patient_ids_train)
+#print(best_params)
 
 

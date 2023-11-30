@@ -34,7 +34,7 @@ def create_svc_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="balanced_accuracy",
+          scoring="accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -58,7 +58,7 @@ def create_rf_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="balanced_accuracy",
+          scoring="accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -81,7 +81,7 @@ def create_kmeans_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="balanced_accuracy",
+          scoring="accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -102,7 +102,7 @@ def create_gmm_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="balanced_accuracy",
+          scoring="accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -125,7 +125,7 @@ def create_xg_pipeline(group_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="balanced_accuracy",
+          scoring="accuracy",
           cv=group_kfold,
           verbose=2
         )
@@ -147,9 +147,9 @@ def train_test_tune(data, labels, groups):
   # Outputs: best hyperparameters for each classical ml model
 
   ## Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
   num_patients = np.size(np.unique(groups))
 
   # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
