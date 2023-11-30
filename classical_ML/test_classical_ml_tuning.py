@@ -72,12 +72,13 @@ def eval_tuning(data, labels, groups):
   return
 
 # Run with fake test data
-patients = 5
-channels = 5*patients
-features = 10
+patients = 2
+channels = 16*patients
+features = 21
 data = np.random.rand(channels, features)
-labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
-groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
+labels = np.append(np.ones(16), np.zeros(16))
+# groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
+groups = np.array([1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4])
 
 # Return list of pd dataframes that contain every combo of parameters + mean_test_score
 # Return list of dict for each model with the best parameters
