@@ -38,17 +38,19 @@ def svm_model(data, labels, val_data, svm_param):
   umap_neighbors = svm_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  data_reshape = data
+  val_data_reshape = val_data
 
   X_train = data_reshape
   y_train = labels
@@ -91,17 +93,19 @@ def random_forest_model(data, labels, val_data, rf_param):
   umap_neighbors = rf_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  data_reshape = data
+  val_data_reshape = val_data
 
   X_train = data_reshape
   y_train = labels
@@ -141,17 +145,19 @@ def kmeans_model(data, labels, val_data, kmeans_param):
   umap_neighbors = kmeans_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  data_reshape = data
+  val_data_reshape = val_data
 
   X_train = data_reshape
   y_train = labels
@@ -194,17 +200,19 @@ def xg_boost_model(data, labels, val_data, xg_param):
   umap_neighbors = xg_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  data_reshape = data
+  val_data_reshape = val_data
 
   X_train = data_reshape
   y_train = labels
@@ -244,17 +252,19 @@ def gmm_model(data, labels, val_data, gmm_param):
   umap_neighbors = gmm_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  data_reshape = data
+  val_data_reshape = val_data
 
   X_train = data_reshape
   y_train = labels
