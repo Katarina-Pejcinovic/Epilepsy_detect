@@ -15,18 +15,16 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 # #create valdiation datset
 # edf_data = mne.io.read_raw_edf('aaaaaebo_s001_t000.edf', preload=True)
 # test_data, time = edf_data[:, :]
+import numpy as np
 
-# Example usage:
-train_data = np.random.randn(100, 3, 128, 128)
+# Generate random 2D numpy arrays for training and testing
+train_data = np.random.randn(100, 128, 128)
 train_labels = np.random.randint(0, 2, size=(100,))
-test_data = np.random.randn(20, 3, 128, 128)
-test_labels = np.random.randint(0, 2, size=(20))
+test_data = np.random.randn(20, 128, 128)
+test_labels = np.random.randint(0, 2, size=(20,))
 
-
-
+# Run the CNN
 model_instance, predictions, output = run_CNN(train_data, train_labels, test_data, test_labels)
-print(output)
-
 
 '''evaluate the effectiveness of the model'''
 def evaluate_model(true_labels, predicted_labels):
