@@ -48,9 +48,11 @@ def create_rf_pipeline(group_kfold):
   param_grid = {
       'umap__n_components':[1],
       'umap__n_neighbors':[5, 10],
-      'randomforestclassifier__n_estimators':[10, 100],
+      # 'randomforestclassifier__n_estimators':[10, 100],
+      'randomforestclassifier__n_estimators':[10],
       'randomforestclassifier__min_samples_leaf':[1, 5],
-      'randomforestclassifier__max_features':[25, 50],
+      # 'randomforestclassifier__max_features':[25, 50],
+      'randomforestclassifier__max_features':[25],
     }
 
   # Parameter search
@@ -73,7 +75,8 @@ def create_kmeans_pipeline(group_kfold):
       'umap__n_components':[1],
       'umap__n_neighbors':[5, 10],
       'kmeans__n_clusters':[2, 3],
-      'kmeans__init':['k-means++', 'random'],
+      # 'kmeans__init':['k-means++', 'random'],
+      'kmeans__init':['k-means++'],
     }
 
   # Parameter search
@@ -94,7 +97,8 @@ def create_gmm_pipeline(group_kfold):
   param_grid = {
       'umap__n_components':[1],
       'umap__n_neighbors':[5, 10],
-      'gaussianmixture__init_params':['k-means++', 'random'],
+      # 'gaussianmixture__init_params':['k-means++', 'random'],
+      'gaussianmixture__init_params':['k-means++'],
     }
 
   # Parameter search
@@ -116,9 +120,11 @@ def create_xg_pipeline(group_kfold):
   param_grid = {
       'umap__n_components':[1],
       'umap__n_neighbors':[5, 10],
-      'xgbclassifier__max_depth':[2, 5],
+      # 'xgbclassifier__max_depth':[2, 5],
+      'xgbclassifier__max_depth':[2],
       'xgbclassifier__n_estimators': [50, 100],
-      'xgbclassifier__learning_rate': [0.01, 0.1],
+      # 'xgbclassifier__learning_rate': [0.01, 0.1],
+      'xgbclassifier__learning_rate': [0.01],
     }
   
   param_search = GridSearchCV(
