@@ -13,58 +13,60 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
   from sklearn.metrics import fbeta_score
   from sklearn.metrics import confusion_matrix
 
-  y_true = validation_labels
-
-  svm_params = parameters[0]
-  rf_params = parameters[1]
-  kmeans_params = parameters[2]
-  xg_params = parameters[3]
-  gmm_params = parameters[4]
-
   ## Run models
 
-  [svm_results, svm_pred] = svm_model(data, labels, val_data, svm_params)
+  svm_pred = svm_model(data, labels, val_data, parameters)
 
-  [rf_results, rf_pred] = random_forest_model(data, labels, val_data, rf_params)
+  rf_pred = random_forest_model(data, labels, val_data, parameters)
 
-  [xg_restuls, xg_pred] = xg_boost_model(data, labels, val_data, xg_params)
+  hmm_pred = hmm_model(data, labels, val_data, parameters)
 
-  [gmm_results, gmm_pred] = gmm_model(data, labels, val_data, gmm_params)
+  kmeans_pred = kmeans_model(data, labels, val_data, parameters)
 
   # CNN
 
+  # RNN
   rnn_pred = rnn_model(train_data, train_labels, validation_data)
 
 
-  ## Compare using F2 scoring (beta > 1 gives more weight to recall)
+  # Compare using F2 scoring (beta > 1 gives more weight to recall)
   svm_f2_score = fbeta_score(y_true, svm_pred, average='weighted', beta=2)
   rf_f2_score = fbeta_score(y_true, rf_pred, average='weighted', beta=2)
-  gmm_f2_score = fbeta_score(y_true, gmm_pred, average='weighted', beta=2)
-  xg_f2_score = fbeta_score(y_true, xg_pred, average='weighted', beta=2)
+  hmm_f2_score = fbeta_score(y_true, hmm_pred, average='weighted', beta=2)
+  kmeans_f2_score = fbeta_score(y_true, kmeans_pred, average='weighted', beta=2)
   cnn_f2_score = fbeta_score(y_true, cnn_pred, average='weighted', beta=2)
   rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
 
   # Compare using confusion matrices
   svm_cm = confusion_matrix(y_true, svm_pred)
   rf_cm = confusion_matrix(y_true, rf_pred)
-  gmm_cm = confusion_matrix(y_true, gmm_pred)
-  xg_cm = confusion_matrix(y_true, xg_pred)
+  hmm_cm = confusion_matrix(y_true, hmm_pred)
+  kmeans_cm = confusion_matrix(y_true, kmeans_pred)
   cnn_cm = confusion_matrix(y_true, cnn_pred)
   rnn_cm = confusion_matrix(y_true, rnn_pred)
 
-  #Compare using ROC curves
-  #svm_roc = roc_auc(y_true, svm_pred)
-  #rf_roc = roc_auc(y_true, rf_pred)
-  #hmm_roc = roc_auc(y_true, hmm_pred)
-  #kmeans_roc = roc_auc(y_true, kmeans_pred)
-  #cnn_roc = roc_auc(y_true, cnn_pred)
-  #rnn_roc = roc_auc(y_true, rnn_pred)
-
-  results_f2_score = [svm_f2_score, rf_f2_score, gmm_f2_score, xg_f2_score, cnn_f2_score, rnn_f2_score]
-
+  # F2 Highest Score
+  results_f2_score = [svm_f2_score, rf_f2_score, hmm_f2_score, kmeans_f2_score, cnn_f2_score, rnn_f2_score]
   print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
 
-  confusion_matrices = [svm_cm,rf_cm,gmm_cm,xg_cm,cnn_cm,rnn_cm]
+
+  # Compare using ROC curves
+  for i in [svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]:
+    fpr, tpr, _ = roc_curve(y_true, i)
+    roc_auc = auc(fpr, tpr)
+    plt.figure()
+    plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = {:.2f})'.format(roc_auc))
+    plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Receiver Operating Characteristic (ROC) Curve for', i)
+    plt.legend(loc="lower right")
+    plt.show()
+
+  # Confusion matrices
+  confusion_matrices = [svm_cm,rf_cm,hmm_cm,kmeans_cm,cnn_cm,rnn_cm]
 
   for matrix in confusion_matrices:
     true_positives = matrix[1][1]
@@ -82,3 +84,4 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
     print(f"Precision: {precision:.2f}")
     print(f"Accuracy: {accuracy:.2f}")
     print(f"Recall: {recall:.2f}")
+

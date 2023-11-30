@@ -11,15 +11,18 @@ Original file is located at
 # %cd  /content/gdrive/Shareddrives/BE_223A_Seizure_Project/Code/
 
 
-def rnn_model(eeg_array, label, val_data, test_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
-  for id in range(0,len(eeg_array)):
-    X = eeg_array[id]
-    y = np.array([label[id]])
+def rnn_model(eeg_array, label, test_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
+  train_array = eeg_array[0:100]
+  val_array = eeg_array[100:]
 
+  train_label = label[0:100]
+  val_label = label[100:]
 
-    # Convert values to numpy arrays
+  for id, (X, y) in enumerate(zip(train_array, train_label)):
+
     X = X.T
-
+    # Convert values to numpy arrays
+    y = np.array([y])
     # Reshape data
     X_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
 
@@ -39,7 +42,7 @@ def rnn_model(eeg_array, label, val_data, test_data, learning_rate=0.001, gradie
 
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
-    X_val, y_val = val_data[id]
+    X_val, y_val = val_array[id], np.array([val_label[id]])
     X_val = X_val.T
     X_val_reshaped = X_val.reshape((1, X_val.shape[0], X_val.shape[1]))
     
@@ -51,10 +54,13 @@ def rnn_model(eeg_array, label, val_data, test_data, learning_rate=0.001, gradie
       validation_data=(X_val_reshaped, y_val))
 
   predictions = []
+  preds_proba_obj = []
   for id2 in range(0,len(test_data)):
     X = test_data[id2]
     X = X.T
     X_test_reshaped = X.reshape((1, X.shape[0], X.shape[1]))
     prediction = model.predict(X_test_reshaped)
     predictions.append(prediction)
-  return predictions
+    preds_proba = model.predict_proba(X_test_reshaped)[:, 1]
+    preds_proba_obj.append(preds_proba)
+  return predictions, preds_proba_obj
