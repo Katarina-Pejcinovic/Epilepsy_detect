@@ -23,7 +23,7 @@ def create_svc_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
   param_grid = {
-      'umap__n_components':[5, 8],
+      'umap__n_components':[1, 3],
       'umap__n_neighbors':[5, 10],
       'svc__kernel':['linear', 'rbf'],
       'svc__C':[1, 10],
@@ -46,7 +46,7 @@ def create_rf_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
-      'umap__n_components':[5, 8],
+      'umap__n_components':[1, 3],
       'umap__n_neighbors':[5, 10],
       'randomforestclassifier__n_estimators':[10, 100],
       'randomforestclassifier__min_samples_leaf':[1, 5],
@@ -70,7 +70,7 @@ def create_kmeans_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), KMeans(n_clusters=2, n_init='auto'))
 
   param_grid = {
-      'umap__n_components':[5, 8],
+      'umap__n_components':[1, 3],
       'umap__n_neighbors':[5, 10],
       'kmeans__n_clusters':[2, 3],
       'kmeans__init':['k-means++', 'random'],
@@ -92,7 +92,7 @@ def create_gmm_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
-      'umap__n_components':[5, 8],
+      'umap__n_components':[1, 3],
       'umap__n_neighbors':[5, 10],
       'gaussianmixture__init_params':['k-means++', 'random'],
     }
@@ -114,7 +114,7 @@ def create_xg_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-      'umap__n_components':[5, 8],
+      'umap__n_components':[1, 3],
       'umap__n_neighbors':[5, 10],
       'xgbclassifier__max_depth':[2, 5],
       'xgbclassifier__n_estimators': [50, 100],
