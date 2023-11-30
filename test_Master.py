@@ -24,17 +24,23 @@ features_one = get_features(preprocessed_train_ep)
 features_two = get_features(preprocessed_train_noep)
 features_three = get_features(preprocessed_test_ep)
 features_four = get_features(preprocessed_test_noep)
-print(features_one.shape)
-print(features_two.shape)
-print(features_three.shape)
-print(features_four.shape)
+# print(features_one.shape)
+# print(features_two.shape)
+# print(features_three.shape)
+# print(features_four.shape)
+import get_features_2
+
+pre_train = get_features_2.get_features('data_copy/training/epilepsy')
+pre_test = get_features_2.get_features('data_copy/testing/epilepsy')
+
+print("pre train shape", pre_train.shape)
 
 #this is what is sent to the cnn, rnn, and classical 
 training = np.append(features_one, features_two, axis =0)
 #training_2 = np.append(training, training, training, training)
 testing = np.append(features_three, features_four, axis =0)
 #testing_2 = np.append(testing, testing, testing, testing)
-print(training.shape, testing.shape)
+# print(training.shape, testing.shape)
 
 labels_train = np.append(np.ones(16), np.zeros(16), axis =0)
 labels_test = labels_train
@@ -45,7 +51,10 @@ print(patient_ids_train)
 
 from classical_ML.train_test_tune import * 
 
-param_table, best_params = train_test_tune(training, labels_train, patient_ids_train)
+#param_table, best_params = train_test_tune(training, labels_train, patient_ids_train)
 #print(best_params)
+# print("training", training)
+from deep_learning.cnn import *
+model_instance, predictions, output = run_CNN(training, labels_train, testing, labels_test)
 
 
