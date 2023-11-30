@@ -10,6 +10,20 @@ import neurokit2 as nk
 import pywt
 from collections import Counter
 import scipy.stats as stats
+import tensorflow as tf
+from keras.models import Sequential
+from tensorflow.python.keras.layers import Dense
+from keras.layers import LSTM
+from tensorflow.python.keras.layers import Embedding
+from keras.preprocessing import sequence
+from sklearn.model_selection import train_test_split
+from keras.optimizers import Adam
+from tensorflow.python.keras.layers import Input
+from keras.layers import Bidirectional
+from tensorflow.python.keras.layers import Dropout
+from keras.utils import to_categorical
+from sklearn.metrics import roc_curve, auc
+from keras.preprocessing.sequence import pad_sequences
 
 #run get_features()
 from feature_selection.get_features import * 
@@ -19,6 +33,9 @@ preprocessed_train_ep = np.load('data/training/epilepsy/preprocessed_aaaaaanr_ep
 preprocessed_train_noep = np.load('data/training/no_epilepsy/preprocessed_aaaaaebo_no_epilepsy_edf_aaaaaebo_s001_t000.edf.npy')
 preprocessed_test_ep = np.load('data/testing/epilepsy/preprocessed_aaaaalug_epilepsy_edf_aaaaalug_s001_t000.edf.npy')
 preprocessed_test_noep = np.load('data/testing/no_epilepsy/preprocessed_aaaaappo_no_epilepsy_edf_aaaaappo_s001_t001.edf.npy')
+
+preprocessed_train = [preprocessed_train_ep, preprocessed_train_noep]
+preprocessed_test = [preprocessed_test_ep, preprocessed_test_noep]
 
 features_one = get_features(preprocessed_train_ep)
 features_two = get_features(preprocessed_train_noep)
@@ -49,6 +66,9 @@ patient_ids_train = np.concatenate((np.ones(8),np.ones(8)*2, np.ones(8)*3, np.on
 patient_ids_test = np.concatenate((np.ones(8)*5, np.ones(8)*6, np.ones(8)*7, np.ones(8)*8))
 print(patient_ids_train)
 
+labels_train_dp = np.array([1,0])
+labels_test_dp = np.array([1,0])
+
 from classical_ML.train_test_tune import * 
 
 #param_table, best_params = train_test_tune(training, labels_train, patient_ids_train)
@@ -57,4 +77,8 @@ from classical_ML.train_test_tune import *
 from deep_learning.cnn import *
 model_instance, predictions, output = run_CNN(training, labels_train, testing, labels_test)
 
+from deep_learning.cnn import *
+# model_instance, predictions, output = run_CNN(training, labels_train, testing, labels_test)
 
+from deep_learning.rnn import *
+rnn_preds = rnn_model(preprocessed_train, labels_train_dp, preprocessed_test, epochs=1)
