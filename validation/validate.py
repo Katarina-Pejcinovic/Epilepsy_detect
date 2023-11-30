@@ -15,13 +15,13 @@ def validate(train_data, train_labels, validation_data, validation_labels, param
 
   ## Run models
 
-  svm_pred = svm_model(data, labels, val_data, parameters)
+  svm_pred = svm_model(train_data, train_labels, validation_data, parameters)
 
-  rf_pred = random_forest_model(data, labels, val_data, parameters)
+  rf_pred = random_forest_model(train_data, train_labels, validation_data, parameters)
 
-  hmm_pred = hmm_model(data, labels, val_data, parameters)
+  hmm_pred = hmm_model(train_data, train_labels, validation_data, parameters)
 
-  kmeans_pred = kmeans_model(data, labels, val_data, parameters)
+  kmeans_pred = kmeans_model(train_data, train_labels, validation_data, parameters)
 
   # CNN
 
