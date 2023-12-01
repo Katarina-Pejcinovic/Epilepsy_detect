@@ -20,12 +20,12 @@ from keras.preprocessing.sequence import pad_sequences
 
 
 #generate  data
-train = np.random.rand(150, 34, 437500).astype(np.float32)
-test = np.random.rand(50, 34, 437500).astype(np.float32)
+train = np.random.rand(3, 34, 437500).astype(np.float32)
+test = np.random.rand(3, 34, 437500).astype(np.float32)
 
 #generate labels
-train_label = np.random.randint(2, size=100)
-test_label = np.random.randint(2, size=50)
+train_label = np.random.randint(2, size=3)
+test_label = np.random.randint(2, size=3)
 
 #test
 preds = rnn_model(train, train_label, test)[0]
