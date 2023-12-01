@@ -14,7 +14,7 @@ from deep_learning.rnn import *
 from deep_learning.cnn import *
 
 def validate(train_data, train_labels, validation_data, validation_labels, train_data_ml, train_labels_ml, 
-             validation_data_ml, validation_labels_ml, parameters):
+             validation_data_ml, validation_labels_ml, parameters, cnn_train, cnn_test):
 
   import numpy as np
   from sklearn.metrics import fbeta_score
@@ -22,8 +22,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
 
   y_true = validation_labels
 
-  ## Run models
-
+  ## Run classical models
   svm_pred = svm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[0])
   svm_temp = svm_pred[1]
   pat1 = svm_temp[0:16,:]
@@ -62,8 +61,8 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
 
 
 #run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
-  model_cnn, cnn_pred, cnn_proba = run_CNN(train_data, train_labels, validation_data, validation_labels)
-
+  model_cnn, cnn_pred, cnn_proba = run_CNN(cnn_train, train_labels, cnn_test, validation_labels)
+  print("in validate")
   # RNN
   rnn_pred = rnn_model(train_data, train_labels, validation_data, epochs=3)
 
