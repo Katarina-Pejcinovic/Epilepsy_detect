@@ -11,6 +11,7 @@ Original file is located at
 
 from classical_ML.classical_ml_models import *
 from deep_learning.rnn import *
+from deep_learning.cnn import *
 
 def validate(train_data, train_labels, validation_data, validation_labels, train_data_ml, train_labels_ml, 
              validation_data_ml, validation_labels_ml, parameters):
@@ -59,8 +60,9 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
   pat_pred = np.append(pat1_pred, pat2_pred, axis=0)
   gmm_pred = pat_pred.reshape(2,2)
 
-  # CNN
-  cnn_pred = run_cnn(train_data, train_labels, validation_data, validation_labels)
+
+#run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
+  model_cnn, cnn_pred, cnn_proba = run_CNN(train_data, train_labels, validation_data, validation_labels)
 
   # RNN
   rnn_pred = rnn_model(train_data, train_labels, validation_data, epochs=3)

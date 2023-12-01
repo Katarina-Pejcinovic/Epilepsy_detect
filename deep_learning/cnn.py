@@ -5,20 +5,22 @@ from torch.utils.data import Dataset, DataLoader
 import numpy as np
 
 def run_CNN(train_data, train_labels, test_data, test_labels):
+
     # CNN architecture
     class SimpleCNN(nn.Module):
         def __init__(self):
             super(SimpleCNN, self).__init__()
-            self.conv1 = nn.Conv2d(in_channels=1, out_channels=16, kernel_size=3, stride=1, padding=1)  # Adjust in_channels
+            self.conv1 = nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3, stride=1, padding=1)  # Adjust in_channels
             self.relu = nn.ReLU()
             self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-            self.fc1 = nn.Linear(16 * 64 * 64, 2)  # Adjust the input size based on your data
+            # Adjust the input size for nn.Linear based on the output size after max pooling
+            self.fc1 = nn.Linear(8 * 10 * 32, 2)  # Adjust the input size based on your data
 
         def forward(self, x):
             x = self.conv1(x)
             x = self.relu(x)
             x = self.pool(x)
-            x = x.view(-1, 16 * 64 * 64)  # Adjust the size based on your data
+            x = x.view(-1, 8 * 10 * 32)  # Adjust the size based on your data
             x = self.fc1(x)
             return x
 
@@ -40,7 +42,7 @@ def run_CNN(train_data, train_labels, test_data, test_labels):
 
     # Create a DataLoader for training
     train_dataset = CustomDataset(train_data, train_labels)
-    train_dataloader = DataLoader(train_dataset, batch_size=32, shuffle=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=2, shuffle=True)
 
     # Define loss function and optimizer
     criterion = nn.CrossEntropyLoss()
