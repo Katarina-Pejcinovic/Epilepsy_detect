@@ -1,29 +1,8 @@
-import mne
+#only import stuff you call in this file 
 import os
-import matplotlib.pyplot as plt
-import pandas as pd
 import numpy as np
-import scipy as sp
-import scipy.io as sio
-from scipy.signal import periodogram
-import neurokit2 as nk
-import pywt
-from collections import Counter
-import scipy.stats as stats
-import tensorflow as tf
-from keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
-from keras.layers import LSTM
-from tensorflow.python.keras.layers import Embedding
-from keras.preprocessing import sequence
-from sklearn.model_selection import train_test_split
-from keras.optimizers.legacy import Adam
-from tensorflow.python.keras.layers import Input
-from keras.layers import Bidirectional
-from tensorflow.python.keras.layers import Dropout
-from keras.utils import to_categorical
-from sklearn.metrics import roc_curve, auc
-from keras.preprocessing.sequence import pad_sequences
+
+
 
 #run get_features()
 from feature_selection.get_features import * 
