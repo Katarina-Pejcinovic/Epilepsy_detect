@@ -53,7 +53,7 @@ from classical_ML.get_features import *
 from classical_ML.train_test_tune import *
 from deep_learning.cnn import *
 from deep_learning.rnn import *
-from validate import *
+from validation.validate import *
 
 '''Preprocessing'''
 data_file_path = "aaaaaanr_s001_t001.edf"
@@ -101,10 +101,10 @@ groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4
 
 [params, best_params] = train_test_tune(data, labels, groups)
 
-svc_params = best_params[0]
-rf_params = best_params[1]
-kmeans_params = best_params[2]
-xg_params = best_params[3]
+# svc_params = best_params[0]
+# rf_params = best_params[1]
+# kmeans_params = best_params[2]
+# xg_params = best_params[3]
 
 '''CNN'''
 #create training datset
