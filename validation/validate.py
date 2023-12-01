@@ -60,40 +60,41 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
   gmm_pred = pat_pred.reshape(2,2)
 
   # CNN
+  cnn_pred = run_cnn(train_data, train_labels, validation_data, validation_labels)
 
   # RNN
-  rnn_pred = rnn_model(train_data, train_labels, validation_data)
+  rnn_pred = rnn_model(train_data, train_labels, validation_data, epochs=3)
 
 
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
-  svm_f2_score = fbeta_score(y_true, svm_pred, average='weighted', beta=2)
-  rf_f2_score = fbeta_score(y_true, rf_pred, average='weighted', beta=2)
-  xg_f2_score = fbeta_score(y_true, xg_pred, average='weighted', beta=2)
-  gmm_f2_score = fbeta_score(y_true, gmm_pred, average='weighted', beta=2)
-  # cnn_f2_score = fbeta_score(y_true, cnn_pred, average='weighted', beta=2)
-  rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
+  svm_f2_score = fbeta_score(y_true, svm_pred[0], average='weighted', beta=2)
+  rf_f2_score = fbeta_score(y_true, rf_pred[0], average='weighted', beta=2)
+  xg_f2_score = fbeta_score(y_true, xg_pred[0], average='weighted', beta=2)
+  gmm_f2_score = fbeta_score(y_true, gmm_pred[0], average='weighted', beta=2)
+  cnn_f2_score = fbeta_score(y_true, cnn_pred, average='weighted', beta=2)
+  rnn_f2_score = fbeta_score(y_true, rnn_pred[0], average='weighted', beta=2)
 
   # Compare using confusion matrices
-  svm_cm = confusion_matrix(y_true, svm_pred)
-  rf_cm = confusion_matrix(y_true, rf_pred)
-  xg_cm = confusion_matrix(y_true, xg_pred)
-  gmm_cm = confusion_matrix(y_true, gmm_pred)
-  # cnn_cm = confusion_matrix(y_true, cnn_pred)
-  rnn_cm = confusion_matrix(y_true, rnn_pred)
+  svm_cm = confusion_matrix(y_true, svm_pred[0])
+  rf_cm = confusion_matrix(y_true, rf_pred[0])
+  xg_cm = confusion_matrix(y_true, xg_pred[0])
+  gmm_cm = confusion_matrix(y_true, gmm_pred[0])
+  cnn_cm = confusion_matrix(y_true, cnn_pred)
+  rnn_cm = confusion_matrix(y_true, rnn_pred[0])
 
   # F2 Highest Score
-  # results_f2_score = [svm_f2_score, rf_f2_score, hmm_f2_score, kmeans_f2_score, cnn_f2_score, rnn_f2_score]
-  results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, rnn_f2_score]
+  results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
+  #results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, rnn_f2_score]
   print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
   with open('figure_list.txt', 'a') as f:
      f.write(f"The model with the highest f2 score is {max(results_f2_score, key=lambda x: x)}")
 
   # Compare using ROC curves
   # model_names = ['SVM', 'Random Forest', 'HMM', 'KMeans', 'CNN', 'RNN']
-  model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'RNN']
+  model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
-  for i, pred in enumerate([svm_pred, rf_pred, xg_pred, gmm_pred, rnn_pred]):
+  for i, pred in enumerate([svm_pred[1], rf_pred[1], xg_pred[1], gmm_pred[1], cnn_pred[1],rnn_pred[1]]):
     fpr, tpr, _ = roc_curve(y_true, pred)
     roc_auc = auc(fpr, tpr)
     plt.figure()
@@ -103,7 +104,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
     plt.ylim([0.0, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver Operating Characteristic (ROC) Curve for',model_names[i])
+    plt.title(f'Receiver Operating Characteristic (ROC) Curve for {model_names[i]}')
     plt.legend(loc="lower right")
     plt.show()
     plt.savefig("{}_roc_auc.jpg".format(model_names[i]))
@@ -112,7 +113,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
 
   # Confusion matrices
   # confusion_matrices = [svm_cm,rf_cm,hmm_cm,kmeans_cm,cnn_cm,rnn_cm]
-  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm, rnn_cm]
+  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
 
   for i, matrix in enumerate(confusion_matrices):
     true_positives = matrix[1][1]
@@ -133,7 +134,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
 
     with open('figure_list.txt', 'a') as f:
         f.write(model_names[i])
-        f.write(matrix)
+        f.write(str(matrix))
         f.write(f'Precision: {precision}')
         f.write(f'Precision: {accuracy}')
         f.write(f'Precision: {recall}')
