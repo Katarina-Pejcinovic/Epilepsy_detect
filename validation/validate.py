@@ -61,7 +61,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
 
 
 #run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
-  model_cnn, cnn_pred, cnn_proba = run_CNN(cnn_train, train_labels, cnn_test, validation_labels)
+  cnn_pred, cnn_proba = run_CNN(cnn_train, train_labels, cnn_test, validation_labels)
   print("in validate")
   # RNN
   rnn_pred = rnn_model(train_data, train_labels, validation_data, epochs=3)
