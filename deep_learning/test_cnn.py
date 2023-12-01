@@ -18,10 +18,12 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import numpy as np
 
 # Generate random 2D numpy arrays for training and testing
-train_data = np.random.randn(100, 12, 12)
-train_labels = np.random.randint(0, 2, size=(100,))
-test_data = np.random.randn(20, 12, 12)
-test_labels = np.random.randint(0, 2, size=(20,))
+train_data = np.random.randn(2, 16, 21)
+train_labels = np.array([0,1])
+test_data = np.random.randn(2, 16, 21)
+test_labels = np.array([0,1])
+print(train_data.shape)
+print(train_labels.shape)
 
 # Run the CNN
 model_instance, predictions, output = run_CNN(train_data, train_labels, test_data, test_labels)

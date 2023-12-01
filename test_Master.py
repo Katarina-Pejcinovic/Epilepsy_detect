@@ -10,20 +10,20 @@ import neurokit2 as nk
 import pywt
 from collections import Counter
 import scipy.stats as stats
-import tensorflow as tf
-from keras.models import Sequential
-from tensorflow.python.keras.layers import Dense
-from keras.layers import LSTM
-from tensorflow.python.keras.layers import Embedding
-from keras.preprocessing import sequence
-from sklearn.model_selection import train_test_split
-from keras.optimizers import Adam
-from tensorflow.python.keras.layers import Input
-from keras.layers import Bidirectional
-from tensorflow.python.keras.layers import Dropout
-from keras.utils import to_categorical
-from sklearn.metrics import roc_curve, auc
-from keras.preprocessing.sequence import pad_sequences
+# import tensorflow as tf
+# from keras.models import Sequential
+# from tensorflow.python.keras.layers import Dense
+# from keras.layers import LSTM
+# from tensorflow.python.keras.layers import Embedding
+# from keras.preprocessing import sequence
+# from sklearn.model_selection import train_test_split
+# from keras.optimizers import Adam
+# from tensorflow.python.keras.layers import Input
+# from keras.layers import Bidirectional
+# from tensorflow.python.keras.layers import Dropout
+# from keras.utils import to_categorical
+# from sklearn.metrics import roc_curve, auc
+# from keras.preprocessing.sequence import pad_sequences
 
 #run get_features()
 from feature_selection.get_features import * 
@@ -45,12 +45,7 @@ features_four = get_features(preprocessed_test_noep)
 # print(features_two.shape)
 # print(features_three.shape)
 # print(features_four.shape)
-import get_features_2
 
-pre_train = get_features_2.get_features('data_copy/training/epilepsy')
-pre_test = get_features_2.get_features('data_copy/testing/epilepsy')
-
-print("pre train shape", pre_train.shape)
 
 #this is what is sent to the cnn, rnn, and classical 
 training = np.append(features_one, features_two, axis =0)
@@ -68,6 +63,7 @@ print(patient_ids_train)
 
 labels_train_dp = np.array([1,0])
 labels_test_dp = np.array([1,0])
+print("labels shape", labels_train_dp.shape)
 
 from classical_ML.train_test_tune import * 
 
@@ -75,10 +71,17 @@ from classical_ML.train_test_tune import *
 #print(best_params)
 # print("training", training)
 from deep_learning.cnn import *
-model_instance, predictions, output = run_CNN(training, labels_train, testing, labels_test)
+import get_features_2
 
-from deep_learning.cnn import *
-# model_instance, predictions, output = run_CNN(training, labels_train, testing, labels_test)
+pre_train = get_features_2.get_features('data_copy/training/epilepsy')
+pre_test = get_features_2.get_features('data_copy/testing/epilepsy')
+print(pre_train)
 
-from deep_learning.rnn import *
-rnn_preds = rnn_model(preprocessed_train, labels_train_dp, preprocessed_test, epochs=1)
+# print("pre train shape", pre_train.shape)
+# print("pre test shape", pre_train.shape)
+
+model_instance, predictions, output = run_CNN(pre_train, labels_train_dp, pre_test, labels_test_dp)
+print(output)
+
+# from deep_learning.rnn import *
+# rnn_preds = rnn_model(preprocessed_train, labels_train_dp, preprocessed_test, epochs=1)
