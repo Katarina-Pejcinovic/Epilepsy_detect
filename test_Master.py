@@ -77,8 +77,10 @@ import get_features_2
 
 pre_train = get_features_2.get_features('data_copy/training/epilepsy')
 pre_test = get_features_2.get_features('data_copy/testing/epilepsy')
-#params_table, best_params = train_test_tune(training, labels_train, patient_ids_train)
-best_params = [{'svc__C': 1, 'svc__kernel': 'linear', 'umap__n_components': 1, 'umap__n_neighbors': 10}, {'randomforestclassifier__max_features': 25, 'randomforestclassifier__min_samples_leaf': 1, 'randomforestclassifier__n_estimators': 10, 'umap__n_components': 1, 'umap__n_neighbors': 10}, {'kmeans__init': 'k-means++', 'kmeans__n_clusters': 3, 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'umap__n_components': 1, 'umap__n_neighbors': 5, 'xgbclassifier__learning_rate': 0.01, 'xgbclassifier__max_depth': 2, 'xgbclassifier__n_estimators': 100}, {'gaussianmixture__init_params': 'k-means++', 'umap__n_components': 1, 'umap__n_neighbors': 5}]
-print(labels_test)
 
+# tune parameters for the classical ml model
+params_table, best_params = train_test_tune(training, labels_train, patient_ids_train)
+# best_params = [{'svc__C': 1, 'svc__kernel': 'linear', 'umap__n_components': 1, 'umap__n_neighbors': 10}, {'randomforestclassifier__max_features': 25, 'randomforestclassifier__min_samples_leaf': 1, 'randomforestclassifier__n_estimators': 10, 'umap__n_components': 1, 'umap__n_neighbors': 10}, {'kmeans__init': 'k-means++', 'kmeans__n_clusters': 3, 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'umap__n_components': 1, 'umap__n_neighbors': 5, 'xgbclassifier__learning_rate': 0.01, 'xgbclassifier__max_depth': 2, 'xgbclassifier__n_estimators': 100}, {'gaussianmixture__init_params': 'k-means++', 'umap__n_components': 1, 'umap__n_neighbors': 5}]
+
+# validate the models
 validate(preprocessed_train, labels_train_dp, preprocessed_test, labels_test_dp, training, labels_train, testing, labels_test, best_params, pre_train, pre_test)
