@@ -83,3 +83,47 @@ RNN[[0 1]
 Accuracy: 0.5
 Recall: 1.0
 
+The model with the highest f2 score is 0.4166666666666667 
+
+validation_results/SVM_roc_auc.jpg
+validation_results/Random Forest_roc_auc.jpg
+validation_results/XG Boost_roc_auc.jpg
+validation_results/Gaussian Mixture_roc_auc.jpg
+validation_results/CNN_roc_auc.jpg
+validation_results/RNN_roc_auc.jpg
+SVM[[16  0]
+ [16  0]]
+ Precision: nan
+Accuracy: 0.5
+Recall: 0.0
+
+Random Forest[[ 0 16]
+ [ 0 16]]
+ Precision: 0.5
+Accuracy: 0.5
+Recall: 1.0
+
+XG Boost[[16  0]
+ [16  0]]
+ Precision: nan
+Accuracy: 0.5
+Recall: 0.0
+
+Gaussian Mixture[[ 0 16]
+ [ 0 16]]
+ Precision: 0.5
+Accuracy: 0.5
+Recall: 1.0
+
+CNN[[0 1]
+ [0 1]]
+ Precision: 0.5
+Accuracy: 0.5
+Recall: 1.0
+
+RNN[[0 1]
+ [0 1]]
+ Precision: 0.5
+Accuracy: 0.5
+Recall: 1.0
+
