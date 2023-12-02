@@ -3,5 +3,6 @@
 .idea
 .ipynb_checkpoints
 .pyc
-
+.jpg
+.txt
 
