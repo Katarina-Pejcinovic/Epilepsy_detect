@@ -27,21 +27,18 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
 
   rf_pred, rf_proba = random_forest_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[1])
 
-
   xg_pred, xg_proba = xg_boost_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[3])
-
 
   gmm_pred, gmm_proba = gmm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[4])
 
 
 
-#run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
+  # run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
   cnn_pred, cnn_proba= run_CNN(cnn_train, train_labels, cnn_test, validation_labels)
   print("in validate")
 
   # RNN
   rnn_pred, rnn_proba = rnn_model(train_data, train_labels, validation_data, epochs=3)
-
 
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
   svm_f2_score = fbeta_score(validation_labels_ml, svm_pred, average='weighted', beta=2)
@@ -63,21 +60,20 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
   results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
   print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
   with open('validation_results/figure_list.txt', 'a') as f:
-     f.write(f"The model with the highest f2 score is {max(results_f2_score, key=lambda x: x)}")
+     f.write(f"The model with the highest f2 score is {max(results_f2_score, key=lambda x: x)} \n")
 
   # Compare using ROC curves
-  # model_names = ['SVM', 'Random Forest', 'HMM', 'KMeans', 'CNN', 'RNN']
   model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
   for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
     if i < 4:
-       print("ostensible 1")
+      #  print("ostensible 1")
        pred = np.amax(pred, axis =1)
        fpr, tpr, _ = roc_curve(validation_labels_ml, pred)
     else:
-      print(i)
-      print(pred)
+      # print(i)
+      # print(pred)
       fpr, tpr, _ = roc_curve(y_true, pred)
     roc_auc = auc(fpr, tpr)
     plt.figure()
@@ -95,7 +91,6 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
         f.write('validation_results/{}_roc_auc.jpg\n'.format(model_names[i]))
 
   # Confusion matrices
-  # confusion_matrices = [svm_cm,rf_cm,hmm_cm,kmeans_cm,cnn_cm,rnn_cm]
   confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
 
   for i, matrix in enumerate(confusion_matrices):

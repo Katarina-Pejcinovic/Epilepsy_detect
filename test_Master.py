@@ -14,7 +14,7 @@ else:
     from batch_processing import data_file_batch
     data_file_path = data_file_batch
 
-#get preprocessed data 
+# Get preprocessed data 
 preprocessed_data = []
 state = ['epilepsy/', 'no_epilepsy/']
 train_ep_files = os.listdir(data_file_path + 'training/' + state[0])
@@ -46,20 +46,22 @@ for i, file in enumerate(test_noep_files):
     else:
         preprocessed_test_noep = test_noep_file
 
-print('ostensibly')
+# print('ostensibly')
 
 preprocessed_train = [preprocessed_train_ep, preprocessed_train_noep]
 preprocessed_test = [preprocessed_test_ep, preprocessed_test_noep]
 
+# Feature extraction
 features_one = get_features(preprocessed_train_ep)
 features_two = get_features(preprocessed_train_noep)
 features_three = get_features(preprocessed_test_ep)
 features_four = get_features(preprocessed_test_noep)
 
-#this is what is sent to the cnn, rnn, and classical 
+# Data and labels sent to the cnn, rnn, and classical  models
 training = np.append(features_one, features_two, axis =0)
 testing = np.append(features_three, features_four, axis =0)
 
+# Classical labels
 labels_train = np.append(np.ones(16), np.zeros(16), axis =0)
 labels_test = labels_train
 
@@ -67,6 +69,7 @@ patient_ids_train = np.concatenate((np.ones(8),np.ones(8)*2, np.ones(8)*3, np.on
 patient_ids_test = np.concatenate((np.ones(8)*5, np.ones(8)*6, np.ones(8)*7, np.ones(8)*8))
 print(patient_ids_train)
 
+# Deep learning labels
 labels_train_dp = np.array([1,0])
 labels_test_dp = np.array([1,0])
 
@@ -75,6 +78,7 @@ from deep_learning.cnn import *
 from validation.validate import *
 import get_features_2
 
+# cnn features
 pre_train = get_features_2.get_features('data_copy/training/epilepsy')
 pre_test = get_features_2.get_features('data_copy/testing/epilepsy')
 
