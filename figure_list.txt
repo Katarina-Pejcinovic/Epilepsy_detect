@@ -1,0 +1,4 @@
+The model with the highest f2 score is 0.4166666666666667The model with the highest f2 score is 0.4166666666666667SVM_roc_auc.jpg
+Random Forest_roc_auc.jpg
+XG Boost_roc_auc.jpg
+The model with the highest f2 score is 0.4166666666666667

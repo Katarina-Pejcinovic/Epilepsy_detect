@@ -23,69 +23,44 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
   y_true = validation_labels
 
   ## Run classical models
-  svm_pred = svm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[0])
-  svm_temp = svm_pred[1]
-  pat1 = svm_temp[0:16,:]
-  pat2 = svm_temp[16:32,:]
-  pat1_pred = np.mean(pat1, axis=0)
-  pat2_pred = np.mean(pat2, axis=0)
-  pat_pred = np.append(pat1_pred, pat2_pred, axis=0)
-  svm_pred = pat_pred.reshape(2,2)
+  svm_pred, svm_proba = svm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[0])
 
-  rf_pred = random_forest_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[1])
-  rf_temp = rf_pred[1]
-  pat1 = rf_temp[0:16,:]
-  pat2 = rf_temp[16:32,:]
-  pat1_pred = np.mean(pat1, axis=0)
-  pat2_pred = np.mean(pat2, axis=0)
-  pat_pred = np.append(pat1_pred, pat2_pred, axis=0)
-  rf_pred = pat_pred.reshape(2,2)
+  rf_pred, rf_proba = random_forest_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[1])
 
-  xg_pred = xg_boost_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[3])
-  xg_temp = xg_pred[1]
-  pat1 = xg_temp[0:16,:]
-  pat2 = xg_temp[16:32,:]
-  pat1_pred = np.mean(pat1, axis=0)
-  pat2_pred = np.mean(pat2, axis=0)
-  pat_pred = np.append(pat1_pred, pat2_pred, axis=0)
-  xg_pred = pat_pred.reshape(2,2)
 
-  gmm_pred = gmm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[4])
-  gmm_temp = gmm_pred[1]
-  pat1 = gmm_temp[0:16,:]
-  pat2 = gmm_temp[16:32,:]
-  pat1_pred = np.mean(pat1, axis=0)
-  pat2_pred = np.mean(pat2, axis=0)
-  pat_pred = np.append(pat1_pred, pat2_pred, axis=0)
-  gmm_pred = pat_pred.reshape(2,2)
+  xg_pred, xg_proba = xg_boost_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[3])
+
+
+  gmm_pred, gmm_proba = gmm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[4])
+
 
 
 #run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
-  cnn_pred, cnn_proba = run_CNN(cnn_train, train_labels, cnn_test, validation_labels)
+  cnn_pred, cnn_proba= run_CNN(cnn_train, train_labels, cnn_test, validation_labels)
   print("in validate")
+
   # RNN
-  rnn_pred = rnn_model(train_data, train_labels, validation_data, epochs=3)
+  rnn_pred, rnn_proba = rnn_model(train_data, train_labels, validation_data, epochs=3)
 
 
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
-  svm_f2_score = fbeta_score(y_true, svm_pred[0], average='weighted', beta=2)
-  rf_f2_score = fbeta_score(y_true, rf_pred[0], average='weighted', beta=2)
-  xg_f2_score = fbeta_score(y_true, xg_pred[0], average='weighted', beta=2)
-  gmm_f2_score = fbeta_score(y_true, gmm_pred[0], average='weighted', beta=2)
+  svm_f2_score = fbeta_score(validation_labels_ml, svm_pred, average='weighted', beta=2)
+  rf_f2_score = fbeta_score(validation_labels_ml, rf_pred, average='weighted', beta=2)
+  xg_f2_score = fbeta_score(validation_labels_ml, xg_pred, average='weighted', beta=2)
+  gmm_f2_score = fbeta_score(validation_labels_ml, gmm_pred, average='weighted', beta=2)
   cnn_f2_score = fbeta_score(y_true, cnn_pred, average='weighted', beta=2)
-  rnn_f2_score = fbeta_score(y_true, rnn_pred[0], average='weighted', beta=2)
+  rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
 
   # Compare using confusion matrices
-  svm_cm = confusion_matrix(y_true, svm_pred[0])
-  rf_cm = confusion_matrix(y_true, rf_pred[0])
-  xg_cm = confusion_matrix(y_true, xg_pred[0])
-  gmm_cm = confusion_matrix(y_true, gmm_pred[0])
+  svm_cm = confusion_matrix(validation_labels_ml, svm_pred)
+  rf_cm = confusion_matrix(validation_labels_ml, rf_pred)
+  xg_cm = confusion_matrix(validation_labels_ml, xg_pred)
+  gmm_cm = confusion_matrix(validation_labels_ml, gmm_pred)
   cnn_cm = confusion_matrix(y_true, cnn_pred)
-  rnn_cm = confusion_matrix(y_true, rnn_pred[0])
+  rnn_cm = confusion_matrix(y_true, rnn_pred)
 
   # F2 Highest Score
   results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
-  #results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, rnn_f2_score]
   print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
   with open('figure_list.txt', 'a') as f:
      f.write(f"The model with the highest f2 score is {max(results_f2_score, key=lambda x: x)}")
@@ -95,8 +70,15 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
   model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
-  for i, pred in enumerate([svm_pred[1], rf_pred[1], xg_pred[1], gmm_pred[1], cnn_pred[1],rnn_pred[1]]):
-    fpr, tpr, _ = roc_curve(y_true, pred)
+  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
+    if i < 4:
+       print("ostensible 1")
+       pred = np.amax(pred, axis =1)
+       fpr, tpr, _ = roc_curve(validation_labels_ml, pred)
+    else:
+      print(i)
+      print(pred)
+      fpr, tpr, _ = roc_curve(y_true, pred)
     roc_auc = auc(fpr, tpr)
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = {:.2f})'.format(roc_auc))
