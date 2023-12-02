@@ -65,8 +65,6 @@ def run_CNN(train_data, train_labels, test_data, test_labels):
 
         # print(f"Epoch [{epoch + 1}/{num_epochs}], Loss: {loss.item()}")
 
-    # Save the trained model
-    torch.save(model.state_dict(), 'simple_cnn_model.pth')
 
     # Instantiate the model
     model_instance = SimpleCNN()
@@ -96,4 +94,4 @@ def run_CNN(train_data, train_labels, test_data, test_labels):
     # convert to numpy
     prob = class_prob.cpu().numpy()
 
-    return model_instance, predictions, prob
+    return predictions, prob

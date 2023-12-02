@@ -30,7 +30,7 @@ from keras.layers import LSTM
 from tensorflow.python.keras.layers import Embedding
 from keras.preprocessing import sequence
 from sklearn.model_selection import train_test_split
-from keras.optimizers import Adam
+from keras.optimizers.legacy import Adam
 from tensorflow.python.keras.layers import Input
 from keras.layers import Bidirectional
 from tensorflow.python.keras.layers import Dropout
