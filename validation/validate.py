@@ -60,7 +60,7 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
   results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
   print("The model with the highest f2 score is", max(results_f2_score, key=lambda x: x))
   with open('validation_results/figure_list.txt', 'a') as f:
-     f.write(f"The model with the highest f2 score is {max(results_f2_score, key=lambda x: x)} \n")
+     f.write(f"The model with the highest f2 score is {max(results_f2_score, key=lambda x: x)} \n\n")
 
   # Compare using ROC curves
   model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
@@ -86,7 +86,6 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
     plt.title(f'Receiver Operating Characteristic (ROC) Curve for {model_names[i]}')
     plt.legend(loc="lower right")
     plt.savefig("validation_results/{}_roc_auc.jpg".format(model_names[i]))
-    plt.show()
     with open('validation_results/figure_list.txt', 'a') as f:
         f.write('validation_results/{}_roc_auc.jpg\n'.format(model_names[i]))
 

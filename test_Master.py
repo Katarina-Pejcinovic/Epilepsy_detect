@@ -76,7 +76,7 @@ labels_test_dp = np.array([1,0])
 from classical_ML.train_test_tune import * 
 from deep_learning.cnn import *
 from validation.validate import *
-import get_features_2
+import feature_selection.get_features_2 as get_features_2
 
 # cnn features
 pre_train = get_features_2.get_features('data_copy/training/epilepsy')
