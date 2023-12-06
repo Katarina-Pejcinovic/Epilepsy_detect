@@ -22,11 +22,11 @@ train_data = np.random.randn(2, 16, 21)
 train_labels = np.array([0,1])
 test_data = np.random.randn(2, 16, 21)
 test_labels = np.array([0,1])
-print(train_data.shape)
-print(train_labels.shape)
+#print(train_data.shape)
+#print(train_labels.shape)
 
 # Run the CNN
-model_instance, predictions, output = run_CNN(train_data, train_labels, test_data, test_labels)
+#model_instance, predictions, output = run_CNN(train_data, train_labels, test_data, test_labels)
 
 '''evaluate the effectiveness of the model'''
 def evaluate_model(true_labels, predicted_labels):
@@ -64,4 +64,35 @@ def evaluate_model(true_labels, predicted_labels):
 
 
 # Call the evaluation function
-evaluate_model(test_labels, predictions)
+#evaluate_model(test_labels, predictions)
+
+
+#Test EEGNet modification 
+X_train = np.random.rand(100, 1, 120, 64).astype('float32') # np.random.rand generates between [0, 1)
+y_train = np.round(np.random.rand(100).astype('float32')) # binary data, so we round it to 0 or 1.
+
+X_test = np.random.rand(100, 1, 120, 64).astype('float32')
+y_test = np.round(np.random.rand(100).astype('float32'))
+print("X_train", X_train.shape)
+
+bi_predictions, output = run_EEGnet(X_train, y_train, X_test, y_test)
+print(bi_predictions)
+print(bi_predictions.shape)
+print(output)
+print(output.shape)
+
+# Compute accuracy
+accuracy = accuracy_score(y_test, bi_predictions)
+print(f"Accuracy: {accuracy:.4f}")
+
+# Calculate ROC curve
+fpr, tpr, thresholds = roc_curve(y_test, output)
+
+# Calculate AUC
+roc_auc = auc(fpr, tpr)
+plt.plot(fpr, tpr)
+plt.xlabel('False positive rate')
+plt.ylabel('True positive rate')
+plt.title('ROC curve')
+plt.legend()
+plt.show()
