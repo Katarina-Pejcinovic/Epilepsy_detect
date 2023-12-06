@@ -1,9 +1,8 @@
 #only import stuff you call in this file 
 import os
 import numpy as np
-
-#run get_features()
-from feature_selection.get_features import * 
+import pandas as pd
+from glob import glob
 
 # Batch Processing
 if __name__ == "__main__":
@@ -15,43 +14,82 @@ else:
     data_file_path = data_file_batch
 
 # Get preprocessed data 
-preprocessed_data = []
-state = ['epilepsy/', 'no_epilepsy/']
-train_ep_files = os.listdir(data_file_path + 'training/' + state[0])
-train_noep_files = os.listdir(data_file_path + 'training/' + state[1])
-test_ep_files = os.listdir(data_file_path + 'testing/' + state[0])
-test_noep_files = os.listdir(data_file_path + 'testing/' + state[1])
-for i, file in enumerate(train_ep_files):
-    train_ep_file = np.load(data_file_path + 'training/' + state[0] + file)
-    if i != 0:
-        preprocessed_train_ep = np.concatenate((preprocessed_train_ep, train_ep_file))
-    else:
-        preprocessed_train_ep = train_ep_file
-for i, file in enumerate(train_noep_files):
-    train_noep_file = np.load(data_file_path + 'training/' + state[1] + file)
-    if i != 0:
-        preprocessed_train_noep = np.concatenate((preprocessed_train_noep, train_noep_file))
-    else:
-        preprocessed_train_noep = train_noep_file
-for i, file in enumerate(test_ep_files):
-    test_ep_file = np.load(data_file_path + 'testing/' + state[0] + file)
-    if i != 0:
-        preprocessed_test_ep = np.concatenate((preprocessed_test_ep, test_ep_file))
-    else:
-        preprocessed_test_ep = test_ep_file
-for i, file in enumerate(test_noep_files):
-    test_noep_file = np.load(data_file_path + 'testing/' + state[1] + file)
-    if i != 0:
-        preprocessed_test_noep = np.concatenate((preprocessed_test_noep, test_noep_file))
-    else:
-        preprocessed_test_noep = test_noep_file
+# Beta subset: ep_train = [aaaaaanr], ep_test = [aaaaalug], noep_train = [aaaaaebo], noep_test = [aaaaappo]
+# ep_train_ID = ['aaaaaanr']
+# ep_test_ID = ['aaaaalug']
+# noep_train_ID = ['aaaaaebo']
+# noep_test_ID = ['aaaaappo']
 
-# print('ostensibly')
+# FIX: Load in the txt files instead as a list of ID names
+ep_train_df = pd.read_table('data/subject_ids_epilepsy_training.txt', delimiter="\t")
+ep_train_ID = ep_train_df["IDs"].values.tolist()
+noep_train_df = pd.read_table('data/subject_ids_no_epilepsy_training.txt', delimiter="\t")
+noep_train_ID = noep_train_df["IDs"].values.tolist()
+
+ep_test_df = pd.read_table('data/subject_ids_epilepsy_testing.txt', delimiter="\t")
+ep_test_ID = ep_test_df["IDs"].values.tolist()
+noep_test_df = pd.read_table('data/subject_ids_no_epilepsy_testing.txt', delimiter="\t")
+noep_test_ID = noep_test_df["IDs"].values.tolist()
+
+
+# Get all patient names
+preprocessed_path = data_file_path + 'preprocessed_data/'
+state = ['epilepsy_edf/', 'no_epilepsy_edf/']
+
+ep_patients_train = [filename for filename in os.listdir(preprocessed_path + state[0]) 
+                     if filename in ep_train_ID]
+noep_patients_train = [filename for filename in os.listdir(preprocessed_path + state[1])
+                        if filename in noep_train_ID]
+ep_patients_test = [filename for filename in os.listdir(preprocessed_path + state[0])
+                     if filename in ep_test_ID]
+noep_patients_test = [filename for filename in os.listdir(preprocessed_path + state[1])
+                       if filename in noep_test_ID]
+
+preprocessed_train_ep = []
+preprocessed_train_noep = []
+preprocessed_test_ep = []
+preprocessed_test_noep = []
+
+# Load in all the pre-processed files
+for patient in ep_patients_train:
+    patient_folder_path = preprocessed_path + state[0] + "/" + patient
+    processed_files = [filename for filename in os.listdir(patient_folder_path) 
+                       if filename.startswith("p")]
+    for file in processed_files:
+        file = np.load(patient_folder_path + "/" + file)
+        preprocessed_train_ep.append(file)
+    
+for patient in noep_patients_train:
+    patient_folder_path = preprocessed_path + state[1] + "/" + patient
+    processed_files = [filename for filename in os.listdir(patient_folder_path) 
+                       if filename.startswith("p")]
+    for file in processed_files:
+        file = np.load(patient_folder_path + "/" + file)
+        preprocessed_train_noep.append(file)
+
+for patient in ep_patients_test:
+    patient_folder_path = preprocessed_path + state[0] + "/" + patient
+    processed_files = [filename for filename in os.listdir(patient_folder_path) 
+                       if filename.startswith("p")]
+    for file in processed_files:
+        file = np.load(patient_folder_path + "/" + file)
+        preprocessed_test_ep.append(file)
+
+for patient in noep_patients_test:
+    patient_folder_path = preprocessed_path + state[1] + "/" + patient
+    processed_files = [filename for filename in os.listdir(patient_folder_path) 
+                       if filename.startswith("p")]
+    for file in processed_files:
+        file = np.load(patient_folder_path + "/" + file)
+        preprocessed_test_noep.append(file)
+
 
 preprocessed_train = [preprocessed_train_ep, preprocessed_train_noep]
 preprocessed_test = [preprocessed_test_ep, preprocessed_test_noep]
 
 # Feature extraction
+from feature_selection.get_features import * 
+
 features_one = get_features(preprocessed_train_ep)
 features_two = get_features(preprocessed_train_noep)
 features_three = get_features(preprocessed_test_ep)
