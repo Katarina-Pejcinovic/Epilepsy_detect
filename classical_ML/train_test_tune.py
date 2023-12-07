@@ -153,13 +153,13 @@ def train_test_tune(data, labels, groups):
   # Outputs: best hyperparameters for each classical ml model
 
   ## Reshape data
-  # num_files = data.shape[0]
-  # num_channels = data.shape[1]
-  # num_features = data.shape[2]
+  num_files = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
   num_patients = np.size(np.unique(groups))
 
-  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
-  data_reshape = data
+  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = data
 
   group_kfold = GroupKFold(n_splits=num_patients)
 
@@ -185,13 +185,13 @@ def train_test_tune(data, labels, groups):
                           'param_randomforestclassifier__max_features', 'mean_test_score']]
 
   ## K Means
-  kmeans_param_search = create_kmeans_pipeline(group_kfold)
-  kmeans_param_search.fit(data_reshape, labels, groups=groups)
+  # kmeans_param_search = create_kmeans_pipeline(group_kfold)
+  # kmeans_param_search.fit(data_reshape, labels, groups=groups)
 
-  kmeans_best_params = kmeans_param_search.best_params_
-  kmeans_results = pd.DataFrame(kmeans_param_search.cv_results_)
-  kmeans_params = kmeans_results[['param_umap__n_components', 'param_umap__n_neighbors',
-                                  'param_kmeans__init', 'param_kmeans__n_clusters','mean_test_score']]
+  # kmeans_best_params = kmeans_param_search.best_params_
+  # kmeans_results = pd.DataFrame(kmeans_param_search.cv_results_)
+  # kmeans_params = kmeans_results[['param_umap__n_components', 'param_umap__n_neighbors',
+  #                                 'param_kmeans__init', 'param_kmeans__n_clusters','mean_test_score']]
 
   ## GMM
   gmm_param_search = create_gmm_pipeline(group_kfold)
@@ -216,8 +216,8 @@ def train_test_tune(data, labels, groups):
   print('Cross validate to determine optimal feature selection and model hyperparameters')
 
   # Return all of best parameters of each model as a multidimensional list
-  params_full = [svc_params, rf_params, kmeans_params, xg_params, gmm_params]
-  params_best = [svc_best_params, rf_best_params, kmeans_best_params, xg_best_params, gmm_best_params]
+  params_full = [svc_params, rf_params, xg_params, gmm_params]
+  params_best = [svc_best_params, rf_best_params, xg_best_params, gmm_best_params]
 
   return params_full, params_best
 
