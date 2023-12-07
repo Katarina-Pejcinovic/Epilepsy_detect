@@ -1,21 +1,27 @@
 import numpy as np
 from imputate import *
 
+# Create two random 2D arrays with shape (3, 4) filled with random floats
+array1 = np.random.rand(3, 4)
+array2 = np.random.rand(3, 4)
 
-#fake preprocessed data 
-preprocessed = np.array([[1.0, 2.0, 3.0],
-                        [4.0, 5.0, 6.0],
-                        [7.0, 8.0, 9.0]])
+# Replace one row in array1 with NaN
+row_to_replace = 1  # You can change this value to choose a different row
+array1[row_to_replace, :] = np.nan
 
-#preprocessed = np.load('data/training/epilepsy/preprocessed_aaaaaanr_epilepsy_edf_aaaaaanr_s007_t000.edf.npy')
+# Stack the arrays along a new axis to create a 3D array
+stacked_array = np.stack((array1, array2), axis=0)
 
-# Create a row of NaN values
-row_of_nans = np.full_like(preprocessed[0, :], np.nan)
+# print("Array1:")
+# print(array1)
+# print("\nArray2:")
+# print(array2)
+# print("\nStacked Array:")
+# print(stacked_array)
 
-# Append the row of NaN values to the 2D array
-preprocessed = np.append(preprocessed, [row_of_nans], axis=0)
-print(preprocessed)
+
 
 #call run_imputate()
-imputated = run_imputate(preprocessed)
-print(imputated )
+imputated = run_imputate(stacked_array)
+print("imputated", '\n', imputated)
+#print(imputated )
