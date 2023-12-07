@@ -3,20 +3,30 @@ import numpy as np
 from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
+#run_imputate takes in the first index in the list list[0], which is a list of 
+# 4 3D numpy arrays. run_imputate takes in a 3D numpy array 
 def run_imputate(preprocessed):
 
-    #make a copy and make a mask of the missing data 
-    preprocessed_copy = np.copy(preprocessed)
-    missing_mask = np.isnan(preprocessed_copy)
+    #Make a copy of the 3D numpy array 
+    copy_preprocessed_3D = np.copy(preprocessed)
 
-    #instantiate the imputer class
-    imputer = IterativeImputer(max_iter=10, random_state=0)
+    #loop through slices of 3D array representing patients
+    for i in range(copy_preprocessed_3D.shape[0]):
 
-    #calculate the values 
-    imputed_values = imputer.fit_transform(preprocessed_copy)
+        #Take a slice of the data 
+        patient_slice = copy_preprocessed_3D[i, :, :]
+        print("patient slice ",'\n',  patient_slice)
 
-    preprocessed_copy[missing_mask] = imputed_values[missing_mask]
+        #instantiate the imputer class
+        imputer = IterativeImputer(max_iter=10, random_state=0)
 
-    return preprocessed_copy
+        #calculate the values 
+        imputed_values = imputer.fit_transform(patient_slice)
+        print("imputed values", '\n', imputed_values)
+
+        copy_preprocessed_3D[i, :, :] = imputed_values
+
+
+    return copy_preprocessed_3D
 
         
