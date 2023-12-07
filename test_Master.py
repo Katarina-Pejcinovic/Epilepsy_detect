@@ -2,7 +2,6 @@
 import os
 import numpy as np
 import pandas as pd
-from glob import glob
 
 # Batch Processing
 if __name__ == "__main__":
@@ -13,79 +12,14 @@ else:
     from batch_processing import data_file_batch
     data_file_path = data_file_batch
 
-# Get preprocessed data 
-# Beta subset: ep_train = [aaaaaanr], ep_test = [aaaaalug], noep_train = [aaaaaebo], noep_test = [aaaaappo]
-# ep_train_ID = ['aaaaaanr']
-# ep_test_ID = ['aaaaalug']
-# noep_train_ID = ['aaaaaebo']
-# noep_test_ID = ['aaaaappo']
+# Load preprocessed data
+from load_data import *
 
-# FIX: Load in the txt files instead as a list of ID names
-ep_train_df = pd.read_table('data/subject_ids_epilepsy_training.txt', delimiter="\t")
-ep_train_ID = ep_train_df["IDs"].values.tolist()
-noep_train_df = pd.read_table('data/subject_ids_no_epilepsy_training.txt', delimiter="\t")
-noep_train_ID = noep_train_df["IDs"].values.tolist()
-
-ep_test_df = pd.read_table('data/subject_ids_epilepsy_testing.txt', delimiter="\t")
-ep_test_ID = ep_test_df["IDs"].values.tolist()
-noep_test_df = pd.read_table('data/subject_ids_no_epilepsy_testing.txt', delimiter="\t")
-noep_test_ID = noep_test_df["IDs"].values.tolist()
-
-
-# Get all patient names
-preprocessed_path = data_file_path + 'preprocessed_data/'
-state = ['epilepsy_edf/', 'no_epilepsy_edf/']
-
-ep_patients_train = [filename for filename in os.listdir(preprocessed_path + state[0]) 
-                     if filename in ep_train_ID]
-noep_patients_train = [filename for filename in os.listdir(preprocessed_path + state[1])
-                        if filename in noep_train_ID]
-ep_patients_test = [filename for filename in os.listdir(preprocessed_path + state[0])
-                     if filename in ep_test_ID]
-noep_patients_test = [filename for filename in os.listdir(preprocessed_path + state[1])
-                       if filename in noep_test_ID]
-
-preprocessed_train_ep = []
-preprocessed_train_noep = []
-preprocessed_test_ep = []
-preprocessed_test_noep = []
-
-# Load in all the pre-processed files
-for patient in ep_patients_train:
-    patient_folder_path = preprocessed_path + state[0] + "/" + patient
-    processed_files = [filename for filename in os.listdir(patient_folder_path) 
-                       if filename.startswith("p")]
-    for file in processed_files:
-        file = np.load(patient_folder_path + "/" + file)
-        preprocessed_train_ep.append(file)
-    
-for patient in noep_patients_train:
-    patient_folder_path = preprocessed_path + state[1] + "/" + patient
-    processed_files = [filename for filename in os.listdir(patient_folder_path) 
-                       if filename.startswith("p")]
-    for file in processed_files:
-        file = np.load(patient_folder_path + "/" + file)
-        preprocessed_train_noep.append(file)
-
-for patient in ep_patients_test:
-    patient_folder_path = preprocessed_path + state[0] + "/" + patient
-    processed_files = [filename for filename in os.listdir(patient_folder_path) 
-                       if filename.startswith("p")]
-    for file in processed_files:
-        file = np.load(patient_folder_path + "/" + file)
-        preprocessed_test_ep.append(file)
-
-for patient in noep_patients_test:
-    patient_folder_path = preprocessed_path + state[1] + "/" + patient
-    processed_files = [filename for filename in os.listdir(patient_folder_path) 
-                       if filename.startswith("p")]
-    for file in processed_files:
-        file = np.load(patient_folder_path + "/" + file)
-        preprocessed_test_noep.append(file)
-
-
-preprocessed_train = [preprocessed_train_ep, preprocessed_train_noep]
-preprocessed_test = [preprocessed_test_ep, preprocessed_test_noep]
+# Order: Train EP, Train No EP, Test EP, Test No EP
+# data_list = list of 4 lists that contain 2D numpy arrays
+# label_list = list of 4 1D numpy arrays
+# patientID_list = list of 4 1D numpy arrays
+[data_list, label_list, patientID_list] = load_data(data_file_path)
 
 # Feature extraction
 from feature_selection.get_features import * 
