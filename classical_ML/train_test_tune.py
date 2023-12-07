@@ -23,7 +23,7 @@ def create_svc_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
   param_grid = {
-      'umap__n_components':[1],
+      'umap__n_components':[3, 5],
       'umap__n_neighbors':[5, 10],
       'svc__kernel':['linear', 'rbf'],
       'svc__C':[1, 10],
@@ -46,7 +46,7 @@ def create_rf_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
-      'umap__n_components':[1],
+      'umap__n_components':[3, 5],
       'umap__n_neighbors':[5, 10],
       # 'randomforestclassifier__n_estimators':[10, 100],
       'randomforestclassifier__n_estimators':[10],
@@ -72,7 +72,7 @@ def create_kmeans_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), KMeans(n_clusters=2, n_init='auto'))
 
   param_grid = {
-      'umap__n_components':[1],
+      'umap__n_components':[3, 5],
       'umap__n_neighbors':[5, 10],
       'kmeans__n_clusters':[2, 3],
       # 'kmeans__init':['k-means++', 'random'],
@@ -95,7 +95,7 @@ def create_gmm_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
-      'umap__n_components':[1],
+      'umap__n_components':[3, 5],
       'umap__n_neighbors':[5, 10],
       # 'gaussianmixture__init_params':['k-means++', 'random'],
       'gaussianmixture__init_params':['k-means++'],
@@ -118,7 +118,7 @@ def create_xg_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-      'umap__n_components':[1],
+      'umap__n_components':[3, 5],
       'umap__n_neighbors':[5, 10],
       # 'xgbclassifier__max_depth':[2, 5],
       'xgbclassifier__max_depth':[2],
@@ -219,19 +219,33 @@ def train_test_tune(data, labels, groups):
   params_full = [svc_params, rf_params, xg_params, gmm_params]
   params_best = [svc_best_params, rf_best_params, xg_best_params, gmm_best_params]
 
+  # Save best params to text file
+  file = open('results/best_params.txt','w')
+  for item in params_best:
+    for key, value in item.items():
+      file.write('%s: %s\n' % (key, value))
+    file.write('\n')
+  file.close()
+
+  params_full[0].to_csv("results/svm_params.csv", index=False)
+  params_full[1].to_csv("results/rf_params.csv", index=False)
+  params_full[2].to_csv("results/xg_params.csv", index=False)
+  params_full[3].to_csv("results/gmm_params.csv", index=False)
+
+  # Save all param results to CSV
   return params_full, params_best
 
-# # Run with fake test data
-# patients = 5
-# files = 5*patients
-# channels = 2
-# features = 10
-# data = np.random.rand(files, channels, features)
-# labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
-# groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
+# Run with fake test data
+patients = 5
+files = 5*patients
+channels = 2
+features = 10
+data = np.random.rand(files, channels, features)
+labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
 
-# # Return list of pd dataframes that contain every combo of parameters + mean_test_score
-# # Return list of dict for each model with the best parameters
-# [params, best_params] = train_test_tune(data, labels, groups)
+# Return list of pd dataframes that contain every combo of parameters + mean_test_score
+# Return list of dict for each model with the best parameters
+[params, best_params] = train_test_tune(data, labels, groups)
 
-# print('Done')
+print('Done')
