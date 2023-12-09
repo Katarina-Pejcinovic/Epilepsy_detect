@@ -27,9 +27,9 @@ def validate(train_data, train_labels, validation_data, validation_labels, train
 
   rf_pred, rf_proba = random_forest_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[1])
 
-  xg_pred, xg_proba = xg_boost_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[3])
+  xg_pred, xg_proba = xg_boost_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[2])
 
-  gmm_pred, gmm_proba = gmm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[4])
+  gmm_pred, gmm_proba = gmm_model(train_data_ml, train_labels_ml, validation_data_ml, parameters[3])
 
 
 
