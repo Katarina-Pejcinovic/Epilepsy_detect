@@ -6,6 +6,7 @@ import numpy as np
 import torch.nn.functional as F
 from torch.autograd import Variable
 
+'''
 def run_CNN(train_data, train_labels, test_data, test_labels):
 
     # CNN architecture
@@ -95,10 +96,15 @@ def run_CNN(train_data, train_labels, test_data, test_labels):
     prob = class_prob.cpu().numpy()
 
     return predictions, prob
-
+'''
 
 #runs EEGnet
 def run_EEGnet(train_data, train_labels, test_data, test_labels):
+
+    #convert 3D numpy array into 4D 
+    train_data = train_data[:, np.newaxis, :, :]
+    test_data = test_data[:, np.newaxis, :, :]
+
     class EEGNet(nn.Module):
         def __init__(self):
             super(EEGNet, self).__init__()
@@ -191,7 +197,6 @@ def run_EEGnet(train_data, train_labels, test_data, test_labels):
     threshold = 0.5
     binary_predictions = (predictions > threshold).astype(int)
 
-    output = 2
     return binary_predictions, predictions
 
 
