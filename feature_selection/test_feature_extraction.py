@@ -8,18 +8,19 @@ Original file is located at
 """
 
 import numpy as np
+from sklearn.decomposition import PCA
 from sklearn.cluster import KMeans
 from sklearn.metrics import accuracy_score
 import matplotlib.pyplot as plt
 
-def test_feature_extraction():
+def test_get_features_content():
     # Function to generate a signal with added noise
     def generate_signal(amplitude, frequency):
         sample_rate = 1000
         duration = 1
         t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
         signal = amplitude * np.sin(2 * np.pi * frequency * t)
-
+        
         # Add a small amount of random noise to the signal
         noise = np.random.normal(0, 1, len(t))  # Adjust noise amplitude as needed
         signal_with_noise = signal + noise
@@ -41,9 +42,9 @@ def test_feature_extraction():
     # Combine signals from both clusters
     all_signals = signals_cluster1 + signals_cluster2
 
-    all_features = get_features(all_signals)
+    all_features = get_features_for_test(all_signals, wavelet_name)
 
-    # Apply PCA for dimensionality reduction
+    # Apply PCA for 2D visualization
     pca = PCA(n_components=2)
     principal_components = pca.fit_transform(all_features)
 
@@ -59,11 +60,13 @@ def test_feature_extraction():
 
     # Plot two sample signals from each cluster on separate horizontal subplots
     fig, axs = plt.subplots(1, 2, figsize=(12, 6))
-
+    
+    amp = [5,3]
+    freq = [5,33]
     for i, signals in enumerate([signals_cluster1, signals_cluster2]):
         for j in range(2):
             axs[i].plot(signals[j], label=f'Signal {j+1}', alpha=0.7 if j == 0 else 1.0)
-            axs[i].set_title(f'Cluster {i+1} Sample Signals')
+            axs[i].set_title(f'2 of the 10 Signals in Cluster {i+1}: Amplitude = {amp[i]}, Frequency = {freq[i]}')
             axs[i].set_xlabel('Time')
             axs[i].set_ylabel('Amplitude')
             axs[i].legend()
@@ -71,7 +74,7 @@ def test_feature_extraction():
     plt.tight_layout()
     plt.show()
 
-    # Plot principal components (features) with circles around clusters
+    # Plot principal components (features)
     plt.figure(figsize=(8, 6))
     plt.scatter(principal_components[:, 0], principal_components[:, 1], c=pred_labels, cmap='viridis', marker='o')
 
@@ -80,5 +83,23 @@ def test_feature_extraction():
     plt.ylabel('Principal Component 2')
     plt.colorbar(label='Cluster')
     plt.show()
+    
+    print(f"Accuracy of K-means clustering of 20 signals (5 vs. 33 Hz) based on our extracted features: {accuracy * 100:.2f}%")
 
-    return f"Accuracy of K-means clustering of 20 signals (5 vs. 33 Hz) based on our 21 extracted features: {accuracy * 100:.2f}%"
+def test_get_features_structure():
+    segments_list = []
+    for s in range(5, 9):  # Different 's' values for each array
+        segments = np.random.rand(s, 27, 150000)  # 's' segments, 27 channels, 150000 samples
+        segments_list.append(segments)
+
+    print("Length of Input List: "+str(len(segments_list)))
+    print("Shapes of Input 3D Arrays:")
+    for i in range(len(segments_list)):
+        print(f"3D Array {i+1}: {segments_list[i].shape}")
+
+    result = get_features(segments_list, wavelet_name)
+
+    print("\nLength of Output List: "+str(len(result)))
+    print("Shapes of Output 3D Arrays:")
+    for i in range(len(result)):
+        print(f"3D array {i+1}: {result[i].shape}")

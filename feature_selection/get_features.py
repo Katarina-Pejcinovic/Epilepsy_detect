@@ -20,52 +20,72 @@ import pywt
 from collections import Counter
 import scipy.stats as stats
 
-nSamples = 8000 #number of samples per segment
-fs = 400 #sampling rate
+nSamples = 150000 #number of samples per segment
+fs = 250 #sampling rate
 wavelet_name = 'db1' # name of discrete mother wavelet used in Discrete Wavelet Transform
 
-# Iterate over the list of signals and for each signal:
+# Iterate over a list of 3D arrays, iterate over the 10-min segments in each 3D array
+# iterate over the channels in each segments and for each channel, extract 237 features:
 # - Extract 16 statistical features from the raw EEG signal (nonlinear energy, line length, entropy, etc.)
 # - Extract the power in each of the 5 major frequency bands from the raw EEG signal
-# - Extract 156 statistical features from the DWT coefficients of the EEG signal by doing the following:
-#     - Apply the DWT which returns 13 lists of coefficients.
+# - Extract 216 statistical features from the DWT coefficients of the EEG signal by doing the following:
+#     - Apply the DWT which returns 18 lists of coefficients.
 #     - For each of these lists extract 12 statistical features.
 #     - The features calculated from all of the lists of coefficients belonging to one signal
 #     - are concatenated together, since they belong to the same signal.
 
-# def get_features(list_signals, waveletname):
-#     list_features = []
-#     for signal in tqdm(list_signals):
-#         time_features = get_time_features(signal)
-#         freq_features = get_freq_features(signal)
-#         dwt_coeff = get_dwt_coeff(signal, waveletname)
-#         features = []
-#         for coeff in dwt_coeff:
-#             features += get_time_freq_features(coeff)
-#         for ff in freq_features:
-#             features.append(ff)
-#         for tf in time_features:
-#             features.append(tf)
-#         list_features.append(features)
-#     return np.array(list_features, dtype=object)
-
-def get_features(list_signals):
+def get_features(list_signals, waveletname):
     list_features = []
-  # iterate over files in data_path
+    
+    for signals in list_signals:  # Iterate through the list of 3D arrays
+        features_per_array = []
+        
+        for signal in signals:  # Iterate through each segment in the 3D array
+            features_per_channel = []
+            
+            for channel in range(signal.shape[0]):  # Iterate through each channel in the segment
+                time_features = get_time_features(signal[channel])
+                freq_features = get_freq_features(signal[channel])
+                dwt_coeff = get_dwt_coeff(signal[channel], waveletname)
+                
+                features = []
+                for coeff in dwt_coeff:
+                    features += get_time_freq_features(coeff)
+                    
+                for ff in freq_features:
+                    features.append(ff)
+                    
+                for tf in time_features:
+                    features.append(tf)
+                    
+                features_per_channel.append(features)
+            
+            features_per_array.append(features_per_channel)
+        
+        list_features.append(features_per_array)
+    
+    for i in range(len(list_features)):
+      list_features[i] = np.array(list_features[i])
+    
+    return list_features
+
+def get_features_for_test(list_signals, waveletname):
+    list_features = []
+    # iterate over signals in file
     for signal in list_signals:
         time_features = get_time_features(signal)
         freq_features = get_freq_features(signal)
+        dwt_coeff = get_dwt_coeff(signal, waveletname)
         features = []
+        for coeff in dwt_coeff:
+          features += get_time_freq_features(coeff)
         for ff in freq_features:
           features.append(ff)
         for tf in time_features:
           features.append(tf)
         list_features.append(features)
     all_features = np.array(list_features)
-    nan_indices = np.any(np.isnan(all_features), axis=1)
-    # Filter the array to remove rows containing NaN values
-    all_features_without_nan = all_features[~nan_indices]
-    return all_features_without_nan
+    return all_features
 
 # Return list of statistical features from data: time-domain features
 def get_time_features(data,fs=fs,nSamples=nSamples):
@@ -142,15 +162,3 @@ def calculate_crossings(list_values):
     mean_crossing_indices = np.nonzero(np.diff(np.array(list_values) > np.nanmean(list_values)))[0]
     number_mean_crossings = len(mean_crossing_indices)
     return [number_zero_crossings, number_mean_crossings]
-
-# Test the get_features function by asserting it outputs a matrix with the right dimensions
-def eval_get_features(list_signals, wavelet_name):
-  features = get_features(list_signals, wavelet_name)
-  print('The features matrix has dimensions ' + str(features.shape))
-  if features.shape == (32, 177):
-    print('Those are the correct dimensions!')
-  if features.shape != (32, 177):
-    print('Those are the wrong dimensions! The correct dimensions are (32, 177)')
-
-
-
