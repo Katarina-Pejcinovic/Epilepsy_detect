@@ -108,10 +108,10 @@ def run_EEGnet(train_data, train_labels, test_data, test_labels):
     class EEGNet(nn.Module):
         def __init__(self):
             super(EEGNet, self).__init__()
-            self.T = 120 #NOTE: change this later 
+            self.T = 1600 #NOTE: change this later 
             
             # Layer 1
-            self.conv1 = nn.Conv2d(1, 16, (1, 64), padding = 0)
+            self.conv1 = nn.Conv2d(1, 16, (1, 27), padding = 0)
             self.batchnorm1 = nn.BatchNorm2d(16, False)
             
             # Layer 2
@@ -125,11 +125,11 @@ def run_EEGnet(train_data, train_labels, test_data, test_labels):
             self.conv3 = nn.Conv2d(4, 4, (8, 4))
             self.batchnorm3 = nn.BatchNorm2d(4, False)
             self.pooling3 = nn.MaxPool2d((2, 4))
-            
+
             # FC Layer
             # NOTE: This dimension will depend on the number of timestamps per sample in your data.
             # I have 120 timepoints. 
-            self.fc1 = nn.Linear(4*2*7, 1)
+            self.fc1 = nn.Linear(4*2*100, 1)
         
         def forward(self, x):
             # Layer 1
@@ -153,7 +153,7 @@ def run_EEGnet(train_data, train_labels, test_data, test_labels):
             x = self.pooling3(x)
             
             # FC Layer
-            x = x.view(-1, 4*2*7)
+            x = x.view(-1, 4*2*100) #NOTE: change this later 
             x = F.sigmoid(self.fc1(x))
             return x
 

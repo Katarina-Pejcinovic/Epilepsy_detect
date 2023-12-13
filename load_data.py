@@ -4,7 +4,7 @@ import os
 
 # Get preprocessed data 
 def load_data(data_file_path):
-
+ 
     # Beta subset: ep_train = [aaaaaanr], ep_test = [aaaaalug], noep_train = [aaaaaebo], noep_test = [aaaaappo]
     # ep_train_ID = ['aaaaaanr']
     # ep_test_ID = ['aaaaalug']
@@ -28,12 +28,14 @@ def load_data(data_file_path):
 
     ep_patients_train = [filename for filename in os.listdir(preprocessed_path + state[0]) 
                         if filename in ep_train_ID]
+
     noep_patients_train = [filename for filename in os.listdir(preprocessed_path + state[1])
                             if filename in noep_train_ID]
     ep_patients_test = [filename for filename in os.listdir(preprocessed_path + state[0])
                         if filename in ep_test_ID]
     noep_patients_test = [filename for filename in os.listdir(preprocessed_path + state[1])
                         if filename in noep_test_ID]
+    
 
     preprocessed_train_ep = []
     preprocessed_train_noep = []

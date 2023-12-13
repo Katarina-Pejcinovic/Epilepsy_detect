@@ -29,6 +29,7 @@ def cut_segments(data_list, label_list, patientID_list):
                 segments_array = np.array_split(array[:, :num_segments_array * 150000], num_segments_array, axis=1)
                 segments.extend(segments_array)
                 labels.extend(np.full(num_segments_array, label_list[idx][i]))
+                    
                 patientIDs.extend(np.full(num_segments_array, patientID_list[idx][i]))
 
         result = np.stack(segments, axis=0)
