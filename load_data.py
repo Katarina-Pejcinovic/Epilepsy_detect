@@ -42,6 +42,11 @@ def load_data(data_file_path):
     preprocessed_test_ep = []
     preprocessed_test_noep = []
 
+    ep_patients_train_list = []
+    noep_patients_train_list = []
+    ep_patients_test_list = []
+    noep_patients_test_list = []
+
     # Load in all the pre-processed files
     for patient in ep_patients_train:
         patient_folder_path = preprocessed_path + state[0] + "/" + patient
@@ -50,6 +55,7 @@ def load_data(data_file_path):
         for file in processed_files:
             file = np.load(patient_folder_path + "/" + file)
             preprocessed_train_ep.append(file)
+            ep_patients_train_list.append(patient)
         
     for patient in noep_patients_train:
         patient_folder_path = preprocessed_path + state[1] + "/" + patient
@@ -58,6 +64,7 @@ def load_data(data_file_path):
         for file in processed_files:
             file = np.load(patient_folder_path + "/" + file)
             preprocessed_train_noep.append(file)
+            noep_patients_train_list.append(patient)
 
     for patient in ep_patients_test:
         patient_folder_path = preprocessed_path + state[0] + "/" + patient
@@ -66,6 +73,7 @@ def load_data(data_file_path):
         for file in processed_files:
             file = np.load(patient_folder_path + "/" + file)
             preprocessed_test_ep.append(file)
+            ep_patients_test_list.append(patient)
 
     for patient in noep_patients_test:
         patient_folder_path = preprocessed_path + state[1] + "/" + patient
@@ -74,16 +82,19 @@ def load_data(data_file_path):
         for file in processed_files:
             file = np.load(patient_folder_path + "/" + file)
             preprocessed_test_noep.append(file)
+            noep_patients_test_list.append(patient)
 
     data_list = [preprocessed_train_ep, preprocessed_train_noep, preprocessed_test_ep, preprocessed_test_noep]
     label_list = [np.ones(len(preprocessed_train_ep)), np.zeros(len(preprocessed_train_noep)), 
                   np.ones(len(preprocessed_test_ep)), np.zeros(len(preprocessed_test_noep))]
-    patientID_list = [np.array(ep_patients_train), np.array(noep_patients_train), 
-                      np.array(ep_patients_test), np.array(noep_patients_test)]
+    patientID_list = [np.array(ep_patients_train_list), np.array(noep_patients_train_list), 
+                      np.array(ep_patients_test_list), np.array(noep_patients_test_list)]
 
     return data_list, label_list, patientID_list
 
 
-# # Test function
-# data_path = "data/"
-# [data_list, label_list, patientID_list] = load_data(data_path)
+# Test function
+data_path = "data/"
+[data_list, label_list, patientID_list] = load_data(data_path)
+
+print("dont")
