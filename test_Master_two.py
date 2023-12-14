@@ -79,12 +79,12 @@ print(len(features_list))
 print("new", patientID_result)
 print("old", patientID_list)
 
-from classical_ML.train_test_tune import * 
-concat = np.concatenate((features_list[0], features_list[1]))
-label_res_concat = np.concatenate((label_result[0], label_result[1]))
-patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))
-params_table, best_params = train_test_tune(concat, label_res_concat, 
-                                            patientID_concat)
+# from classical_ML.train_test_tune import * 
+# concat = np.concatenate((features_list[0], features_list[1]))
+# label_res_concat = np.concatenate((label_result[0], label_result[1]))
+# patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))
+# params_table, best_params = train_test_tune(concat, label_res_concat, 
+#                                             patientID_concat)
 
 #from deep_learning.cnn import *
 #from validation.validate import *
