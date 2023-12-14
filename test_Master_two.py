@@ -1,3 +1,4 @@
+
 #only import stuff you call in this file 
 import os
 import numpy as np
@@ -19,6 +20,10 @@ print(len(data_list))
 print(len(label_list))
 print(len(patientID_list))
 print("finished loading data")
+
+print(len(data_list[0]))
+print(label_list[0].shape)
+print(patientID_list[0].shape)
 
 from feature_selection.cut_segments import *
 result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
