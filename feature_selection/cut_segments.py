@@ -32,7 +32,11 @@ def cut_segments(data_list, label_list, patientID_list):
                     
                 patientIDs.extend(np.full(num_segments_array, patientID_list[idx][i]))
 
-        result = np.stack(segments, axis=0)
+        #result_4d.append(segments)
+        if segments:
+            result = np.stack(segments, axis=0)
+        else:
+            result = segments
         result_4d.append(result)
         label_result.append(np.array(labels))
         patientID_result.append(np.array(patientIDs))

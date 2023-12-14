@@ -1,3 +1,4 @@
+
 #only import stuff you call in this file 
 import os
 import numpy as np
@@ -18,11 +19,19 @@ data_file_path = 'data/'
 print(len(data_list))
 print(len(label_list))
 print(len(patientID_list))
+print(len(data_list[0]))
+print(label_list[0].shape)
+print(patientID_list[0].shape)
 print("finished loading data")
 
 from feature_selection.cut_segments import *
 result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
-print(result_4d)
+print(len(result_4d))
+print(result_4d[0].shape)
+print(len(label_result))
+print(label_result[0].shape)
+print(len(patientID_result))
+print(patientID_result[0].shape)
 
 #from classical_ML.train_test_tune import * 
 #from deep_learning.cnn import *
