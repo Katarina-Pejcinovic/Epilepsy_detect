@@ -33,7 +33,59 @@ print(label_result[0].shape)
 print(len(patientID_result))
 print(patientID_result[0].shape)
 
-#from classical_ML.train_test_tune import * 
+print("-----------------")
+print(result_4d[1].shape)
+print(label_result[1].shape)
+print(patientID_result[1].shape)
+print("-----------------")
+print(len(result_4d[2]))
+print(label_result[2].shape)
+print(patientID_result[2].shape)
+print("-----------------")
+print(len(result_4d[3]))
+print(label_result[3].shape)
+print(patientID_result[3].shape)
+
+from preprocessing.imputate import * 
+
+data1 = run_imputate(result_4d[0])
+data2 = run_imputate(result_4d[1])
+data3 = run_imputate(result_4d[2])
+data4 = run_imputate(result_4d[3])
+
+print("imputed data sizes")
+print(data1.shape)
+print(data2.shape)
+print(data3.shape)
+print(data4.shape)
+
+imputed_data = [data1, data2, data3, data4]
+non_empty_arrays = [arr for arr in imputed_data if arr.size > 0]
+
+
+print("number of non-zero arrays", len(non_empty_arrays))
+print("impute runs")
+
+from feature_selection.get_features import *
+nSamples = 150000 #number of samples per segment
+fs = 250 #sampling rate
+wavelet_name = 'db1'
+features_list = get_features(non_empty_arrays, wavelet_name)
+
+print(features_list[0].shape)
+print(features_list[1].shape)
+print(len(features_list))
+
+print("new", patientID_result)
+print("old", patientID_list)
+
+from classical_ML.train_test_tune import * 
+concat = np.concatenate((features_list[0], features_list[1]))
+label_res_concat = np.concatenate((label_result[0], label_result[1]))
+patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))
+params_table, best_params = train_test_tune(concat, label_res_concat, 
+                                            patientID_concat)
+
 #from deep_learning.cnn import *
 #from validation.validate import *
 

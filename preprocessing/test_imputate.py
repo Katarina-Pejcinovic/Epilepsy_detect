@@ -1,5 +1,5 @@
 import numpy as np
-from imputate import *
+from imputate import run_imputate
 
 # Create two random 2D arrays with shape (3, 4) filled with random floats
 array1 = np.random.rand(3, 4)

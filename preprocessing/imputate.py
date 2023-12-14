@@ -1,7 +1,6 @@
-import pandas as pd
+
 import numpy as np
-from sklearn.experimental import enable_iterative_imputer
-from sklearn.impute import IterativeImputer
+from sklearn.impute import SimpleImputer
 
 #run_imputate takes in the first index in the list list[0], which is a list of 
 # 4 3D numpy arrays. run_imputate takes in a 3D numpy array 
@@ -15,14 +14,20 @@ def run_imputate(preprocessed):
 
         #Take a slice of the data 
         patient_slice = copy_preprocessed_3D[i, :, :]
-        print("patient slice ",'\n',  patient_slice)
+        #print("patient slice ",'\n',  patient_slice)
 
         #instantiate the imputer class
-        imputer = IterativeImputer(max_iter=10, random_state=0)
+        imputer = SimpleImputer(missing_values = np.nan, 
+                        strategy ='mean')
 
         #calculate the values 
-        imputed_values = imputer.fit_transform(patient_slice)
-        print("imputed values", '\n', imputed_values)
+        # Fitting the data to the imputer object
+        imputer = imputer.fit(patient_slice)
+        
+        # Imputing the data     
+        imputed_values = imputer.transform(patient_slice)
+
+        #print("imputed values", '\n', imputed_values)
 
         copy_preprocessed_3D[i, :, :] = imputed_values
 
