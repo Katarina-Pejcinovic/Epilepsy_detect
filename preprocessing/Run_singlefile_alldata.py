@@ -14,7 +14,7 @@ import os
 from scipy.signal import welch
 import mne
 import matplotlib.pyplot as plt
-from dataset import *  
+from preprocessing.dataset import *  
 import warnings
 #import pandas as pd
 import shutil

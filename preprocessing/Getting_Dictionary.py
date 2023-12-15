@@ -10,7 +10,7 @@ from glob import glob
 import os
 import mne
 import matplotlib.pyplot as plt
-from dataset import *  
+from preprocessing.dataset import *  
 import warnings
 warnings.filterwarnings("ignore")
 

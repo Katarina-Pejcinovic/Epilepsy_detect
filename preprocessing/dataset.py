@@ -12,6 +12,9 @@ import pyedflib
 from pyedflib import highlevel
 import io
 import tempfile
+from scipy import signal
+import scipy as sp
+
 
 
 class EEGDataPair:
@@ -104,14 +107,29 @@ class EEGDataPair:
         """
 
         # Define the bipolar pairs
+#         bipolar_pairs = [
+#             ('Fp1', 'F7'), ('F7', 'T3'), ('Fp2', 'F8'), ('F8', 'T4'),
+#             ('T3', 'T5'), ('T5', 'O1'), ('T4', 'T6'), ('T6', 'O2'),
+#             ('F3', 'C3'), ('C3', 'P3'), ('F4', 'C4'), ('C4', 'P4'),
+#             ('Fz', 'Cz'), ('Cz', 'Pz'), ('Fp1', 'F3'), ('Fp2', 'F4'),
+#             ('T3', 'C3'), ('T4', 'C4'), ('P3', 'O1'), ('P4', 'O2'),
+#             ('F3', 'Fz'), ('Fz', 'F4'), ('C3', 'Cz'), ('Cz', 'C4'),
+#             ('P3', 'Pz'), ('Pz', 'P4')
+#         ]
+        
+        
+        
         bipolar_pairs = [
-            ('Fp1', 'F7'), ('F7', 'T3'), ('Fp2', 'F8'), ('F8', 'T4'),
-            ('T3', 'T5'), ('T5', 'O1'), ('T4', 'T6'), ('T6', 'O2'),
-            ('F3', 'C3'), ('C3', 'P3'), ('F4', 'C4'), ('C4', 'P4'),
-            ('Fz', 'Cz'), ('Cz', 'Pz'), ('Fp1', 'F3'), ('Fp2', 'F4'),
-            ('T3', 'C3'), ('T4', 'C4'), ('P3', 'O1'), ('P4', 'O2'),
-            ('F3', 'Fz'), ('Fz', 'F4'), ('C3', 'Cz'), ('Cz', 'C4'),
-            ('P3', 'Pz'), ('Pz', 'P4')
+            ('Fp1', 'F7'), ('Fp2', 'F8'), ('F7', 'T3'), ('F8', 'T4'),
+            ('T3', 'T5'), ('T4', 'T6'), ('T5', 'O1'), ('T6', 'O2'), 
+            ('A1','T3'), ('T4', 'A2'), ('T3', 'C3'), ('C4', 'T4'),
+            ('C3', 'Cz'),('Cz', 'C4'), ('Fp1', 'F3'), ('Fp2', 'F4'),
+            ('F3', 'C3'), ('F4', 'C4'), ('C3', 'P3'), ('C4', 'P4'),
+            ('P3', 'O1'), ('P4', 'O2'), ('Pz', 'P4'), ('Fz', 'Cz'),
+            ('Cz', 'Pz'), ('Pz', 'Oz'), ('Fz', 'Fpz'), ('Fpz', 'Fp1'),
+            ('Fpz', 'Fp2'), ('O1', 'Oz'), ('O2', 'Oz'), 
+            ('P3', 'Pz'), ('Fz', 'F4'), ('F3', 'Fz')
+            
         ]
 
         if not hasattr(self, 'raw'):
@@ -157,63 +175,70 @@ class EEGDataPair:
             plt.show()
 
     def preprocess_raw(self):
-            """
-            Function to preprocess and clean EEG data.
-            Includes notch filtering, standard filtering, and ICA-based artifact removal.
-            """
-            standard_channels = [
-                'FP1', 'FP2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 
-                'F7', 'F8', 'T3', 'T4', 'T5', 'T6', 'A1', 'A2', 'FZ', 'CZ', 'PZ'
-            ]
-            potential_suffixes = ['-REF', '-LE', '']
-            potential_channel_names = [ch + suffix for ch in standard_channels for suffix in potential_suffixes]
+        """
+        Function to preprocess and clean EEG data.
+        Includes notch filtering, standard filtering, and ICA-based artifact removal.
+        """
+        standard_channels = [
+            'FP1', 'FP2', 'F3', 'F4', 'C3', 'C4', 'P3', 'P4', 'O1', 'O2', 
+            'F7', 'F8', 'T3', 'T4', 'T5', 'T6', 'A1', 'A2', 'FZ', 'CZ', 'PZ'
+        ]
+        potential_suffixes = ['-REF', '-LE', '']
+        potential_channel_names = [ch + suffix for ch in standard_channels for suffix in potential_suffixes]
 
-            eeg_channels_in_data = [ch for ch in self.raw.ch_names if ch.split()[0] in potential_channel_names]
-            channels_to_remove = [ch for ch in self.raw.ch_names if ch.split()[0] not in potential_channel_names]
-            valid_channels_to_remove = [ch for ch in channels_to_remove if ch in self.raw.ch_names]
+        # Process unipolar data (self.raw)
+        self._preprocess_individual_data(self.raw, potential_channel_names, apply_ica=True)
+
+        # Check if bipolar data (self.raw_tcp) exists and process it
+        if hasattr(self, 'raw_tcp'):
+            self._preprocess_individual_data(self.raw_tcp, potential_channel_names, apply_ica=False)
+
+        print('Processed successfully.')
+
+    def _preprocess_individual_data(self, eeg_data, potential_channel_names, apply_ica):
+        """
+        Helper function to preprocess individual EEG data (unipolar or bipolar).
+        """
+        if apply_ica:
+            eeg_channels_in_data = [ch for ch in eeg_data.ch_names if ch.split()[0] in potential_channel_names]
+            channels_to_remove = [ch for ch in eeg_data.ch_names if ch.split()[0] not in potential_channel_names]
+            valid_channels_to_remove = [ch for ch in channels_to_remove if ch in eeg_data.ch_names]
 
             if valid_channels_to_remove:
-                if len(valid_channels_to_remove) == len(self.raw.ch_names):
-                    logging.error(f"All channels in file {self.raw.filenames[0]} are set to be removed. Skipping file.")
-                    return
-                elif len(valid_channels_to_remove) >= 0.5 * len(self.raw.ch_names):
-                    self.plot_raw_data(title="Inspect Data Before Removing Channels")
-                self.raw.drop_channels(valid_channels_to_remove)
+                eeg_data.drop_channels(valid_channels_to_remove)
                 print(f"Removed {', '.join(valid_channels_to_remove)} from the data.")
 
-            l_freq, h_freq = 0.5, 40
-            self.raw.filter(l_freq, h_freq, fir_design='firwin')
-            notch_freq = 60.0  
-            self.raw.notch_filter(np.arange(notch_freq, self.raw.info['sfreq']//2, notch_freq), fir_design='firwin')
+        # Apply filters
+        l_freq, h_freq = 0.5, 40
+        notch_freq = 60.0  
+        eeg_data.filter(l_freq, h_freq, fir_design='firwin')
+        eeg_data.notch_filter(np.arange(notch_freq, eeg_data.info['sfreq']//2, notch_freq), fir_design='firwin')
 
-            picks = mne.pick_types(self.raw.info, meg=False, eeg=True, eog=False, stim=False, exclude='bads')
-            n_components_for_ica = min(10, len(picks))
-            print(f"Number of ICA components: {n_components_for_ica}")
+        # Apply ICA for artifact removal only to unipolar data (self.raw)
+        if apply_ica:
+            self._apply_ica(eeg_data)
 
-            ica = mne.preprocessing.ICA(n_components_for_ica, random_state=97, max_iter=800)
-            ica.fit(self.raw, picks=picks)
+    def _apply_ica(self, eeg_data):
+        """
+        Apply ICA for artifact removal on unipolar data.
+        """
+        picks = mne.pick_types(eeg_data.info, meg=False, eeg=True, eog=False, stim=False, exclude='bads')
+        n_components_for_ica = min(10, len(picks))
+        print(f"Number of ICA components: {n_components_for_ica}")
 
-            eye_channels = [ch for ch in eeg_channels_in_data if ch.split()[0] in ['Fp1', 'Fp2', 'F7', 'F8', 'T3', 'T4', 'T5', 'T6', 'A1', 'A2']]
-            eog_inds, _ = ica.find_bads_eog(self.raw, ch_name=eye_channels)
-            ekg_channels = [ch for ch in self.raw.ch_names if 'EKG' in ch or 'Ekg' in ch]
-            if ekg_channels:
-                ecg_inds, _ = ica.find_bads_ecg(self.raw, ch_name=ekg_channels[0])
-            else:
-                ecg_inds = []
+        ica = mne.preprocessing.ICA(n_components_for_ica, random_state=97, max_iter=800)
+        ica.fit(eeg_data, picks=picks)
 
-            resp_inds = []  #Respiration?
-            all_artifact_inds = eog_inds + ecg_inds + resp_inds
-            ica.exclude = all_artifact_inds
-            self.raw = ica.apply(self.raw)
-            print('Processed successfully.')
+        # Find and exclude bad components (eye and heart artifacts)
+        eye_channels = [ch for ch in eeg_data.ch_names if 'Fp' in ch or 'F7' in ch or 'F8' in ch or 'T3' in ch or 'T4' in ch or 'T5' in ch or 'T6' in ch or 'A1' in ch or 'A2' in ch]
+        eog_inds, _ = ica.find_bads_eog(eeg_data, ch_name=eye_channels)
+        ekg_channels = [ch for ch in eeg_data.ch_names if 'EKG' in ch or 'Ekg' in ch]
+        ecg_inds = ica.find_bads_ecg(eeg_data, ch_name=ekg_channels[0])[0] if ekg_channels else []
 
+        ica.exclude = eog_inds + ecg_inds
+        eeg_data = ica.apply(eeg_data)
 
-
-
-
-
-
-        
+            
 
             
     def processing_pipeline(self):
@@ -223,8 +248,6 @@ class EEGDataPair:
             signals, signal_headers, header = highlevel.read_edf(self.edf_file)
             patient_id = self.patient_id  # Patient ID
             label = self.label
-
-
 
             # Preprocessing
             self.make_tcp()
@@ -236,16 +259,24 @@ class EEGDataPair:
             else:
                 label = "No Epilepsy"
 
-
-
             # Convert the processed data to Numpy array
-            data, times = self.raw[:]  
-            signals_array = np.array(data)
+            data, times = self.raw[:]
+            print(data.shape[1] / round(times[-1]))
+            print(data.shape)
+            downsampled_list_signals = sp.signal.resample(data, round(times[-1])*250, axis=1)
+            signals_array = np.array(downsampled_list_signals)
+            
+            #bipolar one
+            data_tcp, times_tcp = self.raw_tcp[:]
+            downsampled_list_signals_tcp = sp.signal.resample(data_tcp, round(times_tcp[-1])*250, axis=1)
+            signals_array_tcp = np.array(downsampled_list_signals_tcp)
+            print(downsampled_list_signals_tcp.shape[1] / round(times[-1]))
+            print(downsampled_list_signals_tcp.shape)
+            
+            print("Hereeeeeeee")
+            
 
-            return {'eeg_data': signals_array, 'patient_id': patient_id, 'label': label}
-
-
-
+            return {'eeg_data_bipolar':signals_array_tcp,'eeg_data_unipolar': signals_array, 'patient_id': patient_id, 'label': label}
 
 
 
