@@ -1,0 +1,17 @@
+param_umap__n_components,param_umap__n_neighbors,param_svc__C,param_svc__kernel,mean_test_score
+3,5,1,linear,0.5
+3,10,1,linear,0.5
+5,5,1,linear,
+5,10,1,linear,
+3,5,1,rbf,0.5
+3,10,1,rbf,0.5
+5,5,1,rbf,
+5,10,1,rbf,
+3,5,10,linear,0.5
+3,10,10,linear,0.625
+5,5,10,linear,
+5,10,10,linear,
+3,5,10,rbf,0.5
+3,10,10,rbf,0.5
+5,5,10,rbf,
+5,10,10,rbf,
