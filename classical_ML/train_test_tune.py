@@ -4,20 +4,20 @@
 
 # Use F2 score (weigh recall higher) because in epilepsy detection, it is most important to detect ALL true positives
 
-from sklearn.pipeline import make_pipeline
-import numpy as np
-from sklearn.datasets import load_digits
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV, GroupKFold
-from sklearn.svm import SVC
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.cluster import KMeans
-from sklearn.mixture import GaussianMixture
-from xgboost import XGBClassifier
-import pandas as pd
-import umap.umap_ as umap
-import pickle 
+# from sklearn.pipeline import make_pipeline
+# import numpy as np
+# from sklearn.datasets import load_digits
+# from sklearn.model_selection import train_test_split
+# from sklearn.preprocessing import StandardScaler
+# from sklearn.model_selection import GridSearchCV, GroupKFold
+# from sklearn.svm import SVC
+# from sklearn.ensemble import RandomForestClassifier
+# from sklearn.cluster import KMeans
+# from sklearn.mixture import GaussianMixture
+# from xgboost import XGBClassifier
+# import pandas as pd
+# import umap.umap_ as umap
+import pickle
 
 def create_svc_pipeline(group_kfold):
 
@@ -253,3 +253,8 @@ def train_test_tune(data, labels, groups):
 # [params, best_params] = train_test_tune(data, labels, groups)
 
 # print('Done')
+
+params_best = [{'svc__C': 1, 'svc__kernel': 'linear', 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'randomforestclassifier__max_features': 25, 'randomforestclassifier__min_samples_leaf': 1, 'randomforestclassifier__n_estimators': 10, 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'umap__n_components': 1, 'umap__n_neighbors': 5, 'xgbclassifier__learning_rate': 0.01, 'xgbclassifier__max_depth': 2, 'xgbclassifier__n_estimators': 100}, {'gaussianmixture__init_params': 'k-means++', 'umap__n_components': 1, 'umap__n_neighbors': 5}]
+
+with open('results/best_params_dict.pkl', 'wb') as f:
+    pickle.dump(params_best, f)
