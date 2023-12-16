@@ -85,9 +85,9 @@ def svm_model(data, labels, val_data, svm_param):
 def random_forest_model(data, labels, val_data, rf_param):
 
   # PARAMETERS: n_estimators, min_samples_leaf, max_features
-  # {'randomforestclassifier__max_features': 25, 'randomforestclassifier__min_samples_leaf': 5, 
+  # {'randomforestclassifier__min_samples_leaf': 5, 'randomforestclassifier__max_depth': 5, 
   # 'randomforestclassifier__n_estimators': 100, 'umap__n_components': 10, 'umap__n_neighbors': 5}
-  rf_features = rf_param["randomforestclassifier__max_features"]
+  rf_depth = rf_param["randomforestclassifier__max_depth"]
   rf_samples = rf_param["randomforestclassifier__min_samples_leaf"]
   rf_estimators = rf_param["randomforestclassifier__n_estimators"]
   umap_components = rf_param["umap__n_components"]
@@ -128,7 +128,7 @@ def random_forest_model(data, labels, val_data, rf_param):
   X_test = reducer.fit_transform(X_test)
 
   # Train the model
-  rf_model = RandomForestClassifier(max_features=rf_features, n_estimators=rf_estimators, min_samples_leaf=rf_samples)
+  rf_model = RandomForestClassifier(max_depth=rf_depth, n_estimators=rf_estimators, min_samples_leaf=rf_samples)
   rf_model.fit(X_train, y_train)
 
   # Make predictions

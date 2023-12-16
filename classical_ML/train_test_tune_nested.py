@@ -45,7 +45,7 @@ def create_rf_pipeline(group_kfold):
       'randomforestclassifier__n_estimators':[10, 100],
       # 'randomforestclassifier__n_estimators':[10],
       'randomforestclassifier__min_samples_leaf':[1, 5],
-      'randomforestclassifier__max_features':[25, 50],
+      'randomforestclassifier__max_depth':[3, 5],
       # 'randomforestclassifier__max_features':[25]
     }
 
@@ -91,7 +91,7 @@ def create_xg_pipeline(group_kfold):
   param_grid = {
       'umap__n_components':[3, 5],
       'umap__n_neighbors':[2, 3],
-      'xgbclassifier__max_depth':[2, 5],
+      'xgbclassifier__max_depth':[3, 5],
       # 'xgbclassifier__max_depth':[2],
       'xgbclassifier__n_estimators': [50, 100],
       'xgbclassifier__learning_rate': [0.01, 0.1],
