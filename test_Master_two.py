@@ -13,11 +13,20 @@ from deep_learning.cnn import *
 from deep_learning.rnn import *
 from validation.validate import *
 
+# Batch Processing
+if __name__ == "__main__":
+    print('Running sample file')
+    data_file_path = 'data/'
+else:
+    print('Running batch file(s)')
+    from batch_processing import data_file_batch
+    data_file_path = data_file_batch
+
 # Order: Train EP, Train No EP, Test EP, Test No EP
 # data_list = list of 4 lists that contain 2D numpy arrays
 # label_list = list of 4 1D numpy arrays
 # patientID_list = list of 4 1D numpy arrays
-data_file_path = 'data/'
+# data_file_path = 'data/'
 [data_list, label_list, patientID_list] = load_data(data_file_path)
 
 #check load data 
