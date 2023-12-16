@@ -115,6 +115,12 @@ def validate(train_data,
     false_negatives = matrix[1][0]
     true_negatives = matrix[0][0]
 
+    # Restructure confusion matrix to match conventional layout
+    temp_matrix = matrix
+    temp_matrix[1][1] = true_negatives
+    temp_matrix[0][0] = true_positives
+    matrix = temp_matrix
+
     # Calculate precision, accuracy, and recall
     precision = true_positives / (true_positives + false_positives)
     accuracy = (true_positives + true_negatives) / (true_positives + false_positives + false_negatives + true_negatives)
