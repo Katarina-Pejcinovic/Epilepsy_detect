@@ -12,32 +12,32 @@ SVM[[1 3]
 Accuracy: 0.3333333333333333
 Recall: 0.5
 
-Random Forest[[0 4]
- [0 2]]
+Random Forest[[2 4]
+ [0 0]]
  Precision: 0.3333333333333333
 Accuracy: 0.3333333333333333
 Recall: 1.0
 
-XG Boost[[0 4]
- [0 2]]
+XG Boost[[2 4]
+ [0 0]]
  Precision: 0.3333333333333333
 Accuracy: 0.3333333333333333
 Recall: 1.0
 
-Gaussian Mixture[[4 0]
- [2 0]]
+Gaussian Mixture[[0 0]
+ [2 4]]
  Precision: nan
 Accuracy: 0.6666666666666666
 Recall: 0.0
 
-CNN[[0 4]
- [0 2]]
+CNN[[2 4]
+ [0 0]]
  Precision: 0.3333333333333333
 Accuracy: 0.3333333333333333
 Recall: 1.0
 
-RNN[[0 4]
- [0 2]]
+RNN[[2 4]
+ [0 0]]
  Precision: 0.3333333333333333
 Accuracy: 0.3333333333333333
 Recall: 1.0
