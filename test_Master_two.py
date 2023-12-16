@@ -88,13 +88,17 @@ features_list = [np.load("feature_selection/features0.npy"),
                np.load("feature_selection/features3.npy")]
 
 
+# tune parameters for the classical ml model
+from classical_ML.train_test_tune_nested import * 
+from classical_ML.load_best_params import *
 concat = np.concatenate((features_list[0], features_list[1]))
 label_res_concat = np.concatenate((label_result[0], label_result[1]))
 patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))
-#params_table, best_params = train_test_tune(concat, label_res_concat, 
-                                            #patientID_concat)
+params_scores, best_params = train_test_tune_nested(concat, label_res_concat, 
+                                            patientID_concat)
+# best_params = load_best_params()
 
-best_params = load_best_params()
+# best_params = [{'svc__C': 1, 'svc__kernel': 'linear', 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'randomforestclassifier__max_features': 25, 'randomforestclassifier__min_samples_leaf': 1, 'randomforestclassifier__n_estimators': 10, 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'umap__n_components': 1, 'umap__n_neighbors': 5, 'xgbclassifier__learning_rate': 0.01, 'xgbclassifier__max_depth': 2, 'xgbclassifier__n_estimators': 100}, {'gaussianmixture__init_params': 'k-means++', 'umap__n_components': 1, 'umap__n_neighbors': 5}]
 
 
 

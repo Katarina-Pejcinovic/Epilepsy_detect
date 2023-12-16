@@ -1,22 +1,16 @@
 ## Tune model hyperparameters
-## From feature extraction -> (np array) -> UMAP Feature Selection -> (np array) -> ML model
-## Calculate F2 score of results -> determine best model parameters
-
-# Use F2 score (weigh recall higher) because in epilepsy detection, it is most important to detect ALL true positives
+## Limited parameter range due to small initial dataset
 
 from sklearn.pipeline import make_pipeline
 import numpy as np
-from sklearn.datasets import load_digits
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV, GroupKFold, cross_val_score
+from sklearn.model_selection import GridSearchCV, GroupKFold
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.cluster import KMeans
-from sklearn.mixture import GaussianMixture
 from xgboost import XGBClassifier
-import pandas as pd
+from sklearn.mixture import GaussianMixture
 import umap.umap_ as umap
+import pickle
 
 def create_svc_pipeline(group_kfold):
 
@@ -24,7 +18,7 @@ def create_svc_pipeline(group_kfold):
 
   param_grid = {
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[5, 10],
+      'umap__n_neighbors':[2, 3],
       'svc__kernel':['linear', 'rbf'],
       'svc__C':[1, 10],
     }
@@ -47,12 +41,12 @@ def create_rf_pipeline(group_kfold):
 
   param_grid = {
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[5, 10],
-      # 'randomforestclassifier__n_estimators':[10, 100],
-      'randomforestclassifier__n_estimators':[10],
+      'umap__n_neighbors':[2, 3],
+      'randomforestclassifier__n_estimators':[10, 100],
+      # 'randomforestclassifier__n_estimators':[10],
       'randomforestclassifier__min_samples_leaf':[1, 5],
-      # 'randomforestclassifier__max_features':[25, 50],
-      'randomforestclassifier__max_features':[25],
+      'randomforestclassifier__max_features':[25, 50],
+      # 'randomforestclassifier__max_features':[25]
     }
 
   # Parameter search
@@ -67,38 +61,15 @@ def create_rf_pipeline(group_kfold):
 
   return param_search
 
-
-def create_kmeans_pipeline(group_kfold):
-  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), KMeans(n_clusters=2, n_init='auto'))
-
-  param_grid = {
-      'umap__n_components':[3, 5],
-      'umap__n_neighbors':[5, 10],
-      'kmeans__n_clusters':[2, 3],
-      # 'kmeans__init':['k-means++', 'random'],
-      'kmeans__init':['k-means++'],
-    }
-
-  # Parameter search
-  param_search = GridSearchCV(
-          estimator = pipeline,
-          param_grid = param_grid,
-          n_jobs=1,
-          scoring="accuracy",
-          cv=group_kfold,
-          verbose=2
-        )
-
-  return param_search
 
 def create_gmm_pipeline(group_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[5, 10],
-      # 'gaussianmixture__init_params':['k-means++', 'random'],
-      'gaussianmixture__init_params':['k-means++'],
+      'umap__n_neighbors':[2, 3],
+      'gaussianmixture__init_params':['k-means++', 'random'],
+      # 'gaussianmixture__init_params':['k-means++'],
     }
 
   # Parameter search
@@ -119,12 +90,12 @@ def create_xg_pipeline(group_kfold):
 
   param_grid = {
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[5, 10],
-      # 'xgbclassifier__max_depth':[2, 5],
-      'xgbclassifier__max_depth':[2],
+      'umap__n_neighbors':[2, 3],
+      'xgbclassifier__max_depth':[2, 5],
+      # 'xgbclassifier__max_depth':[2],
       'xgbclassifier__n_estimators': [50, 100],
-      # 'xgbclassifier__learning_rate': [0.01, 0.1],
-      'xgbclassifier__learning_rate': [0.01],
+      'xgbclassifier__learning_rate': [0.01, 0.1],
+      # 'xgbclassifier__learning_rate': [0.01],
     }
   
   param_search = GridSearchCV(
@@ -138,7 +109,7 @@ def create_xg_pipeline(group_kfold):
 
   return param_search
 
-def train_test_tune(data, labels, groups):
+def train_test_tune_nested(data, labels, groups):
   # Reshape data
   # Cross validate loop
   # Inside loop - UMAP + model
@@ -164,109 +135,136 @@ def train_test_tune(data, labels, groups):
   group_kfold = GroupKFold(n_splits=num_patients)
 
   ## Create pipelines
-
-  ## SVC
-  pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
-
-  param_grid = {
-      'umap__n_components':[3, 5],
-      'umap__n_neighbors':[5, 10],
-      'svc__kernel':['linear', 'rbf'],
-      'svc__C':[1, 10],
-    }
-
-  # Parameter search
-  svc_param_search = GridSearchCV(
-          estimator = pipeline,
-          param_grid = param_grid,
-          n_jobs=1,
-          scoring="accuracy",
-          cv=group_kfold,
-          verbose=2
-        )
   
-  svc_param_search = create_svc_pipeline(group_kfold)
-  # svc_param_search.fit(data_reshape, labels, groups=groups)
+  # SVM
+  svc_best_params_list = []
+  svc_scores_list = []
 
-  # svc_best_params = svc_param_search.best_params_
-  # svc_results = pd.DataFrame(svc_param_search.cv_results_)
-  # svc_params = svc_results[['param_umap__n_components', 'param_umap__n_neighbors',
-  #                           'param_svc__C', 'param_svc__kernel', 'mean_test_score']]
-  nested_score = cross_val_score(svc_param_search, X=data_reshape, y=labels, groups=groups, cv=group_kfold)
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+    X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
+    y_train, y_test = labels[train_idx], labels[test_idx]
+    groups_train = groups[train_idx]
+    num_patients_train = np.size(np.unique(groups_train))
+    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
-  # ## RF
-  # rf_param_search = create_rf_pipeline(group_kfold)
-  # rf_param_search.fit(data_reshape, labels, groups=groups)
+    svc_param_search = create_svc_pipeline(group_kfold_inner)
 
-  # rf_best_params = rf_param_search.best_params_
-  # rf_results = pd.DataFrame(rf_param_search.cv_results_)
-  # rf_params = rf_results[['param_umap__n_components', 'param_umap__n_neighbors',
-  #                         'param_randomforestclassifier__n_estimators', 'param_randomforestclassifier__min_samples_leaf',
-  #                         'param_randomforestclassifier__max_features', 'mean_test_score']]
+    svc_param_search.fit(X_train, y_train, groups=groups_train)
+    svc_best_params_list.append(svc_param_search.best_params_)
 
-  # ## K Means
-  # # kmeans_param_search = create_kmeans_pipeline(group_kfold)
-  # # kmeans_param_search.fit(data_reshape, labels, groups=groups)
+    svc_scores = svc_param_search.score(X_test, y_test)
+    svc_scores_list.append(svc_scores)
 
-  # # kmeans_best_params = kmeans_param_search.best_params_
-  # # kmeans_results = pd.DataFrame(kmeans_param_search.cv_results_)
-  # # kmeans_params = kmeans_results[['param_umap__n_components', 'param_umap__n_neighbors',
-  # #                                 'param_kmeans__init', 'param_kmeans__n_clusters','mean_test_score']]
+  best_svc_model_score = np.argmax(svc_scores_list)
+  svc_best_score = np.max(svc_scores_list)
+  svc_best_params = svc_best_params_list[best_svc_model_score]
+  
 
-  # ## GMM
-  # gmm_param_search = create_gmm_pipeline(group_kfold)
-  # gmm_param_search.fit(data_reshape, labels, groups=groups)
+  ## RF
+  rf_best_params_list = []
+  rf_scores_list = []
 
-  # gmm_best_params = gmm_param_search.best_params_
-  # gmm_results = pd.DataFrame(gmm_param_search.cv_results_)
-  # gmm_params = gmm_results[['param_umap__n_components', 'param_umap__n_neighbors',
-  #                           'param_gaussianmixture__init_params', 'mean_test_score']]
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+    X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
+    y_train, y_test = labels[train_idx], labels[test_idx]
+    groups_train = groups[train_idx]
+    num_patients_train = np.size(np.unique(groups_train))
+    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
-  # ## XG Boost
-  # xg_param_search = create_xg_pipeline(group_kfold)
-  # xg_param_search.fit(data_reshape, labels, groups=groups)
+    rf_param_search = create_rf_pipeline(group_kfold_inner)
 
-  # xg_best_params = xg_param_search.best_params_
-  # xg_results = pd.DataFrame(xg_param_search.cv_results_)
-  # xg_params = xg_results[['param_umap__n_components', 'param_umap__n_neighbors',
-  #                         'param_xgbclassifier__n_estimators', 'param_xgbclassifier__max_depth', 
-  #                         'param_xgbclassifier__learning_rate', 'mean_test_score']]
+    rf_param_search.fit(X_train, y_train, groups=groups_train)
+    rf_best_params_list.append(rf_param_search.best_params_)
 
-  # ## Results
-  # print('Cross validate to determine optimal feature selection and model hyperparameters')
+    rf_scores = rf_param_search.score(X_test, y_test)
+    rf_scores_list.append(rf_scores)
 
-  # # Return all of best parameters of each model as a multidimensional list
-  # params_full = [svc_params, rf_params, xg_params, gmm_params]
-  # params_best = [svc_best_params, rf_best_params, xg_best_params, gmm_best_params]
+  best_rf_model_score = np.argmax(rf_scores_list)
+  rf_best_score = np.max(rf_scores_list)
+  rf_best_params = rf_best_params_list[best_rf_model_score]
 
-  # # Save best params to text file
-  # file = open('results/best_params.txt','w')
-  # for item in params_best:
-  #   for key, value in item.items():
-  #     file.write('%s: %s\n' % (key, value))
-  #   file.write('\n')
-  # file.close()
 
-  # params_full[0].to_csv("results/svm_params.csv", index=False)
-  # params_full[1].to_csv("results/rf_params.csv", index=False)
-  # params_full[2].to_csv("results/xg_params.csv", index=False)
-  # params_full[3].to_csv("results/gmm_params.csv", index=False)
+  ## XG Boost
+  xg_best_params_list = []
+  xg_scores_list = []
 
-  # # Save all param results to CSV
-  # return params_full, params_best
-  return nested_score
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+    X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
+    y_train, y_test = labels[train_idx], labels[test_idx]
+    groups_train = groups[train_idx]
+    num_patients_train = np.size(np.unique(groups_train))
+    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
-# Run with fake test data
-patients = 5
-files = 5*patients
-channels = 2
-features = 10
-data = np.random.rand(files, channels, features)
-labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
-groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
+    xg_param_search = create_xg_pipeline(group_kfold_inner)
 
-# Return list of pd dataframes that contain every combo of parameters + mean_test_score
-# Return list of dict for each model with the best parameters
-[params, best_params] = train_test_tune(data, labels, groups)
+    xg_param_search.fit(X_train, y_train, groups=groups_train)
+    xg_best_params_list.append(xg_param_search.best_params_)
 
-print('Done')
+    xg_scores = xg_param_search.score(X_test, y_test)
+    xg_scores_list.append(xg_scores)
+
+  best_xg_model_score = np.argmax(xg_scores_list)
+  xg_best_score = np.max(xg_scores_list)
+  xg_best_params = xg_best_params_list[best_xg_model_score]
+
+
+  ## GMM
+  gmm_best_params_list = []
+  gmm_scores_list = []
+
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+    X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
+    y_train, y_test = labels[train_idx], labels[test_idx]
+    groups_train = groups[train_idx]
+    num_patients_train = np.size(np.unique(groups_train))
+    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
+
+    gmm_param_search = create_gmm_pipeline(group_kfold_inner)
+
+    gmm_param_search.fit(X_train, y_train, groups=groups_train)
+    gmm_best_params_list.append(gmm_param_search.best_params_)
+
+    gmm_scores = gmm_param_search.score(X_test, y_test)
+    gmm_scores_list.append(gmm_scores)
+
+  best_gmm_model_score = np.argmax(gmm_scores_list)
+  gmm_best_score = np.max(gmm_scores_list)
+  gmm_best_params = gmm_best_params_list[best_gmm_model_score]
+
+
+  ## Results
+  print('Cross validate to determine optimal feature selection and model hyperparameters')
+
+  # Return all of best parameters of each model as a multidimensional list
+  param_scores = [svc_best_score, rf_best_score, xg_best_score, gmm_best_score]
+  param_best = [svc_best_params, rf_best_params, xg_best_params, gmm_best_params]
+
+  # Save best params to text file
+  file = open('results/best_params.txt','w')
+  for item in param_best:
+    for key, value in item.items():
+      file.write('%s: %s\n' % (key, value))
+    file.write('\n')
+  file.close()
+
+  # Save best params to load later
+  with open('results/best_params_dict.pkl', 'wb') as f:
+    pickle.dump(param_best, f)
+
+  # Return
+  return param_scores, param_best
+
+# # Run with fake test data
+# patients = 5
+# files = 5*patients
+# channels = 2
+# features = 10
+# data = np.random.rand(files, channels, features)
+# labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+# groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
+
+# # # Return list of pd dataframes that contain every combo of parameters + mean_test_score
+# # # Return list of dict for each model with the best parameters
+# [scores, best_params] = train_test_tune(data, labels, groups)
+
+# print('Done')

@@ -1,21 +1,21 @@
-svc__C: 10
+svc__C: 1
 svc__kernel: linear
 umap__n_components: 3
-umap__n_neighbors: 10
+umap__n_neighbors: 2
 
 randomforestclassifier__max_features: 25
 randomforestclassifier__min_samples_leaf: 1
 randomforestclassifier__n_estimators: 10
 umap__n_components: 3
-umap__n_neighbors: 5
+umap__n_neighbors: 2
 
 umap__n_components: 3
-umap__n_neighbors: 5
+umap__n_neighbors: 2
 xgbclassifier__learning_rate: 0.01
 xgbclassifier__max_depth: 2
 xgbclassifier__n_estimators: 50
 
 gaussianmixture__init_params: k-means++
 umap__n_components: 3
-umap__n_neighbors: 10
+umap__n_neighbors: 2
 
