@@ -11,6 +11,7 @@
 
 import numpy as np
 
+# WILL USE PATIENT DICT IN THE FUTURE - NOT PATIENT ID ARRAY FROM CUT SEGMENTS
 def create_3d_numpy(results, labels, patients):
     num_segments = np.size(results, 2)
     num_channels = np.size(results, 0)
