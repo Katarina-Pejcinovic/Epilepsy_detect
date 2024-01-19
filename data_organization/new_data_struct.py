@@ -14,7 +14,7 @@ from patient_id_dict import *
 
 # WILL USE PATIENT DICT IN THE FUTURE - NOT PATIENT ID ARRAY FROM CUT SEGMENTS
 
-def create_3d_numpy(results_list, labels_list, patients_list, patient_list_folder):
+def new_data_struct(results_list, labels_list, patients_list, patient_list_folder, save_file_path):
 
     array_count = 1
 
@@ -77,6 +77,8 @@ def create_3d_numpy(results_list, labels_list, patients_list, patient_list_folde
         array_count = array_count + 1
         # print("count: ", array_count)
 
+    # Save data array
+
     return full_data_array
 
 
@@ -98,7 +100,9 @@ patients_list = [test_patients, test_patients, test_patients, test_patients]
 
 patient_list_folder = 'data/'
 
-full_data_array = create_3d_numpy(array_list, labels_list, patients_list, patient_list_folder)
+save_file_path = 'data/'
+
+full_data_array = new_data_struct(array_list, labels_list, patients_list, patient_list_folder, save_file_path)
 print("Full Data Shape: ", np.shape(full_data_array))
 
 
