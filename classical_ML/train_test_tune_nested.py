@@ -19,8 +19,9 @@ def create_svc_pipeline(group_kfold):
   param_grid = {
       'umap__n_components':[3, 5],
       'umap__n_neighbors':[2, 3],
-      'svc__kernel':['linear', 'rbf'],
-      'svc__C':[1, 10],
+      'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
+      'svc__C':[0.1, 1, 10, 100],
+      'svc__degree': [2, 3, 4, 5]
     }
 
   # Parameter search
@@ -42,10 +43,13 @@ def create_rf_pipeline(group_kfold):
   param_grid = {
       'umap__n_components':[3, 5],
       'umap__n_neighbors':[2, 3],
-      'randomforestclassifier__n_estimators':[10, 100],
-      # 'randomforestclassifier__n_estimators':[10],
-      'randomforestclassifier__min_samples_leaf':[1, 5],
-      'randomforestclassifier__max_depth':[3, 5],
+      # 'randomforestclassifier__n_estimators':[10, 100],
+      'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
+      # 'randomforestclassifier__min_samples_leaf':[1, 5],
+      'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
+      # 'randomforestclassifier__max_depth':[3, 5],
+      'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+
       # 'randomforestclassifier__max_features':[25]
     }
 
