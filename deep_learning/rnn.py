@@ -39,27 +39,33 @@ from sklearn.metrics import roc_curve, auc
 from keras.preprocessing.sequence import pad_sequences
 
 
-def rnn_model(train_data, train_label, test_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
+import numpy as np
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score
+
+def rnn_model(train_df, test_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
+    train_data = train_df[:,:,1:]
     n_channels = train_data.shape[1]
+    train_label = train_df[:,0,0]
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
     predictions = []
     preds_proba = []
     val_predictions_list = []
     val_predictions_binary_list = []
+    model = Sequential()
+    model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, train_data.shape[2])))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+
+    opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
+    model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+
     for train_index, val_index in skf.split(train_data, train_label):
         X_train, X_val = train_data[train_index], train_data[val_index]
         y_train, y_val = train_label[train_index], train_label[val_index]
-
-        model = Sequential()
-        model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, train_data.shape[2])))
-        model.add(Dense(32, activation='relu'))
-        model.add(Dropout(0.2))
-        model.add(Dense(32, activation='relu'))
-        model.add(Dense(1, activation='sigmoid'))
-
-        opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
-        model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
         X_train_reshaped = X_train.reshape(X_train.shape[0], n_channels, X_train.shape[2])
 
@@ -68,7 +74,7 @@ def rnn_model(train_data, train_label, test_data, learning_rate=0.001, gradient_
             y_train,
             batch_size=batch_size,
             epochs=epochs,
-            verbose=0  # Set verbose to 0 to suppress output during training
+            verbose=1  # Set verbose to 0 to suppress output during training
         )
 
         X_val_reshaped = X_val.reshape(X_val.shape[0], n_channels, X_val.shape[2])
@@ -79,7 +85,8 @@ def rnn_model(train_data, train_label, test_data, learning_rate=0.001, gradient_
         # Convert predictions to binary (0 or 1)
         val_predictions_binary = [1 if pred >= 0.50 else 0 for pred in val_predictions]
         val_predictions_binary_list.extend(val_predictions_binary)
-
+    
+    test_data = test_df[:,:,1:]
     # Evaluate the model on the test data
     X_test_reshaped = test_data.reshape(test_data.shape[0], n_channels, test_data.shape[2])
     test_predictions = model.predict(X_test_reshaped)
