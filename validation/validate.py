@@ -138,4 +138,34 @@ def validate(train_data,
         f.write(f'\n Precision: {precision}\n')
         f.write(f'Accuracy: {accuracy}\n')
         f.write(f'Recall: {recall}\n\n')
+    
+  for i, matrix in enumerate(confusion_matrices):
+    # Calculate TPR, FPR, TNR, FNR
+    true_positives = matrix[1][1]
+    false_positives = matrix[0][1]
+    false_negatives = matrix[1][0]
+    true_negatives = matrix[0][0]
 
+    tpr = true_positives/(true_positives+false_positives)
+    fpr = false_positives / (true_positives+false_positives)
+    tnr = true_negatives / (true_negatives+false_negatives)
+    fnr = false_negatives / (true_negatives+false_negatives)
+
+    # Create a matrix with rates (transposed)
+    rate_cm = np.array([[tpr, fpr], [fnr, tnr]])
+
+    # Create a list of labels for each box with rates
+    labels = [
+        f'{tpr:.2f}', f'{fpr:.2f}',
+        f'{fnr:.2f}', f'{tnr:.2f}'
+    ]
+
+    # Create a heatmap with annotations using 'Blues' colormap
+    sns.heatmap(rate_cm, annot=np.array(labels).reshape(2, 2), fmt='', cmap='Blues', cbar_kws={'label': 'Rate'},
+                yticklabels=['Predicted Negative', 'Predicted Positive'][::-1],
+                xticklabels=['True Positive', 'True Negative'])
+
+    plt.xlabel('True Label')
+    plt.ylabel('Predicted Label')
+    plt.title(f'{model_names[i]}')
+    plt.savefig("validation_results/{}_cm_heatmap.jpg".format(model_names[i]))
