@@ -10,7 +10,8 @@
 # 1st row is the data, every other row is NaN
 
 import numpy as np
-from patient_id_dict import *
+from data_organization.patient_id_dict import *
+import pickle
 
 # WILL USE PATIENT DICT IN THE FUTURE - NOT PATIENT ID ARRAY FROM CUT SEGMENTS
 
@@ -25,7 +26,7 @@ def new_data_struct(results_list, labels_list, patients_list, patient_list_folde
         # print(np.shape(results))
 
         # Reshape results array
-        results = np.reshape(results, [num_channels, num_points, num_seg])
+        results = np.reshape(results, [num_channels, num_points, num_segments])
 
         # print(np.shape(results))
         # print(num_segments)
@@ -78,32 +79,34 @@ def new_data_struct(results_list, labels_list, patients_list, patient_list_folde
         # print("count: ", array_count)
 
     # Save data array
+    with open(save_file_path + 'full_3d_array.pkl', 'wb') as f:
+        pickle.dump(full_data_array, f)
 
     return full_data_array
 
 
 # TEST
 
-num_seg = 5;
-num_channels = 4
-num_points = 5
+# num_seg = 5;
+# num_channels = 4
+# num_points = 5
 
-test_array = np.ones([num_seg, num_channels, num_points])
-array_list = [test_array, test_array, test_array, test_array]
+# test_array = np.ones([num_seg, num_channels, num_points])
+# array_list = [test_array, test_array, test_array, test_array]
 
-test_labels = np.ones([num_seg])*2
-labels_list = [test_labels, test_labels, test_labels, test_labels]
+# test_labels = np.ones([num_seg])*2
+# labels_list = [test_labels, test_labels, test_labels, test_labels]
 
-test_patients= np.array(['aaaaaawu', 'aaaaaawu', 'aaaaamor', 'aaaaanla', 'aaaaanla'])
-# 101 101 161 253 253
-patients_list = [test_patients, test_patients, test_patients, test_patients]
+# test_patients= np.array(['aaaaaawu', 'aaaaaawu', 'aaaaamor', 'aaaaanla', 'aaaaanla'])
+# # 101 101 161 253 253
+# patients_list = [test_patients, test_patients, test_patients, test_patients]
 
-patient_list_folder = 'data/'
+# patient_list_folder = 'data/'
 
-save_file_path = 'data/'
+# save_file_path = 'data/'
 
-full_data_array = new_data_struct(array_list, labels_list, patients_list, patient_list_folder, save_file_path)
-print("Full Data Shape: ", np.shape(full_data_array))
+# full_data_array = new_data_struct(array_list, labels_list, patients_list, patient_list_folder, save_file_path)
+# print("Full Data Shape: ", np.shape(full_data_array))
 
 
 

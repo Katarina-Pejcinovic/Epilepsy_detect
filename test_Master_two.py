@@ -4,6 +4,8 @@ import os
 import numpy as np
 import pandas as pd
 from load_data import *
+from data_organization.new_data_struct import *
+from data_organization.patient_id_dict import *
 from preprocessing.imputate import * 
 from classical_ML.train_test_tune import * 
 from classical_ML.load_best_params import *
@@ -53,13 +55,17 @@ print(result_4d[1].shape)
 print(label_result[1].shape)
 print(patientID_result[1].shape)
 print("-----------------")
-print(len(result_4d[2]))
-print(label_result[2].shape)
-print(patientID_result[2].shape)
-print("-----------------")
-print(len(result_4d[3]))
-print(label_result[3].shape)
-print(patientID_result[3].shape)
+# print(len(result_4d[2]))
+# print(label_result[2].shape)
+# print(patientID_result[2].shape)
+# print("-----------------")
+# print(len(result_4d[3]))
+# print(label_result[3].shape)
+# print(patientID_result[3].shape)
+
+patient_list_folder = data_file_path
+save_file_path = data_file_path
+full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 
 #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
