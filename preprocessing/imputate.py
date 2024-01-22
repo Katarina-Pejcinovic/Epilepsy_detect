@@ -4,8 +4,12 @@ from sklearn.impute import SimpleImputer
 
 #run_imputate takes in the first index in the list list[0], which is a list of 
 # 4 3D numpy arrays. run_imputate takes in a 3D numpy array 
-def run_imputate(preprocessed):
+def run_imputate(preprocessed_og):
+    #cut off metadata 
+    y_length = preprocessed_og.shape[1]
+    print("x_length", y_length)
 
+    preprocessed = preprocessed_og[:, 1:y_length, :]
     #Make a copy of the 3D numpy array 
     copy_preprocessed_3D = np.copy(preprocessed)
 
