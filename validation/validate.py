@@ -140,7 +140,7 @@ def validate(train_data,
         f.write(f'Recall: {recall}\n\n')
     
   for i, matrix in enumerate(confusion_matrices):
-    disp = ConfusionMatrixDisplay(confusion_matrix=rnn_cm, 
+    disp = ConfusionMatrixDisplay(confusion_matrix=matrix, 
                                   display_labels=['Non-Epileptic', 'Epileptic'])
     disp.plot()
     plt.title(f'{model_names[i]}')
