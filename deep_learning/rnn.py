@@ -52,8 +52,8 @@ def rnn_model(train_df, test_df, learning_rate=0.001, gradient_threshold=1, batc
 
     predictions = []
     preds_proba = []
-    val_predictions_list = []
-    val_predictions_binary_list = []
+    val_predictions_list = {}
+    val_predictions_binary_list = {}
     model = Sequential()
     model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, train_data.shape[2])))
     model.add(Dense(32, activation='relu'))
@@ -81,11 +81,11 @@ def rnn_model(train_df, test_df, learning_rate=0.001, gradient_threshold=1, batc
         X_val_reshaped = X_val.reshape(X_val.shape[0], n_channels, X_val.shape[2])
 
         val_predictions = model.predict(X_val_reshaped)
-        val_predictions_list.append(val_predictions)
+        val_predictions_list[f'fold{counter}'] = val_predictions
 
         # Convert predictions to binary (0 or 1)
         val_predictions_binary = [1 if pred >= 0.50 else 0 for pred in val_predictions]
-        val_predictions_binary_list.extend(val_predictions_binary)
+        val_predictions_binary_list[f'fold{counter}'] = [val_predictions_binary, y_val]
     
     test_data = test_df[:,:,3:]
     # Evaluate the model on the test data
