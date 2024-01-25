@@ -44,9 +44,10 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 
 def rnn_model(train_df, test_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
-    train_data = train_df[:,:,1:]
+    train_data = train_df[:,:,3:]
     n_channels = train_data.shape[1]
     train_label = train_df[:,0,0]
+    groups = train_df[:,0,1]
     skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
     predictions = []
@@ -63,7 +64,7 @@ def rnn_model(train_df, test_df, learning_rate=0.001, gradient_threshold=1, batc
     opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
-    for train_index, val_index in skf.split(train_data, train_label):
+    for train_index, val_index in skf.split(train_data, train_label, groups=groups):
         X_train, X_val = train_data[train_index], train_data[val_index]
         y_train, y_val = train_label[train_index], train_label[val_index]
 
@@ -86,7 +87,7 @@ def rnn_model(train_df, test_df, learning_rate=0.001, gradient_threshold=1, batc
         val_predictions_binary = [1 if pred >= 0.50 else 0 for pred in val_predictions]
         val_predictions_binary_list.extend(val_predictions_binary)
     
-    test_data = test_df[:,:,1:]
+    test_data = test_df[:,:,3:]
     # Evaluate the model on the test data
     X_test_reshaped = test_data.reshape(test_data.shape[0], n_channels, test_data.shape[2])
     test_predictions = model.predict(X_test_reshaped)
