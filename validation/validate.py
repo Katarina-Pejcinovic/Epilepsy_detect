@@ -35,7 +35,7 @@ def validate(train_data,
   print("running deep learning")
   print("train_data data types", type(reduced_data_train))
   cnn_pred, cnn_proba= run_EEGnet(reduced_data_train, train_labels, reduced_data_test, validation_labels, batch_size = 50)
-  rnn_pred, rnn_proba = rnn_model(deep_data_train, train_labels, deep_data_test, epochs=3)
+  rnn_pred, rnn_proba = rnn_model_test(deep_data_train, train_labels, deep_data_test, epochs=3)
 
 
   # Run classical models
