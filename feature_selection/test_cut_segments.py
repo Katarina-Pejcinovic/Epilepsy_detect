@@ -31,8 +31,8 @@ def test_cut_segments():
     for i in range(len(result_4d_array)):
         assert result_4d_array[i].shape[1] == 26
         print(f"Channels should be 26 in 3D array {i + 1}. Here's how many it has: {result_4d_array[i].shape[1]}")
-        assert result_4d_array[i].shape[2] == 150000
-        print(f"Segments should be of length 150000 in 3D array {i + 1}. Here's the length: {result_4d_array[i].shape[2]}")
+        assert result_4d_array[i].shape[2] == 75000
+        print(f"Segments should be of length 75000 in 3D array {i + 1}. Here's the length: {result_4d_array[i].shape[2]}")
 
         # Confirm label and patient ID list sizes match the first dimension of 3D arrays
         num_segments = result_4d_array[i].shape[0]
