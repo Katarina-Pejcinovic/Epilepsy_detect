@@ -21,8 +21,8 @@ y_test = np.round(np.random.rand(100).astype('float32'))
 print(X_train.shape)
 print(X_test.shape)
 
-bi_predictions, probas = run_EEGnet(X_train, y_train, X_test, y_test, batch_size = 50)
-
+x = run_EEGnet(X_train, y_train, X_test, y_test, batch_size = 50)
+'''
 # Compute accuracy
 accuracy = accuracy_score(y_test, bi_predictions)
 print(f"Accuracy: {accuracy:.4f}")
@@ -52,3 +52,4 @@ print(f"F1 Score: {f1:.4f}")
 cm = confusion_matrix(y_test, bi_predictions)
 print("Confusion Matrix:")
 print(cm)
+'''

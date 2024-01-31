@@ -100,6 +100,12 @@ def run_EEGnet(train_data_og, train_labels, test_data_og, test_labels, batch_siz
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
+
+        # Save the trained model
+        torch.save(model.state_dict(), 'trained_model.pth')
+
+        
+        '''
     # Make predictions
     model.eval()  # Set the model to evaluation mode
     predictions = []
@@ -115,7 +121,7 @@ def run_EEGnet(train_data_og, train_labels, test_data_og, test_labels, batch_siz
     # Convert predictions to binary values based on a threshold (e.g., 0.5 for sigmoid)
     threshold = 0.5
     binary_predictions = (predictions > threshold).astype(int)
+    '''
 
-    return binary_predictions, predictions
 
 
