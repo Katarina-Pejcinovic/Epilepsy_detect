@@ -6,7 +6,7 @@ import pandas as pd
 from load_data import *
 from data_organization.new_data_struct import *
 from data_organization.patient_id_dict import *
-from preprocessing.imputate import * 
+from preprocessing.impute import * 
 from classical_ML.train_test_tune import * 
 from classical_ML.load_best_params import *
 from feature_selection.get_features import *
