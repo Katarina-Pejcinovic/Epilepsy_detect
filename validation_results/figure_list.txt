@@ -1,0 +1,94 @@
+The model with the highest f2 score is 0.6060606060606061 
+
+validation_results/SVM_roc_auc.jpg
+validation_results/Random Forest_roc_auc.jpg
+validation_results/XG Boost_roc_auc.jpg
+validation_results/Gaussian Mixture_roc_auc.jpg
+validation_results/CNN_roc_auc.jpg
+validation_results/RNN_roc_auc.jpg
+SVM[[1 3]
+ [1 1]]
+ Precision: 0.25
+Accuracy: 0.3333333333333333
+Recall: 0.5
+
+Random Forest[[2 4]
+ [0 0]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+
+XG Boost[[2 4]
+ [0 0]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+
+Gaussian Mixture[[0 0]
+ [2 4]]
+ Precision: nan
+Accuracy: 0.6666666666666666
+Recall: 0.0
+
+CNN[[2 4]
+ [0 0]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+
+RNN[[2 4]
+ [0 0]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+
+The f2 score for SVM is 0.8293460925039873
+The f2 score for Random Forest is 0.2380952380952381
+The f2 score for XG Boost is 0.2380952380952381
+The f2 score for Gaussian Mixture is 0.6060606060606061
+The f2 score for CNN is 0.2380952380952381
+The f2 score for RNN is 0.2380952380952381
+The highest f2 score is 0.8293460925039873 
+
+validation_results/SVM_roc_auc.jpg
+validation_results/Random Forest_roc_auc.jpg
+validation_results/XG Boost_roc_auc.jpg
+validation_results/Gaussian Mixture_roc_auc.jpg
+validation_results/CNN_roc_auc.jpg
+validation_results/RNN_roc_auc.jpg
+SVM[[3 1]
+ [0 2]]
+ Precision: 0.6666666666666666
+Accuracy: 0.8333333333333334
+Recall: 1.0
+
+Random Forest[[0 4]
+ [0 2]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+
+XG Boost[[0 4]
+ [0 2]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+
+Gaussian Mixture[[4 0]
+ [2 0]]
+ Precision: nan
+Accuracy: 0.6666666666666666
+Recall: 0.0
+
+CNN[[0 4]
+ [0 2]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+
+RNN[[0 4]
+ [0 2]]
+ Precision: 0.3333333333333333
+Accuracy: 0.3333333333333333
+Recall: 1.0
+

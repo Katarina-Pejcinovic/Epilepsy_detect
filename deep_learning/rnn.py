@@ -24,7 +24,7 @@ from collections import Counter
 import scipy.stats as stats
 
 import tensorflow as tf
-from keras.models import Sequential
+from keras.models import Sequential, load_model
 from tensorflow.python.keras.layers import Dense
 from keras.layers import LSTM
 from tensorflow.python.keras.layers import Embedding
@@ -39,56 +39,71 @@ from sklearn.metrics import roc_curve, auc
 from keras.preprocessing.sequence import pad_sequences
 
 
-def rnn_model(eeg_array, label, test_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
-    train_array = eeg_array
-    train_label = label
+import numpy as np
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import accuracy_score
 
-    n_channels = eeg_array[0].shape[0]
-    
-    # Find the maximum sequence length in the entire dataset
-    max_sequence_length = max(len(seq.T) for seq in train_array)
+def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
+    model_save_path = 'deep_learning/rnn_saved_model'
+    train_data = train_df[:,:,3:]
+    n_channels = train_data.shape[1]
+    train_label = train_df[:,0,0]
+    groups = train_df[:,0,1]
+    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
+    val_predictions_list = {}
+    val_predictions_binary_list = {}
     model = Sequential()
-    model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, max_sequence_length)))
+    model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, train_data.shape[2])))
     model.add(Dense(32, activation='relu'))
     model.add(Dropout(0.2))
     model.add(Dense(32, activation='relu'))
     model.add(Dense(1, activation='sigmoid'))
 
-    learning_rate = learning_rate
-    gradient_threshold = 1
     opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
-
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
-    for id, (X, y) in enumerate(zip(train_array, train_label)):
-        X = X.T
-        y = np.array([y])
+    counter = 0
+    for train_index, val_index in skf.split(train_data, train_label, groups=groups):
+        counter+=1
+        X_train, X_val = train_data[train_index], train_data[val_index]
+        y_train, y_val = train_label[train_index], train_label[val_index]
 
-        X_padded = pad_sequences([X], maxlen=max_sequence_length, padding='post', truncating='post')[0]
-        X_reshaped = X_padded.reshape((1, n_channels, max_sequence_length))
+        X_train_reshaped = X_train.reshape(X_train.shape[0], n_channels, X_train.shape[2])
 
         history = model.fit(
-            X_reshaped,
-            y,
+            X_train_reshaped,
+            y_train,
             batch_size=batch_size,
-            epochs=epochs
+            epochs=epochs,
+            verbose=1  # Set verbose to 0 to suppress output during training
         )
 
+        X_val_reshaped = X_val.reshape(X_val.shape[0], n_channels, X_val.shape[2])
+
+        val_predictions = model.predict(X_val_reshaped)
+        val_predictions_list[f'fold{counter}'] = val_predictions
+
+        # Convert predictions to binary (0 or 1)
+        val_predictions_binary = [1 if pred >= 0.50 else 0 for pred in val_predictions]
+        val_predictions_binary_list[f'fold{counter}'] = [val_predictions_binary, y_val]
+    
+    model.save(model_save_path)
+    return val_predictions_binary_list, val_predictions_list
+        
+def rnn_model_test(test_df):
     predictions = []
     preds_proba = []
-    for X_test in test_data:
-        X_test = X_test.T
-        
-        # Pad/truncate each inner array to the maximum length
-        X_test_padded = pad_sequences([X_test], maxlen=max_sequence_length, padding='post', truncating='post')[0]
-        X_test_reshaped = X_test_padded.reshape((1, n_channels, max_sequence_length))
-        
-        prediction = model.predict(X_test_reshaped)
-        preds_proba.append(prediction[0][0])
-        if prediction < 0.50:
-            predictions.append(0)
-        if prediction > 0.50:
-            predictions.append(1)
+    model = load_model('deep_learning/rnn_saved_model')
+    test_data = test_df[:,:,3:]
+    n_channels = test_data.shape[1]
+    # Evaluate the model on the test data
+    X_test_reshaped = test_data.reshape(test_data.shape[0], n_channels, test_data.shape[2])
+    test_predictions = model.predict(X_test_reshaped)
+    preds_proba.append(test_predictions)
+
+    # Convert test predictions to binary (0 or 1)
+    test_predictions_binary = [1 if pred >= 0.50 else 0 for pred in test_predictions]
+    predictions.extend(test_predictions_binary)
 
     return predictions, preds_proba

@@ -17,6 +17,7 @@ from sklearn.mixture import GaussianMixture
 from xgboost import XGBClassifier
 import pandas as pd
 import umap.umap_ as umap
+import pickle
 
 def create_svc_pipeline(group_kfold):
 
@@ -227,6 +228,9 @@ def train_test_tune(data, labels, groups):
     file.write('\n')
   file.close()
 
+  with open('results/best_params_dict.pkl', 'wb') as f:
+    pickle.dump(params_best, f)
+
   params_full[0].to_csv("results/svm_params.csv", index=False)
   params_full[1].to_csv("results/rf_params.csv", index=False)
   params_full[2].to_csv("results/xg_params.csv", index=False)
@@ -235,17 +239,22 @@ def train_test_tune(data, labels, groups):
   # Save all param results to CSV
   return params_full, params_best
 
-# Run with fake test data
-patients = 5
-files = 5*patients
-channels = 2
-features = 10
-data = np.random.rand(files, channels, features)
-labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
-groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
+# # Run with fake test data
+# patients = 5
+# files = 5*patients
+# channels = 2
+# features = 10
+# data = np.random.rand(files, channels, features)
+# labels = np.array([1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1])
+# groups = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4])
 
-# Return list of pd dataframes that contain every combo of parameters + mean_test_score
-# Return list of dict for each model with the best parameters
-[params, best_params] = train_test_tune(data, labels, groups)
+# # Return list of pd dataframes that contain every combo of parameters + mean_test_score
+# # Return list of dict for each model with the best parameters
+# [params, best_params] = train_test_tune(data, labels, groups)
 
-print('Done')
+# print('Done')
+
+# params_best = [{'svc__C': 1, 'svc__kernel': 'linear', 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'randomforestclassifier__max_features': 25, 'randomforestclassifier__min_samples_leaf': 1, 'randomforestclassifier__n_estimators': 10, 'umap__n_components': 1, 'umap__n_neighbors': 5}, {'umap__n_components': 1, 'umap__n_neighbors': 5, 'xgbclassifier__learning_rate': 0.01, 'xgbclassifier__max_depth': 2, 'xgbclassifier__n_estimators': 100}, {'gaussianmixture__init_params': 'k-means++', 'umap__n_components': 1, 'umap__n_neighbors': 5}]
+
+# with open('results/best_params_dict.pkl', 'wb') as f:
+#     pickle.dump(params_best, f)

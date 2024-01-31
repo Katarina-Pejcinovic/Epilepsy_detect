@@ -1,0 +1,9 @@
+param_umap__n_components,param_umap__n_neighbors,param_xgbclassifier__n_estimators,param_xgbclassifier__max_depth,param_xgbclassifier__learning_rate,mean_test_score
+3,5,50,2,0.01,0.25
+3,5,100,2,0.01,0.25
+3,10,50,2,0.01,0.25
+3,10,100,2,0.01,0.25
+5,5,50,2,0.01,
+5,5,100,2,0.01,
+5,10,50,2,0.01,
+5,10,100,2,0.01,
