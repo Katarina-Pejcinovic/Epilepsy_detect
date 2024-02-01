@@ -4,7 +4,7 @@
 from sklearn.pipeline import make_pipeline
 import numpy as np
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import GridSearchCV, GroupKFold
+from sklearn.model_selection import GridSearchCV, GroupKFold, StratifiedKFold
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier
 from xgboost import XGBClassifier
@@ -113,7 +113,7 @@ def create_xg_pipeline(stratified_kfold):
 
   return param_search
 
-def train_test_tune_nested(data, stratified_cv):
+def train_test_tune_nested(data, labels, patient_id, stratified_cv):
   # Reshape data
   # Cross validate loop
   # Inside loop - UMAP + model
@@ -135,17 +135,15 @@ def train_test_tune_nested(data, stratified_cv):
 
   # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  data_new = data[:, 3:, :]
-  labels = data[0, 0, :]
-  patient_id = data[0, 1, :]
-  num_files = data.shape[2]
-  num_channels = data.shape[0]
-  num_features = data.shape[1] - 3
 
-  data_reshape = np.reshape(data_new, (num_files, num_channels*num_features))
+  num_files = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
 
-  num_patients = np.size(np.unique(patient_id))
-  group_kfold = GroupKFold(n_splits=num_patients)
+  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+
+  # num_patients = np.size(np.unique(patient_id))
+  splits = 2
 
   ## Create pipelines
   
@@ -153,16 +151,22 @@ def train_test_tune_nested(data, stratified_cv):
   svc_best_params_list = []
   svc_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
+  for i, (train_idx, test_idx) in enumerate(stratified_cv):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
-    groups_train = patient_id[train_idx]
-    num_patients_train = np.size(np.unique(groups_train))
-    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
+    group_train = patient_id[train_idx]
 
-    svc_param_search = create_svc_pipeline(group_kfold_inner)
+    strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True)
+    # strat_kfold_inner = strat_kfold_object.split(X_train, group_train)
 
-    svc_param_search.fit(X_train, y_train, groups=groups_train)
+    # for j, (train_index, test_index) in enumerate(strat_kfold_inner):
+    #     print(f"Fold {j}:")
+    #     print(f"  Train: index={train_index}")
+    #     print(f"  Test:  index={test_index}")
+
+    svc_param_search = create_svc_pipeline(strat_kfold_object.split(X_train, group_train))
+    svc_param_search.fit(X_train, y_train)
+
     svc_best_params_list.append(svc_param_search.best_params_)
 
     svc_scores = svc_param_search.score(X_test, y_test)
@@ -177,12 +181,12 @@ def train_test_tune_nested(data, stratified_cv):
   rf_best_params_list = []
   rf_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
+  for i, (train_idx, test_idx) in enumerate(stratified_cv):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     groups_train = patient_id[train_idx]
-    num_patients_train = np.size(np.unique(groups_train))
-    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
+
+    strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True)
 
     rf_param_search = create_rf_pipeline(group_kfold_inner)
 
@@ -201,7 +205,7 @@ def train_test_tune_nested(data, stratified_cv):
   xg_best_params_list = []
   xg_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
+  for i, (train_idx, test_idx) in enumerate(stratified_cv):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     groups_train = patient_id[train_idx]
@@ -225,7 +229,7 @@ def train_test_tune_nested(data, stratified_cv):
   gmm_best_params_list = []
   gmm_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
+  for i, (train_idx, test_idx) in enumerate(stratified_cv):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     groups_train = patient_id[train_idx]
@@ -267,7 +271,7 @@ def train_test_tune_nested(data, stratified_cv):
   # Return
   return param_scores, param_best
 
-# # Run with fake test data
+# Run with fake test data
 # patients = 5
 # files = 5*patients
 # channels = 2
@@ -278,6 +282,4 @@ def train_test_tune_nested(data, stratified_cv):
 
 # # # Return list of pd dataframes that contain every combo of parameters + mean_test_score
 # # # Return list of dict for each model with the best parameters
-# [scores, best_params] = train_test_tune(data, labels, groups)
-
-print('Done')
+# [scores, best_params] = train_test_tune_nested(data, labels, groups)

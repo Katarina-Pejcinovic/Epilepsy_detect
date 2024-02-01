@@ -7,7 +7,7 @@ from load_data import *
 from data_organization.new_data_struct import *
 from data_organization.patient_id_dict import *
 from preprocessing.impute import * 
-from classical_ML.train_test_tune import * 
+from classical_ML.train_test_tune_nested import * 
 from classical_ML.load_best_params import *
 from feature_selection.get_features import *
 from feature_selection.cut_segments import *
@@ -62,15 +62,16 @@ save_file_path = data_file_path
 with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
     full_data_array = pickle.load(f)
 
-## Create Stratified CV by patient
-data_new = full_data_array[:, 3:, :]
+# Break down data structure
+data_full = full_data_array[:, 3:, :]
 labels = full_data_array[0, 0, :]
 patient_id = full_data_array[0, 1, :]
 num_segments = full_data_array.shape[2]
 num_channels = full_data_array.shape[0]
-num_features = full_data_array.shape[1] - 3
+num_data = full_data_array.shape[1] - 3
 
-data_reshape = np.reshape(data_new, (num_segments, num_channels, num_features))
+# Create Stratified CV by patient
+data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
 
 splits = 3
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
@@ -81,6 +82,8 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 #     print(f"Fold {i}:")
 #     print(f"  Train: index={train_index}")
 #     print(f"  Test:  index={test_index}")
+
+params_scores, best_params = train_test_tune_nested(data_reshape, labels, patient_id, strat_kfold)
 
 #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
 data1 = run_imputate(result_4d[0])
