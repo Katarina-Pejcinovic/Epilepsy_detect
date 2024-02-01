@@ -43,13 +43,12 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 
-def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
+def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5, strat_kfold):
     model_save_path = 'deep_learning/rnn_saved_model'
     train_data = train_df[:,:,3:]
     n_channels = train_data.shape[1]
     train_label = train_df[:,0,0]
     groups = train_df[:,0,1]
-    skf = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=42)
 
     val_predictions_list = {}
     val_predictions_binary_list = {}
@@ -64,7 +63,7 @@ def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32
     model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
     counter = 0
-    for train_index, val_index in skf.split(train_data, train_label, groups=groups):
+    for train_index, val_index in strat_kfold:
         counter+=1
         X_train, X_val = train_data[train_index], train_data[val_index]
         y_train, y_val = train_label[train_index], train_label[val_index]
