@@ -113,7 +113,7 @@ def create_xg_pipeline(group_kfold):
 
   return param_search
 
-def train_test_tune_nested(data, labels, groups):
+def train_test_tune_nested(data):
   # Reshape data
   # Cross validate loop
   # Inside loop - UMAP + model
@@ -128,13 +128,17 @@ def train_test_tune_nested(data, labels, groups):
   # Outputs: best hyperparameters for each classical ml model
 
   ## Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
-  num_patients = np.size(np.unique(groups))
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
+  # num_patients = np.size(np.unique(groups))
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
-  # data_reshape = data
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  data_new = data[:, 2:, :]
+  num_files = data.shape[2]
+  num_channels = data.shape[0]
+  num_features = data.shape[1] - 3
+
 
   group_kfold = GroupKFold(n_splits=num_patients)
 
@@ -271,4 +275,4 @@ def train_test_tune_nested(data, labels, groups):
 # # # Return list of dict for each model with the best parameters
 # [scores, best_params] = train_test_tune(data, labels, groups)
 
-# print('Done')
+print('Done')

@@ -25,7 +25,7 @@ import umap.umap_ as umap
 # Use for validation
 # Sample parameters for now
 
-def svm_model(data, labels, val_data, svm_param):
+def svm_model(data, val_data, svm_param):
 
   # For validation, train on full 3/4 data and then test on untouched 1/4 validation data?
 
@@ -38,20 +38,34 @@ def svm_model(data, labels, val_data, svm_param):
   umap_neighbors = svm_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  data_new = data[:, 3:, :]
+  labels = data[0, 0, :]
+  patient_id = data[0, 1, :]
+  num_files = data.shape[2]
+  num_channels = data.shape[0]
+  num_features = data.shape[1] - 3
 
-  # data_reshape = data
-  # val_data_reshape = val_data
+  data_reshape = np.reshape(data_new, (num_files, num_channels*num_features))
+
+  val_data_new = val_data[:, 3:, :]
+  val_labels = val_data[0, 0, :]
+  val_patient_id = val_data[0, 1, :]
+  val_num_files = val_data.shape[2]
+  val_num_channels = val_data.shape[0]
+  val_num_features = val_data.shape[1] - 3
+
+  val_data_reshape = np.reshape(val_data_new, (val_num_files, val_num_channels*val_num_features))
 
   X_train = data_reshape
   y_train = labels
@@ -82,7 +96,7 @@ def svm_model(data, labels, val_data, svm_param):
   return y_pred, y_pred_proba
 
 
-def random_forest_model(data, labels, val_data, rf_param):
+def random_forest_model(data, val_data, rf_param):
 
   # PARAMETERS: n_estimators, min_samples_leaf, max_features
   # {'randomforestclassifier__min_samples_leaf': 5, 'randomforestclassifier__max_depth': 5, 
@@ -94,20 +108,35 @@ def random_forest_model(data, labels, val_data, rf_param):
   umap_neighbors = rf_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
 
-  # data_reshape = data
-  # val_data_reshape = val_data
+  data_new = data[:, 3:, :]
+  labels = data[0, 0, :]
+  patient_id = data[0, 1, :]
+  num_files = data.shape[2]
+  num_channels = data.shape[0]
+  num_features = data.shape[1] - 3
+
+  data_reshape = np.reshape(data_new, (num_files, num_channels*num_features))
+
+  val_data_new = val_data[:, 3:, :]
+  val_labels = val_data[0, 0, :]
+  val_patient_id = val_data[0, 1, :]
+  val_num_files = val_data.shape[2]
+  val_num_channels = val_data.shape[0]
+  val_num_features = val_data.shape[1] - 3
+
+  val_data_reshape = np.reshape(val_data_new, (val_num_files, val_num_channels*val_num_features))
 
   X_train = data_reshape
   y_train = labels
@@ -138,7 +167,7 @@ def random_forest_model(data, labels, val_data, rf_param):
   return y_pred, y_pred_proba
 
 
-def xg_boost_model(data, labels, val_data, xg_param):
+def xg_boost_model(data, val_data, xg_param):
 
   # PARAMETERS: max_depth, n_estimators, learning_rate
   # {'umap__n_components': 10, 'umap__n_neighbors': 5, 'xgbclassifier__learning_rate': 0.1, 'xgbclassifier__max_depth': 5, 
@@ -150,20 +179,35 @@ def xg_boost_model(data, labels, val_data, xg_param):
   umap_neighbors = xg_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
 
-  # data_reshape = data
-  # val_data_reshape = val_data
+  data_new = data[:, 3:, :]
+  labels = data[0, 0, :]
+  patient_id = data[0, 1, :]
+  num_files = data.shape[2]
+  num_channels = data.shape[0]
+  num_features = data.shape[1] - 3
+
+  data_reshape = np.reshape(data_new, (num_files, num_channels*num_features))
+
+  val_data_new = val_data[:, 3:, :]
+  val_labels = val_data[0, 0, :]
+  val_patient_id = val_data[0, 1, :]
+  val_num_files = val_data.shape[2]
+  val_num_channels = val_data.shape[0]
+  val_num_features = val_data.shape[1] - 3
+
+  val_data_reshape = np.reshape(val_data_new, (val_num_files, val_num_channels*val_num_features))
 
   X_train = data_reshape
   y_train = labels
@@ -194,7 +238,7 @@ def xg_boost_model(data, labels, val_data, xg_param):
   return y_pred, y_pred_proba
 
 
-def gmm_model(data, labels, val_data, gmm_param):
+def gmm_model(data, val_data, gmm_param):
 
   # PARAMETERS: n_clusters, init
   # {gaussianmixture__init_params=k-means++, gaussianmixture__n_components=2, umap__n_components=5, umap__n_neighbors=10},
@@ -203,20 +247,35 @@ def gmm_model(data, labels, val_data, gmm_param):
   umap_neighbors = gmm_param["umap__n_neighbors"]
 
   # Reshape data
-  num_files = data.shape[0]
-  num_channels = data.shape[1]
-  num_features = data.shape[2]
+  # num_files = data.shape[0]
+  # num_channels = data.shape[1]
+  # num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
 
-  num_files_val = val_data.shape[0]
-  num_channels_val = val_data.shape[1]
-  num_features_val = val_data.shape[2]
+  # num_files_val = val_data.shape[0]
+  # num_channels_val = val_data.shape[1]
+  # num_features_val = val_data.shape[2]
 
-  val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
+  # val_data_reshape = np.reshape(val_data, (num_files_val, num_channels_val*num_features_val))
 
-  # data_reshape = data
-  # val_data_reshape = val_data
+  data_new = data[:, 3:, :]
+  labels = data[0, 0, :]
+  patient_id = data[0, 1, :]
+  num_files = data.shape[2]
+  num_channels = data.shape[0]
+  num_features = data.shape[1] - 3
+
+  data_reshape = np.reshape(data_new, (num_files, num_channels*num_features))
+
+  val_data_new = val_data[:, 3:, :]
+  val_labels = val_data[0, 0, :]
+  val_patient_id = val_data[0, 1, :]
+  val_num_files = val_data.shape[2]
+  val_num_channels = val_data.shape[0]
+  val_num_features = val_data.shape[1] - 3
+
+  val_data_reshape = np.reshape(val_data_new, (val_num_files, val_num_channels*val_num_features))
 
   X_train = data_reshape
   y_train = labels

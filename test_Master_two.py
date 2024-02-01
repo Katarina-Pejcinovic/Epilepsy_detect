@@ -49,24 +49,18 @@ print(len(label_result))
 print(label_result[0].shape)
 print(len(patientID_result))
 print(patientID_result[0].shape)
-
 print("-----------------")
 print(result_4d[1].shape)
 print(label_result[1].shape)
 print(patientID_result[1].shape)
 print("-----------------")
-# print(len(result_4d[2]))
-# print(label_result[2].shape)
-# print(patientID_result[2].shape)
-# print("-----------------")
-# print(len(result_4d[3]))
-# print(label_result[3].shape)
-# print(patientID_result[3].shape)
 
 patient_list_folder = data_file_path
 save_file_path = data_file_path
 full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
+# with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
+#         dict = pickle.load(f)
 
 #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
 data1 = run_imputate(result_4d[0])
@@ -103,12 +97,12 @@ features_list = [np.load("feature_selection/features0.npy"),
                np.load("feature_selection/features3.npy")]
 
 
-# tune parameters for the classical ml model
+# tune parameters for the classical ml model (FIX AFTER FEATURE EXTRACT)
 from classical_ML.train_test_tune_nested import * 
 from classical_ML.load_best_params import *
-concat = np.concatenate((features_list[0], features_list[1]))
-label_res_concat = np.concatenate((label_result[0], label_result[1]))
-patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))
+# concat = np.concatenate((features_list[0], features_list[1]))
+# label_res_concat = np.concatenate((label_result[0], label_result[1]))
+# patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))
 # params_scores, best_params = train_test_tune_nested(concat, label_res_concat, 
 #                                             patientID_concat)
 best_params = load_best_params()
