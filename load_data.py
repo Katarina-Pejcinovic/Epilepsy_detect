@@ -102,7 +102,5 @@ def load_data(data_file_path):
 
 
 # # Test function
-data_path = "data/"
-[data_list, label_list, patientID_list] = load_data(data_path)
-
-print("dont")
+# data_path = "data/"
+# [data_list, label_list, patientID_list] = load_data(data_path)

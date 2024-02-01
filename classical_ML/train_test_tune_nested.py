@@ -12,7 +12,7 @@ from sklearn.mixture import GaussianMixture
 import umap.umap_ as umap
 import pickle
 
-def create_svc_pipeline(group_kfold):
+def create_svc_pipeline(stratified_kfold):
 
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
@@ -30,14 +30,14 @@ def create_svc_pipeline(group_kfold):
           param_grid = param_grid,
           n_jobs=1,
           scoring="accuracy",
-          cv=group_kfold,
+          cv=stratified_kfold,
           verbose=2
         )
   
   return param_search
 
 
-def create_rf_pipeline(group_kfold):
+def create_rf_pipeline(stratified_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
@@ -59,14 +59,14 @@ def create_rf_pipeline(group_kfold):
           param_grid = param_grid,
           n_jobs=1,
           scoring="accuracy",
-          cv=group_kfold,
+          cv=stratified_kfold,
           verbose=2
         )
 
   return param_search
 
 
-def create_gmm_pipeline(group_kfold):
+def create_gmm_pipeline(stratified_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
@@ -82,14 +82,14 @@ def create_gmm_pipeline(group_kfold):
           param_grid = param_grid,
           n_jobs=1,
           scoring="accuracy",
-          cv=group_kfold,
+          cv=stratified_kfold,
           verbose=2
         )
 
   return param_search
 
 
-def create_xg_pipeline(group_kfold):
+def create_xg_pipeline(stratified_kfold):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
@@ -107,13 +107,13 @@ def create_xg_pipeline(group_kfold):
           param_grid = param_grid,
           n_jobs=1,
           scoring="accuracy",
-          cv=group_kfold,
+          cv=stratified_kfold,
           verbose=2
         )
 
   return param_search
 
-def train_test_tune_nested(data):
+def train_test_tune_nested(data, stratified_cv):
   # Reshape data
   # Cross validate loop
   # Inside loop - UMAP + model
@@ -134,12 +134,17 @@ def train_test_tune_nested(data):
   # num_patients = np.size(np.unique(groups))
 
   # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
-  data_new = data[:, 2:, :]
+
+  data_new = data[:, 3:, :]
+  labels = data[0, 0, :]
+  patient_id = data[0, 1, :]
   num_files = data.shape[2]
   num_channels = data.shape[0]
   num_features = data.shape[1] - 3
 
+  data_reshape = np.reshape(data_new, (num_files, num_channels*num_features))
 
+  num_patients = np.size(np.unique(patient_id))
   group_kfold = GroupKFold(n_splits=num_patients)
 
   ## Create pipelines
@@ -148,10 +153,10 @@ def train_test_tune_nested(data):
   svc_best_params_list = []
   svc_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
-    groups_train = groups[train_idx]
+    groups_train = patient_id[train_idx]
     num_patients_train = np.size(np.unique(groups_train))
     group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
@@ -172,10 +177,10 @@ def train_test_tune_nested(data):
   rf_best_params_list = []
   rf_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
-    groups_train = groups[train_idx]
+    groups_train = patient_id[train_idx]
     num_patients_train = np.size(np.unique(groups_train))
     group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
@@ -196,10 +201,10 @@ def train_test_tune_nested(data):
   xg_best_params_list = []
   xg_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
-    groups_train = groups[train_idx]
+    groups_train = patient_id[train_idx]
     num_patients_train = np.size(np.unique(groups_train))
     group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
@@ -220,10 +225,10 @@ def train_test_tune_nested(data):
   gmm_best_params_list = []
   gmm_scores_list = []
 
-  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=groups):
+  for train_idx, test_idx in group_kfold.split(data_reshape, labels, groups=patient_id):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
-    groups_train = groups[train_idx]
+    groups_train = patient_id[train_idx]
     num_patients_train = np.size(np.unique(groups_train))
     group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
