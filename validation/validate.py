@@ -108,6 +108,7 @@ def validate(train_data,
 
   # Confusion matrices
   confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
+  matrics = []
 
   for i, matrix in enumerate(confusion_matrices):
     true_positives = matrix[1][1]
@@ -138,6 +139,20 @@ def validate(train_data,
         f.write(f'\n Precision: {precision}\n')
         f.write(f'Accuracy: {accuracy}\n')
         f.write(f'Recall: {recall}\n\n')
+
+    for i in range(len(model_names)):
+        model_data = [
+            model_names[i],
+            matrices[i],
+            precisions[i],
+            accuracies[i],
+            recalls[i]
+        ]
+        metrics.append(model_data)
+
+  table = tabulate(data, headers, tablefmt='grid')
+  with open('validation_results/figure_list.txt', 'a') as f:
+    f.write(table)
     
   for i, matrix in enumerate(confusion_matrices):
     disp = ConfusionMatrixDisplay(confusion_matrix=matrix, 
