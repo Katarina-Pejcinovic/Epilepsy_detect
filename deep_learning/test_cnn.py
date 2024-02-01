@@ -14,15 +14,10 @@ import numpy as np
 #Test EEGNet modification 
 #current dimensions: (samples, channels, time)
 X_train = np.random.rand(100, 26, 60000).astype('float32') # np.random.rand generates between [0, 1)
-y_train = np.round(np.random.rand(100).astype('float32')) # binary data, so we round it to 0 or 1.
-X_test = np.random.rand(100, 26,60000).astype('float32')
-y_test = np.round(np.random.rand(100).astype('float32'))
 
-print(X_train.shape)
-print(X_test.shape)
 
-bi_predictions, probas = run_EEGnet(X_train, y_train, X_test, y_test, batch_size = 50)
-
+run_EEGnet(X_train, batch_size = 50)
+'''
 # Compute accuracy
 accuracy = accuracy_score(y_test, bi_predictions)
 print(f"Accuracy: {accuracy:.4f}")
@@ -52,3 +47,4 @@ print(f"F1 Score: {f1:.4f}")
 cm = confusion_matrix(y_test, bi_predictions)
 print("Confusion Matrix:")
 print(cm)
+'''

@@ -10,16 +10,23 @@ from tqdm import tqdm
 
 
 #runs EEGnet
-def run_EEGnet(train_data_og, train_labels, test_data_og, test_labels, batch_size):
+def run_EEGnet(train_data_og, batch_size):
 
     print("in EEGnet")
-    #transpose to: (samples, time channels)
+    #split data into metadata and time-series data 
+    train_labels = train_data_og[0, 0, :]
+
+    #cut off metadata 
+    y_length = train_data_og.shape[1]
+
+    train_data = train_data_og[:, 3:y_length, :]
+    
+    #transpose to: (samples, time, channels)
     train_data = np.transpose(train_data_og, (0, 2, 1))
-    test_data = np.transpose(test_data_og, (0, 2, 1))
+
 
     #convert 3D numpy array into 4D 
     train_data = train_data[:, np.newaxis, :, :]
-    test_data = test_data[:, np.newaxis, :, :]
 
     class EEGNet(nn.Module):
         def __init__(self):
@@ -100,6 +107,12 @@ def run_EEGnet(train_data_og, train_labels, test_data_og, test_labels, batch_siz
             loss = criterion(outputs, labels)
             loss.backward()
             optimizer.step()
+
+        # Save the trained model
+        torch.save(model.state_dict(), 'trained_model.pth')
+
+        
+        '''
     # Make predictions
     model.eval()  # Set the model to evaluation mode
     predictions = []
@@ -115,7 +128,7 @@ def run_EEGnet(train_data_og, train_labels, test_data_og, test_labels, batch_siz
     # Convert predictions to binary values based on a threshold (e.g., 0.5 for sigmoid)
     threshold = 0.5
     binary_predictions = (predictions > threshold).astype(int)
+    '''
 
-    return binary_predictions, predictions
 
 
