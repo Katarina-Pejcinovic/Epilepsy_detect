@@ -13,10 +13,16 @@ import numpy as np
 
 #Test EEGNet modification 
 #current dimensions: (samples, channels, time)
-X_train = np.random.rand(100, 26, 60000).astype('float32') # np.random.rand generates between [0, 1)
+X_train = np.random.rand(10, 26, 60000).astype('float32') # np.random.rand generates between [0, 1)
+test = np.random.rand(10, 26, 60000).astype('float32')
 
+batch_size = 10
+run_EEGnet(X_train, batch_size = batch_size)
 
-run_EEGnet(X_train, batch_size = 50)
+predictions, probs = predictions_cnn(test_data=test)
+print(predictions)
+print("probs", probs)
+
 '''
 # Compute accuracy
 accuracy = accuracy_score(y_test, bi_predictions)
