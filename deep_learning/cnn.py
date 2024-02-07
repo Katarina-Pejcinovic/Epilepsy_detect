@@ -10,7 +10,7 @@ from tqdm import tqdm
 class EEGNet(nn.Module):
     def __init__(self):
         super(EEGNet, self).__init__()
-        self.T = 60000 #NOTE: change this later 
+        self.T = 75000 #NOTE: change this later 
         
         # Layer 1
         self.conv1 = nn.Conv2d(1, 16, (1, 26), padding = 0)
@@ -31,7 +31,7 @@ class EEGNet(nn.Module):
         # FC Layer
         # NOTE: This dimension will depend on the number of timestamps per sample in your data.
         # I have 120 timepoints. 
-        self.fc1 = nn.Linear(4*2*3750, 1)
+        self.fc1 = nn.Linear(4*2*4687, 1)
     
     def forward(self, x):
         # Layer 1
@@ -55,7 +55,7 @@ class EEGNet(nn.Module):
         x = self.pooling3(x)
         
         # FC Layer
-        x = x.reshape(-1, 4*2*3750) #NOTE: change this later 
+        x = x.reshape(-1, 4*2*4687) #NOTE: change this later 
         x = F.sigmoid(self.fc1(x))
         return x
 
