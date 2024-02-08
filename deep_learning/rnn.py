@@ -23,6 +23,9 @@ import pywt
 from collections import Counter
 import scipy.stats as stats
 from sklearn.metrics import fbeta_score
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import accuracy_score
 import tensorflow as tf
 from keras.models import Sequential, load_model
 from tensorflow.python.keras.layers import Dense
@@ -53,7 +56,9 @@ def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32
     val_predictions_list = {}
     val_predictions_binary_list = {}
     f2_score_list = []
-    
+    recall_list = []
+    precision_list = []
+    accuracy_list = []
 
     counter = 0
     for train_index, val_index in strat_kfold:
@@ -92,11 +97,17 @@ def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32
         val_predictions_binary_list[f'fold{counter}'] = [val_predictions_binary, y_val]
 
         f = fbeta_score(val_predictions_binary, y_val, beta=2.0)
+        p = precision_score(val_predictions_binary, y_val)
+        r = recall_score(val_predictions_binary, y_val)
+        a = accuracy_score(val_predictions_binary, y_val)
         f2_score_list.append(f)
+        precision_list.append(p)
+        recall_list.append(r)
+        accuracy_list.append(a)
         if max(f2_score_list) == f:
             model.save(model_save_path)
-            
-        return val_predictions_binary_list, val_predictions_list
+
+    return val_predictions_binary_list, val_predictions_list, f2_score_list, precision_list, recall_list, accuracy_list
         
 def rnn_model_test(test_df):
     predictions = []
