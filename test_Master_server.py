@@ -14,8 +14,7 @@ from feature_selection.cut_segments import *
 from deep_learning.cnn import *
 from deep_learning.rnn import *
 from validation.validate import *
-from preprocessing.train_test_split import*
-
+from preprocessing.train_test_split import *
 from preprocessing.functions_prepro import *
 
 # Batch Processing
@@ -28,7 +27,7 @@ else:
     data_file_path = data_file_batch
 
 
-#PREPROCESSING
+# PREPROCESSING
 base_dir = data_file_path
 master_prepro(base_dir)
 
@@ -81,79 +80,72 @@ data = run_impute(full_data_array)
 print("impute ran")
 print(data.shape)
 
-#Train-Test Split
-train_data, test_data = split(data, data_file_path, data_file_path)
+# Train-Test Split
+train_data, test_data = split(data, data_file_path)
 
-# Break down data structure
-data_full = data[:, 3:, :]
-labels = data[0, 0, :]
-patient_id = data[0, 1, :]
-num_segments = data.shape[2]
-num_channels = data.shape[0]
-num_data = data.shape[1] - 3
+# Break down train data structure
+data_full = train_data[:, 3:, :]
+labels = train_data[0, 0, :]
+patient_id = train_data[0, 1, :]
+num_segments = train_data.shape[2]
+num_channels = train_data.shape[0]
+num_data = train_data.shape[1] - 3
 data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
-print("data reshape ran")
+print("Train data reshape ran")
 print(data_reshape.shape)
+
+# Break down test data structure
+data_full_test = test_data[:, 3:, :]
+labels_test = test_data[0, 0, :]
+patient_id_test = test_data[0, 1, :]
+num_segments_test = test_data.shape[2]
+num_channels_test = test_data.shape[0]
+num_data_test = test_data.shape[1] - 3
+data_reshape_test = np.reshape(data_full_test, (num_segments_test, num_channels_test, num_data_test))
+print("Train data reshape ran")
+print(data_reshape_test.shape)
 
 # # Extract features
 
 # Run once
 features_3d_array = get_features(data_reshape)
+with open('data/features_3d_array.pkl', 'wb') as f:
+    pickle.dump(features_3d_array, f)
+
+features_3d_array_test = get_features(data_reshape_test)
+with open('data/features_3d_array_test.pkl', 'wb') as f:
+    pickle.dump(features_3d_array_test, f)
 
 # Load in features after it has been generated locally
-print("features array", features_3d_array.shape)
+print("Train features array", features_3d_array.shape)
+print("Test features array", features_3d_array_test.shape)
 
-# # Create Stratified Cross Validation object
+with open('data/features_3d_array.pkl', 'rb') as f:
+    features_3d_array = pickle.load(f)
+with open('data/features_3d_array_test.pkl', 'rb') as f:
+    features_3d_array_test = pickle.load(f)
+
+# Create Stratified Cross Validation object
 splits = 3
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
-# Tune parameters for classical ML
-from classical_ML.train_test_tune_umap import * 
-from classical_ML.load_best_params import *
+# Tune classical parameters
 
+# Run once
 params_scores, best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
+# Load in locally generated
 best_params = load_best_params()
 
-# #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
-# data1 = run_imputate(result_4d[0])
-# data2 = run_imputate(result_4d[1])
-# data3 = run_imputate(result_4d[2])
-# data4 = run_imputate(result_4d[3])
-
-# print("imputed data sizes:")
-# print(data1.shape)
-# print(data2.shape)
-# print(data3.shape)
-# print(data4.shape)
-# imputed_data = [data1, data2, data3, data4]
-# non_empty_arrays = [arr for arr in imputed_data if arr.size > 0]
-
-# #concatenate training data for deep learning 
-# training_time = np.concatenate((non_empty_arrays[0], non_empty_arrays[1]), axis = 0)
-# #concatenate testing data for deep learning
-# testing_time = np.concatenate((non_empty_arrays[2], non_empty_arrays[3]), axis =0 )
-
-# # validate the models
-# # def validate(train_data, 
-# #              train_labels, 
-
-# #              validation_data, 
-# #              validation_labels, 
-
-# #              deep_data_train, 
-# #              deep_data_test, 
-
-# #              parameters
-# # ):
-
-# training_time = np.float32(training_time)
-# testing_time = np.float32(testing_time)
+# RNN
+run_EEGnet(train_data, batch_size = 50)
+rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
+        learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=strat_kfold)
 
 validate(train_data = features_3d_array, 
           train_labels = labels, 
-          validation_data = concat_test, 
-          validation_labels = concat_test_labels, 
-          deep_data_train = training_time, 
-          deep_data_test = testing_time, 
+          validation_data = features_3d_array_test, 
+          validation_labels = labels_test, 
+          deep_data_train = train_data, 
+          deep_data_test = test_data, 
           parameters = best_params)
