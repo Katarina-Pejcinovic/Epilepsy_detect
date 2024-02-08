@@ -106,6 +106,10 @@ from classical_ML.load_best_params import *
 params_scores, best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
 best_params = load_best_params()
 
+# Train deep learning models
+run_EEGnet(train_df, batch_size = 50)
+rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=stratCV)
+
 # #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
 # data1 = run_imputate(result_4d[0])
 # data2 = run_imputate(result_4d[1])
@@ -120,10 +124,10 @@ best_params = load_best_params()
 # imputed_data = [data1, data2, data3, data4]
 # non_empty_arrays = [arr for arr in imputed_data if arr.size > 0]
 
-# #concatenate training data for deep learning 
-# training_time = np.concatenate((non_empty_arrays[0], non_empty_arrays[1]), axis = 0)
-# #concatenate testing data for deep learning
-# testing_time = np.concatenate((non_empty_arrays[2], non_empty_arrays[3]), axis =0 )
+# # concatenate training data for deep learning 
+# # training_time = np.concatenate((non_empty_arrays[0], non_empty_arrays[1]), axis = 0)
+# # concatenate testing data for deep learning
+# # testing_time = np.concatenate((non_empty_arrays[2], non_empty_arrays[3]), axis =0 )
 
 # # validate the models
 # # def validate(train_data, 
@@ -141,10 +145,10 @@ best_params = load_best_params()
 # training_time = np.float32(training_time)
 # testing_time = np.float32(testing_time)
 
-# validate(train_data = concat, 
-#          train_labels = label_res_concat, 
-#          validation_data = concat_test, 
-#          validation_labels = concat_test_labels, 
-#          deep_data_train = training_time, 
-#          deep_data_test = testing_time, 
-#          parameters = best_params)
+validate(train_data = concat, 
+          train_labels = label_res_concat, 
+          validation_data = concat_test, 
+          validation_labels = concat_test_labels, 
+          deep_data_train = training_time, 
+          deep_data_test = testing_time, 
+          parameters = best_params)
