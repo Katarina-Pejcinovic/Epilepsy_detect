@@ -19,7 +19,7 @@ def create_svc_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
   param_grid = {
-      'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__metric':['jaccard', 'dice', 'russelrao', 'euclidean'],
       'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
       'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
       'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
@@ -54,7 +54,7 @@ def create_rf_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
-      'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__metric':['jaccard', 'dice', 'russelrao', 'euclidean'],
       'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
       'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
       'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
@@ -87,7 +87,7 @@ def create_gmm_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
-      'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__metrics':['jaccard', 'dice', 'russelrao', 'euclidean'],
       'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
       'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
       'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
@@ -118,7 +118,7 @@ def create_xg_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-      'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__metrics':['jaccard', 'dice', 'russelrao', 'euclidean'],
       'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
       'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
       'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
