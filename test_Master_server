@@ -40,7 +40,7 @@ print(label_list[0].shape)
 print(patientID_list[0].shape)
 print("finished loading data")
 
-#cut segmets into 10 min slices
+#cut segmets into 5 min slices
 result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
 
 print(len(result_4d))
@@ -72,6 +72,9 @@ num_data = full_data_array.shape[1] - 3
 
 # Create Stratified CV by patient
 data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
+
+# Extract features
+features_3d_array = get_features(data_reshape)
 
 splits = 3
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
