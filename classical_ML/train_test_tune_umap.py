@@ -3,6 +3,7 @@
 
 from sklearn.pipeline import make_pipeline
 import numpy as np
+from sklearn.metrics import make_scorer,fbeta_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV, GroupKFold, StratifiedKFold
 from sklearn.svm import SVC
@@ -12,16 +13,26 @@ from sklearn.mixture import GaussianMixture
 import umap.umap_ as umap
 import pickle
 
-def create_svc_pipeline(stratified_kfold):
+
+def create_svc_pipeline(stratified_kfold, f2_score):
 
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
   param_grid = {
+      # 'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+      # 'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
+      # 'svc__C':[0.1, 1, 10, 100],
+      # 'svc__degree': [2, 3, 4, 5]
+      'umap__metric':['euclidean'],
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2, 3],
-      'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
-      'svc__C':[0.1, 1, 10, 100],
-      'svc__degree': [2, 3, 4, 5]
+      'umap__n_neighbors':[2],
+      'umap__min_dist': [0.1],
+      'svc__kernel':['linear'],
+      'svc__C':[0.1],
+      'svc__degree': [2]
     }
 
   # Parameter search
@@ -29,28 +40,34 @@ def create_svc_pipeline(stratified_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring=f2_score,
+          # scoring='accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=2,
+          error_score='raise'
         )
   
   return param_search
 
 
-def create_rf_pipeline(stratified_kfold):
+def create_rf_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
+    # 'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+    # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+    # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+    # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+    # 'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
+    # 'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
+    # 'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      'umap__metric':['euclidean'],
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2, 3],
-      # 'randomforestclassifier__n_estimators':[10, 100],
-      'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
-      # 'randomforestclassifier__min_samples_leaf':[1, 5],
-      'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
-      # 'randomforestclassifier__max_depth':[3, 5],
-      'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
-
-      # 'randomforestclassifier__max_features':[25]
+      'umap__n_neighbors':[2],
+      'umap__min_dist': [0.1],
+      'randomforestclassifier__n_estimators':[8],
+      'randomforestclassifier__min_samples_leaf':[50],
+      'randomforestclassifier__max_depth':[2],
     }
 
   # Parameter search
@@ -58,7 +75,7 @@ def create_rf_pipeline(stratified_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring=f2_score,
           cv=stratified_kfold,
           verbose=2
         )
@@ -66,14 +83,22 @@ def create_rf_pipeline(stratified_kfold):
   return param_search
 
 
-def create_gmm_pipeline(stratified_kfold):
+def create_gmm_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
+    # 'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+    # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+    # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+    # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+    # 'gaussianmixture__init_params':['k-means++', 'random'],
+    # 'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
+      'umap__metric':['euclidean'],
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2, 3],
-      'gaussianmixture__init_params':['k-means++', 'random'],
-      # 'gaussianmixture__init_params':['k-means++'],
+      'umap__n_neighbors':[2],
+      'umap__min_dist': [0.1],
+      'gaussianmixture__init_params':['k-means++'],
+      'gaussianmixture__covariance_type': ['full'],
     }
 
   # Parameter search
@@ -81,7 +106,7 @@ def create_gmm_pipeline(stratified_kfold):
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring=f2_score,
           cv=stratified_kfold,
           verbose=2
         )
@@ -89,31 +114,38 @@ def create_gmm_pipeline(stratified_kfold):
   return param_search
 
 
-def create_xg_pipeline(stratified_kfold):
+def create_xg_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
+    # 'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+    # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+    # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+    # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+    # 'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
+    # 'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
+    # 'xgbclassifier__learning_rate': [0.01, 0.1],
+      'umap__metric':['euclidean'],
       'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2, 3],
-      'xgbclassifier__max_depth':[3, 5],
-      # 'xgbclassifier__max_depth':[2],
-      'xgbclassifier__n_estimators': [50, 100],
-      'xgbclassifier__learning_rate': [0.01, 0.1],
-      # 'xgbclassifier__learning_rate': [0.01],
+      'umap__n_neighbors':[2],
+      'umap__min_dist': [0.1],
+      'xgbclassifier__n_estimators': [50],
+      'xgbclassifier__max_depth':[3],
+      'xgbclassifier__learning_rate': [0.01],
     }
   
   param_search = GridSearchCV(
           estimator = pipeline,
           param_grid = param_grid,
           n_jobs=1,
-          scoring="accuracy",
+          scoring=f2_score,
           cv=stratified_kfold,
           verbose=2
         )
 
   return param_search
 
-def train_test_tune_nested(data, labels, patient_id, stratified_cv):
+def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   # Reshape data
   # Cross validate loop
   # Inside loop - UMAP + model
@@ -121,29 +153,24 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
   # return best parameters per model
   # May not work for unsupervised models
 
-  # Inputs: numpy array of data (size: [# files, 32 channels, 177 features])
+  # Inputs: numpy array of data (size: [# files, 26 channels, # features (225)])
   #         numpy array of labels (size: [# files, 1]) -- Epilepsy or No Epilepsy
   #         numpy array of patient ID per file (size: [# files, 1])
+  #         stratified_cv object
 
   # Outputs: best hyperparameters for each classical ml model
 
   ## Reshape data
-  # num_files = data.shape[0]
-  # num_channels = data.shape[1]
-  # num_features = data.shape[2]
-  # num_patients = np.size(np.unique(groups))
-
-  # data_reshape = np.reshape(data, (num_files, num_channels*num_features))
-
-
-  num_files = data.shape[0]
+  num_segments = data.shape[0]
   num_channels = data.shape[1]
   num_features = data.shape[2]
 
-  data_reshape = np.reshape(data, (num_files, num_channels*num_features))
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
 
   # num_patients = np.size(np.unique(patient_id))
   splits = 2
+
+  stratified_cv = list(stratified_cv)
 
   ## Create pipelines
   
@@ -157,6 +184,7 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
     group_train = patient_id[train_idx]
 
     strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True)
+    f2_score = make_scorer(fbeta_score, beta=2, average='micro')
     # strat_kfold_inner = strat_kfold_object.split(X_train, group_train)
 
     # for j, (train_index, test_index) in enumerate(strat_kfold_inner):
@@ -164,7 +192,7 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
     #     print(f"  Train: index={train_index}")
     #     print(f"  Test:  index={test_index}")
 
-    svc_param_search = create_svc_pipeline(strat_kfold_object.split(X_train, group_train))
+    svc_param_search = create_svc_pipeline(strat_kfold_object.split(X_train, group_train), f2_score)
     svc_param_search.fit(X_train, y_train)
 
     svc_best_params_list.append(svc_param_search.best_params_)
@@ -175,22 +203,32 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
   best_svc_model_score = np.argmax(svc_scores_list)
   svc_best_score = np.max(svc_scores_list)
   svc_best_params = svc_best_params_list[best_svc_model_score]
+
+  # Save best params to text file
+  file = open('results/best_svc_params.txt','w')
+  for item, score in zip(svc_best_params_list, svc_scores_list):
+    for key, value in item.items():
+      file.write('%s: %s\n' % (key, value))
+    # file.write('\n')
+    file.write('F2 Score: %s\n\n' % (score))
+  file.close()
   
 
   ## RF
   rf_best_params_list = []
   rf_scores_list = []
-
+  i = 0
   for i, (train_idx, test_idx) in enumerate(stratified_cv):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
-    groups_train = patient_id[train_idx]
+    group_train = patient_id[train_idx]
 
     strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True)
+    f2_score = make_scorer(fbeta_score, beta=2, average='micro')
 
-    rf_param_search = create_rf_pipeline(group_kfold_inner)
+    rf_param_search = create_rf_pipeline(strat_kfold_object.split(X_train, group_train), f2_score)
+    rf_param_search.fit(X_train, y_train)
 
-    rf_param_search.fit(X_train, y_train, groups=groups_train)
     rf_best_params_list.append(rf_param_search.best_params_)
 
     rf_scores = rf_param_search.score(X_test, y_test)
@@ -199,6 +237,15 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
   best_rf_model_score = np.argmax(rf_scores_list)
   rf_best_score = np.max(rf_scores_list)
   rf_best_params = rf_best_params_list[best_rf_model_score]
+
+  # Save best params to text file
+  file = open('results/best_rf_params.txt','w')
+  for item, score in zip(rf_best_params_list, rf_scores_list):
+    for key, value in item.items():
+      file.write('%s: %s\n' % (key, value))
+    # file.write('\n')
+    file.write('F2 Score: %s\n\n' % (score))
+  file.close()
 
 
   ## XG Boost
@@ -209,12 +256,13 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     groups_train = patient_id[train_idx]
-    num_patients_train = np.size(np.unique(groups_train))
-    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
 
-    xg_param_search = create_xg_pipeline(group_kfold_inner)
+    strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True)
+    f2_score = make_scorer(fbeta_score, beta=2, average='micro')
 
-    xg_param_search.fit(X_train, y_train, groups=groups_train)
+    xg_param_search = create_xg_pipeline(strat_kfold_object.split(X_train, group_train), f2_score)
+    xg_param_search.fit(X_train, y_train)
+
     xg_best_params_list.append(xg_param_search.best_params_)
 
     xg_scores = xg_param_search.score(X_test, y_test)
@@ -223,6 +271,15 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
   best_xg_model_score = np.argmax(xg_scores_list)
   xg_best_score = np.max(xg_scores_list)
   xg_best_params = xg_best_params_list[best_xg_model_score]
+
+  # Save best params to text file
+  file = open('results/best_xg_params.txt','w')
+  for item, score in zip(xg_best_params_list, xg_scores_list):
+    for key, value in item.items():
+      file.write('%s: %s\n' % (key, value))
+    # file.write('\n')
+    file.write('F2 Score: %s\n\n' % (score))
+  file.close()
 
 
   ## GMM
@@ -233,12 +290,13 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     groups_train = patient_id[train_idx]
-    num_patients_train = np.size(np.unique(groups_train))
-    group_kfold_inner = GroupKFold(n_splits=num_patients_train)
+    
+    strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True)
+    f2_score = make_scorer(fbeta_score, beta=2, average='micro')
 
-    gmm_param_search = create_gmm_pipeline(group_kfold_inner)
+    gmm_param_search = create_gmm_pipeline(strat_kfold_object.split(X_train, group_train), f2_score)
+    gmm_param_search.fit(X_train, y_train)
 
-    gmm_param_search.fit(X_train, y_train, groups=groups_train)
     gmm_best_params_list.append(gmm_param_search.best_params_)
 
     gmm_scores = gmm_param_search.score(X_test, y_test)
@@ -247,6 +305,15 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
   best_gmm_model_score = np.argmax(gmm_scores_list)
   gmm_best_score = np.max(gmm_scores_list)
   gmm_best_params = gmm_best_params_list[best_gmm_model_score]
+
+  # Save best params to text file
+  file = open('results/best_gmm_params.txt','w')
+  for item, score in zip(gmm_best_params_list, gmm_scores_list):
+    for key, value in item.items():
+      file.write('%s: %s\n' % (key, value))
+    # file.write('\n')
+    file.write('F2 Score: %s\n\n' % (score))
+  file.close()
 
 
   ## Results
@@ -270,6 +337,14 @@ def train_test_tune_nested(data, labels, patient_id, stratified_cv):
 
   # Return
   return param_scores, param_best
+
+
+
+
+
+
+
+
 
 # Run with fake test data
 # patients = 5
