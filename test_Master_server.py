@@ -107,8 +107,8 @@ params_scores, best_params = train_test_tune_umap(features_3d_array, labels, pat
 best_params = load_best_params()
 
 # Train deep learning models
-run_EEGnet(train_df, batch_size = 50)
-rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=stratCV)
+run_EEGnet(data, batch_size = 50)
+rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=stratCV)
 
 # #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
 # data1 = run_imputate(result_4d[0])
