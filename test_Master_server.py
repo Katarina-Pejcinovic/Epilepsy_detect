@@ -15,6 +15,10 @@ from deep_learning.cnn import *
 from deep_learning.rnn import *
 from validation.validate import *
 
+from preprocessing.functions_prepro import *
+
+
+
 # Batch Processing
 if __name__ == "__main__":
     print('Running sample file')
@@ -25,7 +29,10 @@ else:
     data_file_path = data_file_batch
 
 
+###PREPROCESSING
 
+base_dir = 'data/'
+master_prepro(base_dir)
 
 
 # Order: Train EP, Train No EP, Test EP, Test No EP
@@ -89,15 +96,15 @@ print("features array", features_3d_array.shape)
 
 # # Create Stratified Cross Validation object
 splits = 3
-# strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
-# strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
+strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
+strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
-# # Tune parameters for classical ML
-# from classical_ML.train_test_tune_umap import * 
-# from classical_ML.load_best_params import *
+# Tune parameters for classical ML
+from classical_ML.train_test_tune_umap import * 
+from classical_ML.load_best_params import *
 
-# params_scores, best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
-# best_params = load_best_params()
+params_scores, best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
+best_params = load_best_params()
 
 # #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
 # data1 = run_imputate(result_4d[0])

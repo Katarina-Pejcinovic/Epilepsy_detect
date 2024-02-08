@@ -316,6 +316,6 @@ class EEGPipeline:
                     if n_files is not None and len(self.data_pairs) >= n_files:
                         return
 
-root_directory = '/Users/andresmichel/Documents/EGG data /v2.0.0'
+root_directory = 'data/'
 pipeline = EEGPipeline(root_directory)
 pipeline.load_edf_csv_pairs(partition='dev', n_files=10)
