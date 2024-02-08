@@ -22,7 +22,7 @@ import neurokit2 as nk
 import pywt
 from collections import Counter
 import scipy.stats as stats
-
+from sklearn.metrics import fbeta_score
 import tensorflow as tf
 from keras.models import Sequential, load_model
 from tensorflow.python.keras.layers import Dense
@@ -52,19 +52,23 @@ def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32
 
     val_predictions_list = {}
     val_predictions_binary_list = {}
-    model = Sequential()
-    model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, train_data.shape[2])))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(32, activation='relu'))
-    model.add(Dense(1, activation='sigmoid'))
-
-    opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
-    model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+    f2_score_list = []
+    
 
     counter = 0
     for train_index, val_index in strat_kfold:
+        model = Sequential()
+        model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, train_data.shape[2])))
+        model.add(Dense(32, activation='relu'))
+        model.add(Dropout(0.2))
+        model.add(Dense(32, activation='relu'))
+        model.add(Dense(1, activation='sigmoid'))
+
+        opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
+        model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+
         counter+=1
+
         X_train, X_val = train_data[train_index], train_data[val_index]
         y_train, y_val = train_label[train_index], train_label[val_index]
 
@@ -86,9 +90,13 @@ def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32
         # Convert predictions to binary (0 or 1)
         val_predictions_binary = [1 if pred >= 0.50 else 0 for pred in val_predictions]
         val_predictions_binary_list[f'fold{counter}'] = [val_predictions_binary, y_val]
-    
-    model.save(model_save_path)
-    return val_predictions_binary_list, val_predictions_list
+
+        f = fbeta_score(val_predictions_binary, y_val, beta=2.0)
+        f2_score_list.append(f)
+        if max(f2_score_list) == f:
+            model.save(model_save_path)
+            
+        return val_predictions_binary_list, val_predictions_list
         
 def rnn_model_test(test_df):
     predictions = []
