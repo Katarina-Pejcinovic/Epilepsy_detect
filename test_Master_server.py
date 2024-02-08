@@ -31,7 +31,7 @@ else:
 
 ###PREPROCESSING
 
-base_dir = 'data/'
+base_dir = data_file_path
 master_prepro(base_dir)
 
 
@@ -69,7 +69,7 @@ print("-----------------")
 # Create or load in full data structure
 patient_list_folder = data_file_path
 save_file_path = data_file_path
-#full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
+full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
     full_data_array = pickle.load(f)
