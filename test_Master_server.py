@@ -14,6 +14,7 @@ from feature_selection.cut_segments import *
 from deep_learning.cnn import *
 from deep_learning.rnn import *
 from validation.validate import *
+from preprocessing.train_test_split import*
 
 from preprocessing.functions_prepro import *
 
@@ -74,10 +75,17 @@ full_data_array = new_data_struct(result_4d, label_result, patientID_result, pat
 with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
     full_data_array = pickle.load(f)
 print("full data array", full_data_array.shape)
+
+
+
+
 #impute function 
 data = run_impute(full_data_array)
 print("impute ran")
 print(data.shape)
+
+#Train-Test Split
+train_data, test_data = split(data, data_file_path, data_file_path)
 
 # Break down data structure
 data_full = data[:, 3:, :]
@@ -106,10 +114,6 @@ from classical_ML.load_best_params import *
 params_scores, best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
 best_params = load_best_params()
 
-# Train deep learning models
-run_EEGnet(data, batch_size = 50)
-rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=stratCV)
-
 # #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
 # data1 = run_imputate(result_4d[0])
 # data2 = run_imputate(result_4d[1])
@@ -124,10 +128,10 @@ rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall
 # imputed_data = [data1, data2, data3, data4]
 # non_empty_arrays = [arr for arr in imputed_data if arr.size > 0]
 
-# # concatenate training data for deep learning 
-# # training_time = np.concatenate((non_empty_arrays[0], non_empty_arrays[1]), axis = 0)
-# # concatenate testing data for deep learning
-# # testing_time = np.concatenate((non_empty_arrays[2], non_empty_arrays[3]), axis =0 )
+# #concatenate training data for deep learning 
+# training_time = np.concatenate((non_empty_arrays[0], non_empty_arrays[1]), axis = 0)
+# #concatenate testing data for deep learning
+# testing_time = np.concatenate((non_empty_arrays[2], non_empty_arrays[3]), axis =0 )
 
 # # validate the models
 # # def validate(train_data, 
@@ -145,10 +149,10 @@ rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall
 # training_time = np.float32(training_time)
 # testing_time = np.float32(testing_time)
 
-validate(train_data = concat, 
-          train_labels = label_res_concat, 
-          validation_data = concat_test, 
-          validation_labels = concat_test_labels, 
-          deep_data_train = training_time, 
-          deep_data_test = testing_time, 
-          parameters = best_params)
+# validate(train_data = concat, 
+#          train_labels = label_res_concat, 
+#          validation_data = concat_test, 
+#          validation_labels = concat_test_labels, 
+#          deep_data_train = training_time, 
+#          deep_data_test = testing_time, 
+#          parameters = best_params)
