@@ -51,16 +51,23 @@ def impute_adv(data):
     print("imputed", imputed_channel.shape)
     imputed = imputed_channel[1:len(imputed_channel)]
     print("imputed", imputed.shape)
+    data[nan_row, :] = imputed
+    print(data)
 
 
-    return 
+    return data
 
+#pass in just data, no metadata. Use the reshaped from Sharon 
+def run_impute(data):
+    num_recordings = data.shape[0]
+    for i in range(num_recordings):
+        imputed = data[num_recordings, :, : ]
+        data[num_recordings, :, : ] = imputed
+    return data 
 
-#test case 
-import numpy as np
 
 # Create two random 2D arrays filled with random floats
-array1 = np.random.rand(6, 20)
+array1 = np.random.rand(3, 20, 3)
 # Replace one row in array1 with NaN
 array1[1, :] = np.nan
 
