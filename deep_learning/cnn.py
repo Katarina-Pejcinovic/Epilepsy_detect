@@ -58,8 +58,13 @@ class EEGNet(nn.Module):
         x = x.reshape(-1, 4*2*4687) #NOTE: change this later 
         x = F.sigmoid(self.fc1(x))
         return x
+    
 
-#runs EEGnet
+# for i in stratkfold: 
+#     model = run_EEGnet(stratkfold data)
+#     predictions, proba = predictions_cnn(stratkfold data)
+
+#runs EEGnet trains 
 def run_EEGnet(train_data_og, batch_size):
 
     print("in EEGnet")
@@ -115,14 +120,18 @@ def predictions_cnn(test_data):
     load_model = EEGNet()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load the entire model, including architecture
+    # Load the weights and biases into the architecture 
     load_model.load_state_dict(torch.load('trained_model.pth', map_location = device))
+
     #transpose to: (samples, time, channels)
     test_data_1 = np.transpose(test_data, (0, 2, 1))
+
     #convert 3D numpy array into 4D 
     test_data_2 = test_data_1[:, np.newaxis, :, :]
+
     # Ensure the model is in evaluation mode
     load_model.eval()
+
     inputs = torch.from_numpy(test_data_2)
     with torch.no_grad():  # Disable gradient computation during inference
         outputs = load_model(inputs)
