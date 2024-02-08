@@ -19,20 +19,20 @@ def create_svc_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
   param_grid = {
-      # 'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
-      # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      # 'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
-      # 'svc__C':[0.1, 1, 10, 100],
-      # 'svc__degree': [2, 3, 4, 5]
-      'umap__metric':['euclidean'],
-      'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2],
-      'umap__min_dist': [0.1],
-      'svc__kernel':['linear'],
-      'svc__C':[0.1],
-      'svc__degree': [2]
+      'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+      'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
+      'svc__C':[0.1, 1, 10, 100],
+      'svc__degree': [2, 3, 4, 5]
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3, 5],
+      # 'umap__n_neighbors':[2],
+      # 'umap__min_dist': [0.1],
+      # 'svc__kernel':['linear'],
+      # 'svc__C':[0.1],
+      # 'svc__degree': [2]
     }
 
   # Parameter search
@@ -54,20 +54,20 @@ def create_rf_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
-    # 'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
-    # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-    # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-    # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-    # 'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
-    # 'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
-    # 'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
-      'umap__metric':['euclidean'],
-      'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2],
-      'umap__min_dist': [0.1],
-      'randomforestclassifier__n_estimators':[8],
-      'randomforestclassifier__min_samples_leaf':[50],
-      'randomforestclassifier__max_depth':[2],
+      'umap__metric':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+      'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
+      'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
+      'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3, 5],
+      # 'umap__n_neighbors':[2],
+      # 'umap__min_dist': [0.1],
+      # 'randomforestclassifier__n_estimators':[8],
+      # 'randomforestclassifier__min_samples_leaf':[50],
+      # 'randomforestclassifier__max_depth':[2],
     }
 
   # Parameter search
@@ -87,18 +87,18 @@ def create_gmm_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
-    # 'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
-    # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-    # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-    # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-    # 'gaussianmixture__init_params':['k-means++', 'random'],
-    # 'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
-      'umap__metric':['euclidean'],
-      'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2],
-      'umap__min_dist': [0.1],
-      'gaussianmixture__init_params':['k-means++'],
-      'gaussianmixture__covariance_type': ['full'],
+      'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+      'gaussianmixture__init_params':['k-means++', 'random'],
+      'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3, 5],
+      # 'umap__n_neighbors':[2],
+      # 'umap__min_dist': [0.1],
+      # 'gaussianmixture__init_params':['k-means++'],
+      # 'gaussianmixture__covariance_type': ['full'],
     }
 
   # Parameter search
@@ -118,20 +118,20 @@ def create_xg_pipeline(stratified_kfold, f2_score):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-    # 'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
-    # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-    # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-    # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-    # 'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
-    # 'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
-    # 'xgbclassifier__learning_rate': [0.01, 0.1],
-      'umap__metric':['euclidean'],
-      'umap__n_components':[3, 5],
-      'umap__n_neighbors':[2],
-      'umap__min_dist': [0.1],
-      'xgbclassifier__n_estimators': [50],
-      'xgbclassifier__max_depth':[3],
-      'xgbclassifier__learning_rate': [0.01],
+      'umap__metrics':['hamming', 'jaccard', 'dice', 'russelrao', 'euclidean'],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
+      'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
+      'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
+      'xgbclassifier__learning_rate': [0.01, 0.1],
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3, 5],
+      # 'umap__n_neighbors':[2],
+      # 'umap__min_dist': [0.1],
+      # 'xgbclassifier__n_estimators': [50],
+      # 'xgbclassifier__max_depth':[3],
+      # 'xgbclassifier__learning_rate': [0.01],
     }
   
   param_search = GridSearchCV(
@@ -322,6 +322,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   # Return all of best parameters of each model as a multidimensional list
   param_scores = [svc_best_score, rf_best_score, xg_best_score, gmm_best_score]
   param_best = [svc_best_params, rf_best_params, xg_best_params, gmm_best_params]
+  all_f2scores = [svc_scores_list, rf_scores_list, xg_scores_list, gmm_scores_list]
 
   # Save best params to text file
   file = open('results/best_params.txt','w')
@@ -335,14 +336,12 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   with open('results/best_params_dict.pkl', 'wb') as f:
     pickle.dump(param_best, f)
 
+  # Save all F2 scores to load later
+  with open('results/classical_ml_f2_scores.pkl', 'wb') as f:
+    pickle.dump(all_f2scores, f)
+
   # Return
   return param_scores, param_best
-
-
-
-
-
-
 
 
 
