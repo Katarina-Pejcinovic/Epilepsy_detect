@@ -27,7 +27,7 @@ standard_bipolar_channels = [
     'F8-T4', 'Pz-P4', 'Fp2-F4', 'Fp1-F7', 'Fp2-F8', 'Fp1-F3'
 ]
 
-base_dir = '/Users/andresmichel/Documents/EGG_data /v2.0.0/'   # Change this depending on where data is
+base_dir = 'data/'   # Change this depending on where data is
 output_dir = os.path.join(base_dir, 'preprocessed_data_bipolar_OG') # Change this depending ojn where you want it
 
 
