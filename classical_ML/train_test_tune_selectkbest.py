@@ -159,7 +159,7 @@ def train_test_tune_selectkbest(data, labels, patient_id, stratified_cv):
     group_train = patient_id[train_idx]
 
     strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True)
-    f2_score = make_scorer(fbeta_score, beta=2, average='micro')
+    f2_score = make_scorer(fbeta_score, beta=2, greater_is_better=True)
     # strat_kfold_inner = strat_kfold_object.split(X_train, group_train)
 
     # for j, (train_index, test_index) in enumerate(strat_kfold_inner):

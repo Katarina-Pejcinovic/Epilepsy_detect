@@ -80,3 +80,5 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 params_scores, best_params = train_test_tune_selectkbest(features_list, labels, patient_id, strat_kfold)
 # params_scores, best_params = train_test_tune_umap(features_list, labels, patient_id, strat_kfold)
+
+print('Done')

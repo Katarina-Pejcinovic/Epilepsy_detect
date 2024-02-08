@@ -3,8 +3,8 @@ svc__degree: 2
 svc__kernel: linear
 umap__metric: euclidean
 umap__min_dist: 0.1
-umap__n_components: 3
-umap__n_neighbors: 3
+umap__n_components: 5
+umap__n_neighbors: 2
 
 randomforestclassifier__max_depth: 2
 randomforestclassifier__min_samples_leaf: 50
@@ -26,6 +26,6 @@ gaussianmixture__covariance_type: full
 gaussianmixture__init_params: k-means++
 umap__metric: euclidean
 umap__min_dist: 0.1
-umap__n_components: 5
-umap__n_neighbors: 3
+umap__n_components: 3
+umap__n_neighbors: 2
 
