@@ -18,8 +18,6 @@ from preprocessing.train_test_split import*
 
 from preprocessing.functions_prepro import *
 
-
-
 # Batch Processing
 if __name__ == "__main__":
     print('Running sample file')
@@ -30,8 +28,7 @@ else:
     data_file_path = data_file_batch
 
 
-###PREPROCESSING
-
+#PREPROCESSING
 base_dir = data_file_path
 master_prepro(base_dir)
 
@@ -70,16 +67,16 @@ print("-----------------")
 # Create or load in full data structure
 patient_list_folder = data_file_path
 save_file_path = data_file_path
-full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
+# Run once
+# full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
+
+# Load in data after it has been generated locally
 with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
     full_data_array = pickle.load(f)
 print("full data array", full_data_array.shape)
 
-
-
-
-#impute function 
+# Impute function 
 data = run_impute(full_data_array)
 print("impute ran")
 print(data.shape)
@@ -99,7 +96,11 @@ print("data reshape ran")
 print(data_reshape.shape)
 
 # # Extract features
+
+# Run once
 features_3d_array = get_features(data_reshape)
+
+# Load in features after it has been generated locally
 print("features array", features_3d_array.shape)
 
 # # Create Stratified Cross Validation object
@@ -149,10 +150,10 @@ best_params = load_best_params()
 # training_time = np.float32(training_time)
 # testing_time = np.float32(testing_time)
 
-# validate(train_data = concat, 
-#          train_labels = label_res_concat, 
-#          validation_data = concat_test, 
-#          validation_labels = concat_test_labels, 
-#          deep_data_train = training_time, 
-#          deep_data_test = testing_time, 
-#          parameters = best_params)
+validate(train_data = features_3d_array, 
+          train_labels = labels, 
+          validation_data = concat_test, 
+          validation_labels = concat_test_labels, 
+          deep_data_train = training_time, 
+          deep_data_test = testing_time, 
+          parameters = best_params)

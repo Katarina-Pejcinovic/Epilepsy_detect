@@ -105,3 +105,4 @@ def master_prepro(base_dir):
     plt.ylabel('Frequency')
     plt.tight_layout()
     plt.show()
+    plt.close()
