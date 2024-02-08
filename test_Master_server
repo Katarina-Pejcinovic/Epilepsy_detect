@@ -4,16 +4,39 @@ import os
 import numpy as np
 import pandas as pd
 from load_data import *
+from preprocessing.functions_prepro import *
 from data_organization.new_data_struct import *
 from data_organization.patient_id_dict import *
 from preprocessing.impute import * 
-from classical_ML.train_test_tune_nested import * 
+from classical_ML.train_test_tune_umap import * 
 from classical_ML.load_best_params import *
 from feature_selection.get_features import *
 from feature_selection.cut_segments import *
 from deep_learning.cnn import *
 from deep_learning.rnn import *
 from validation.validate import *
+
+
+
+#import numpy as np
+#import pandas as pd
+#import os
+from scipy.signal import welch
+import mne
+import matplotlib.pyplot as plt
+import logging
+import zipfile
+import pyedflib
+from pyedflib import highlevel
+import io
+import tempfile
+from scipy import signal
+import scipy as sp
+from collections import Counter
+from dataset import *  
+
+
+
 
 # Batch Processing
 if __name__ == "__main__":
@@ -23,6 +46,14 @@ else:
     print('Running batch file(s)')
     from batch_processing import data_file_batch
     data_file_path = data_file_batch
+
+
+###PREPROCESSING
+
+base_dir = 'data/'
+master_prepro(base_dir)
+
+
 
 # Order: Train EP, Train No EP, Test EP, Test No EP
 # data_list = list of 4 lists that contain 2D numpy arrays
@@ -40,7 +71,7 @@ print(label_list[0].shape)
 print(patientID_list[0].shape)
 print("finished loading data")
 
-#cut segmets into 10 min slices
+#cut segmets into 5 min slices
 result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
 
 print(len(result_4d))
@@ -73,17 +104,21 @@ num_data = full_data_array.shape[1] - 3
 # Create Stratified CV by patient
 data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
 
+# Extract features
+features_3d_array = get_features(data_reshape)
+
+# Create Stratified Cross Validation object
 splits = 3
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
-# for i, (train_index, test_index) in enumerate(strat_kfold):
-#     print(f"Fold {i}:")
-#     print(f"  Train: index={train_index}")
-#     print(f"  Test:  index={test_index}")
+# Tune parameters for classical ML
+from classical_ML.train_test_tune_nested import * 
+from classical_ML.load_best_params import *
 
-params_scores, best_params = train_test_tune_nested(data_reshape, labels, patient_id, strat_kfold)
+params_scores, best_params = train_test_tune_nested(features_3d_array, strat_kfold)
+best_params = load_best_params()
 
 #run imputate on train_ep, train_no_ep, test_ep, test_no_ep
 data1 = run_imputate(result_4d[0])
@@ -104,25 +139,8 @@ training_time = np.concatenate((non_empty_arrays[0], non_empty_arrays[1]), axis 
 #concatenate testing data for deep learning
 testing_time = np.concatenate((non_empty_arrays[2], non_empty_arrays[3]), axis =0 )
 
-#feature selection 
-nSamples = 150000 #number of samples per segment
-fs = 250 #sampling rate
-wavelet_name = 'db1'
-#features_list = get_features(non_empty_arrays, wavelet_name)
-# np.save("feature_selection/features0.npy", features_list[0])
-# np.save("feature_selection/features1.npy", features_list[1])
-# np.save("feature_selection/features2.npy", features_list[2])
-# np.save("feature_selection/features3.npy", features_list[3])
-
-features_list = [np.load("feature_selection/features0.npy"), 
-                 np.load("feature_selection/features1.npy"), 
-               np.load("feature_selection/features2.npy"), 
-               np.load("feature_selection/features3.npy")]
 
 
-# tune parameters for the classical ml model (FIX AFTER FEATURE EXTRACT)
-from classical_ML.train_test_tune_nested import * 
-from classical_ML.load_best_params import *
 # concat = np.concatenate((features_list[0], features_list[1]))
 # label_res_concat = np.concatenate((label_result[0], label_result[1]))
 # patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))

@@ -1,0 +1,18 @@
+svc__C: 0.1
+svc__degree: 2
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 5
+umap__n_neighbors: 2
+F2 Score: 0.6500000000000001
+
+svc__C: 0.1
+svc__degree: 2
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 2
+F2 Score: 0.6
+

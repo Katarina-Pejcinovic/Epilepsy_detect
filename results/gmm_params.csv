@@ -1,5 +1,0 @@
-param_umap__n_components,param_umap__n_neighbors,param_gaussianmixture__init_params,mean_test_score
-3,5,k-means++,0.25
-3,10,k-means++,0.5
-5,5,k-means++,
-5,10,k-means++,

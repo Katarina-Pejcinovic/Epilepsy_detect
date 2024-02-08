@@ -40,13 +40,11 @@ from tensorflow.python.keras.layers import Dropout
 from keras.utils import to_categorical
 from sklearn.metrics import roc_curve, auc
 from keras.preprocessing.sequence import pad_sequences
-
-
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 
-def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5, strat_kfold):
+def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
     model_save_path = 'deep_learning/rnn_saved_model'
     train_data = train_df[:,:,3:]
     n_channels = train_data.shape[1]
