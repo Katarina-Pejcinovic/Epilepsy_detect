@@ -32,7 +32,7 @@ wavelet_name = 'db1' # name of discrete mother wavelet used in Discrete Wavelet 
 #     - The features calculated from all of the lists of coefficients belonging to one signal
 #     - are concatenated together, since they belong to the same signal.
 
-def get_features(signals, waveletname):
+def get_features(signals, waveletname=wavelet_name):
     features_3d_array = []
 
     for signal in signals:  # Iterate through each segment in the 3D array
