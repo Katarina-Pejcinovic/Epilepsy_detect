@@ -7,7 +7,7 @@ from load_data import *
 from data_organization.new_data_struct import *
 from data_organization.patient_id_dict import *
 from preprocessing.impute import * 
-from classical_ML.train_test_tune_nested import * 
+from classical_ML.train_test_tune_umap import * 
 from classical_ML.load_best_params import *
 from feature_selection.get_features import *
 from feature_selection.cut_segments import *
@@ -73,9 +73,8 @@ num_data = full_data_array.shape[1] - 3
 # Create Stratified CV by patient
 data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
 
-splits = 3
+splits = 5
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
-
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 # for i, (train_index, test_index) in enumerate(strat_kfold):
@@ -121,13 +120,13 @@ features_list = [np.load("feature_selection/features0.npy"),
 
 
 # tune parameters for the classical ml model (FIX AFTER FEATURE EXTRACT)
-from classical_ML.train_test_tune_nested import * 
+from classical_ML.train_test_tune_umap import * 
 from classical_ML.load_best_params import *
 # concat = np.concatenate((features_list[0], features_list[1]))
 # label_res_concat = np.concatenate((label_result[0], label_result[1]))
 # patientID_concat = np.concatenate((patientID_result[0], patientID_result[1]))
 
-# params_scores, best_params = train_test_tune_nested(data, strat_kfold)
+# params_scores, best_params = train_test_tune_nested(data_reshape, labels, patient_id, strat_kfold)
 best_params = load_best_params()
 
 

@@ -24,8 +24,8 @@ def load_data(data_file_path):
     # noep_test_df = pd.read_table('data/subject_ids_no_epilepsy_testing.txt', delimiter="\t")
     # noep_test_ID = noep_test_df["IDs"].values.tolist()
 
-    ep_path = data_file_path + '/subject_ids_epilepsy.txt'
-    noep_path = data_file_path + '/subject_ids_no_epilepsy.txt'
+    ep_path = data_file_path + 'subject_ids_epilepsy.txt'
+    noep_path = data_file_path + 'subject_ids_no_epilepsy.txt'
 
     ep_df = pd.read_table(ep_path, delimiter="\t")
     ep_ID = ep_df["IDs"].values.tolist()
@@ -33,7 +33,7 @@ def load_data(data_file_path):
     noep_ID = noep_df["IDs"].values.tolist()
 
     # Get all patient names
-    preprocessed_path = data_file_path + 'preprocessed_data/'
+    preprocessed_path = data_file_path + 'preprocessed_data_bipolar_OG/'
     state = ['epilepsy_edf/', 'no_epilepsy_edf/']
 
     ep_patients = [filename for filename in os.listdir(preprocessed_path + state[0]) 

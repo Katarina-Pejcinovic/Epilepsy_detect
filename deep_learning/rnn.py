@@ -40,18 +40,15 @@ from tensorflow.python.keras.layers import Dropout
 from keras.utils import to_categorical
 from sklearn.metrics import roc_curve, auc
 from keras.preprocessing.sequence import pad_sequences
-
-
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 
-def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5, strat_kfold):
+def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
     model_save_path = 'deep_learning/rnn_saved_model'
-    train_data = train_df[:,:,3:]
-    n_channels = train_data.shape[1]
-    train_label = train_df[:,0,0]
-    groups = train_df[:,0,1]
+    train_data = train_df[:,3:,:]
+    n_channels = train_data.shape[0]
+    train_label = train_df[0,0,:]
 
     val_predictions_list = {}
     val_predictions_binary_list = {}
@@ -62,8 +59,16 @@ def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32
 
     counter = 0
     for train_index, val_index in strat_kfold:
+
+        counter+=1
+
+        X_train, X_val = train_data[train_index], train_data[val_index]
+        y_train, y_val = train_label[train_index], train_label[val_index]
+
+        X_train_reshaped = X_train.reshape(X_train.shape[2], n_channels, X_train.shape[1])
+
         model = Sequential()
-        model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, train_data.shape[2])))
+        model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, X_train.shape[1])))
         model.add(Dense(32, activation='relu'))
         model.add(Dropout(0.2))
         model.add(Dense(32, activation='relu'))
@@ -71,13 +76,6 @@ def rnn_model(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32
 
         opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
         model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-
-        counter+=1
-
-        X_train, X_val = train_data[train_index], train_data[val_index]
-        y_train, y_val = train_label[train_index], train_label[val_index]
-
-        X_train_reshaped = X_train.reshape(X_train.shape[0], n_channels, X_train.shape[2])
 
         history = model.fit(
             X_train_reshaped,

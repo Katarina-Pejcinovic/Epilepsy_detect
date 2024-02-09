@@ -61,19 +61,25 @@ def impute_adv(data):
 def run_impute(data):
     num_recordings = data.shape[0]
     for i in range(num_recordings):
-        imputed = data[num_recordings, :, : ]
+        imputed = impute_adv(data[num_recordings, :, : ])
         data[num_recordings, :, : ] = imputed
     return data 
 
 
 # Create two random 2D arrays filled with random floats
-array1 = np.random.rand(3, 20, 3)
+array1 = np.random.rand(3, 20)
+array2 = np.random.rand(3, 20)
+
 # Replace one row in array1 with NaN
 array1[1, :] = np.nan
+array2[1, :] = np.nan
 
-#print("array 1", "\n", array1)
+stacked_array = np.stack((array1, array2), axis=0)
 
-impute_adv(array1)
+# Transpose the array to shape (3, 4, 2)
+transposed_array = np.transpose(stacked_array, (1, 2, 0))
+
+run_impute(transposed_array)
 
 
 
