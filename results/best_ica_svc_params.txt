@@ -1,0 +1,30 @@
+fastica__n_components: 10
+svc__C: 0.1
+svc__degree: 2
+svc__kernel: linear
+F2 Score: 0.6329113924050632
+
+fastica__n_components: 10
+svc__C: 0.1
+svc__degree: 2
+svc__kernel: linear
+F2 Score: 0.875
+
+fastica__n_components: 10
+svc__C: 0.1
+svc__degree: 2
+svc__kernel: linear
+F2 Score: 0.7894736842105262
+
+fastica__n_components: 10
+svc__C: 0.1
+svc__degree: 2
+svc__kernel: linear
+F2 Score: 0.7894736842105262
+
+fastica__n_components: 20
+svc__C: 0.1
+svc__degree: 2
+svc__kernel: linear
+F2 Score: 0.8620689655172414
+

@@ -13,3 +13,5 @@ data/full_3d_array.pkl
 data/preprocessed_data_bipolar_OG
 .npy
 
+data/test_data.pkl
+data/train_data.pkl
