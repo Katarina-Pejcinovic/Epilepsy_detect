@@ -8,6 +8,9 @@ from data_organization.new_data_struct import *
 from data_organization.patient_id_dict import *
 from preprocessing.impute import * 
 from classical_ML.train_test_tune_umap import * 
+from classical_ML.train_test_tune_selectkbest import * 
+from classical_ML.train_test_tune_ica import * 
+from classical_ML.find_best_feat_select import * 
 from classical_ML.load_best_params import *
 from feature_selection.get_features import *
 from feature_selection.cut_segments import *
@@ -29,7 +32,7 @@ else:
 
 # PREPROCESSING
 base_dir = data_file_path
-master_prepro(base_dir)
+# master_prepro(base_dir)
 
 
 # Order: Train EP, Train No EP, Test EP, Test No EP
@@ -73,7 +76,7 @@ save_file_path = data_file_path
 # Load in data after it has been generated locally
 with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
     full_data_array = pickle.load(f)
-print("full data array", full_data_array.shape)
+print("Full data array shape:", full_data_array.shape)
 
 # Impute function 
 data = run_impute(full_data_array)
@@ -81,7 +84,7 @@ print("impute ran")
 print(data.shape)
 
 # Train-Test Split
-train_data, test_data = split(data, data_file_path)
+train_data, test_data = split(data, data_file_path, data_file_path)
 
 # Break down train data structure
 data_full = train_data[:, 3:, :]
@@ -108,44 +111,63 @@ print(data_reshape_test.shape)
 # # Extract features
 
 # Run once
-features_3d_array = get_features(data_reshape)
-with open('data/features_3d_array.pkl', 'wb') as f:
-    pickle.dump(features_3d_array, f)
+# features_3d_array = get_features(data_reshape)
+# with open('data/features_3d_array.pkl', 'wb') as f:
+#     pickle.dump(features_3d_array, f)
 
-features_3d_array_test = get_features(data_reshape_test)
-with open('data/features_3d_array_test.pkl', 'wb') as f:
-    pickle.dump(features_3d_array_test, f)
+# features_3d_array_test = get_features(data_reshape_test)
+# with open('data/features_3d_array_test.pkl', 'wb') as f:
+#     pickle.dump(features_3d_array_test, f)
 
 # Load in features after it has been generated locally
-print("Train features array", features_3d_array.shape)
-print("Test features array", features_3d_array_test.shape)
-
 with open('data/features_3d_array.pkl', 'rb') as f:
     features_3d_array = pickle.load(f)
 with open('data/features_3d_array_test.pkl', 'rb') as f:
     features_3d_array_test = pickle.load(f)
 
+print("Train features array", features_3d_array.shape)
+print("Test features array", features_3d_array_test.shape)
+
 # Create Stratified Cross Validation object
-splits = 3
+splits = 5
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 # Tune classical parameters
 
-# Run once
-params_scores, best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
-# Load in locally generated
-best_params = load_best_params()
+# Run once when training models
+umap_params_scores, umap_best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
+kbest_params_scores, kbest_best_params = train_test_tune_selectkbest(features_3d_array, labels, patient_id, strat_kfold)
+ica_params_scores, ica_best_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
-# RNN
+# Load in locally generated
+with open('results/best_umap_params_dict.pkl', 'rb') as f:
+    umap_params = pickle.load(f)
+with open('results/best_kbest_params_dict.pkl', 'rb') as f:
+    kbest_params = pickle.load(f)
+with open('results/best_ica_params_dict.pkl', 'rb') as f:
+    ica_params = pickle.load(f)
+with open('results/best_umap_scores_dict.pkl', 'rb') as f:
+    umap_scores = pickle.load(f)
+with open('results/best_kbest_scores_dict.pkl', 'rb') as f:
+    kbest_scores = pickle.load(f)
+with open('results/best_ica_scores_dict.pkl', 'rb') as f:
+    ica_scores = pickle.load(f)
+
+# Find best feature selection method and keep those parameters
+best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, kbest_params,
+        kbest_scores, ica_params, ica_scores)
+
+# Deep Learning
 run_EEGnet(train_data, batch_size = 50)
 rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
         learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=strat_kfold)
 
+# Testing
 validate(train_data = features_3d_array, 
           train_labels = labels, 
           validation_data = features_3d_array_test, 
           validation_labels = labels_test, 
           deep_data_train = train_data, 
           deep_data_test = test_data, 
-          parameters = best_params)
+          parameters = best_model_params)
