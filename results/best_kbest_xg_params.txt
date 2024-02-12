@@ -1,0 +1,30 @@
+selectkbest__k: 30
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.7926829268292682
+
+selectkbest__k: 30
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.5
+
+selectkbest__k: 10
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.7792207792207791
+
+selectkbest__k: 10
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.8441558441558441
+
+selectkbest__k: 40
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.7228915662650602
+
