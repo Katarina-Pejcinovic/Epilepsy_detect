@@ -15,3 +15,4 @@ data/preprocessed_data_bipolar_OG
 
 data/test_data.pkl
 data/train_data.pkl
+.pkl

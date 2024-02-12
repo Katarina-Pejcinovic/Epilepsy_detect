@@ -20,10 +20,11 @@ from validation.validate import *
 from preprocessing.train_test_split import *
 from preprocessing.functions_prepro import *
 
+# data/
 # Batch Processing
 if __name__ == "__main__":
     print('Running sample file')
-    data_file_path = 'data/'
+    data_file_path = '/radraid/arathi/'
 else:
     print('Running batch file(s)')
     from batch_processing import data_file_batch
@@ -32,7 +33,7 @@ else:
 
 # PREPROCESSING
 base_dir = data_file_path
-# master_prepro(base_dir)
+master_prepro(base_dir)
 
 
 # Order: Train EP, Train No EP, Test EP, Test No EP
@@ -71,7 +72,7 @@ patient_list_folder = data_file_path
 save_file_path = data_file_path
 
 # Run once
-# full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
+full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 # Load in data after it has been generated locally
 with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
@@ -159,9 +160,17 @@ best_model_params, best_model_params_scores = find_best_feat_select(umap_params,
         kbest_scores, ica_params, ica_scores)
 
 # Deep Learning
-run_EEGnet(train_data, batch_size = 50)
+cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy = run_EEGnet(train_data, batch_size = 50)
 rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
         learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=strat_kfold)
+
+with open('results/cnn_results', 'w') as f:
+    for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
+        f.write("%s\n" % item)
+
+with open('results/rnn_results', 'w') as f:
+    for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
+        f.write("%s\n" % item)
 
 # Testing
 validate(train_data = features_3d_array, 
