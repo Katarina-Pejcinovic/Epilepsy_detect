@@ -6,6 +6,9 @@ import numpy as np
 import torch.nn.functional as F
 from torch.autograd import Variable
 from tqdm import tqdm
+from sklearn.metrics import fbeta_score
+from sklearn.model_selection import StratifiedKFold
+from sklearn.metrics import precision_score, accuracy_score, recall_score
 
 class EEGNet(nn.Module):
     def __init__(self):
@@ -59,30 +62,19 @@ class EEGNet(nn.Module):
         x = F.sigmoid(self.fc1(x))
         return x
 
-#runs EEGnet
-def run_EEGnet(train_data_og, batch_size):
+#runs EEGnet trains 
+def run_EEGnet(data, labels, batch_size, counter):
 
-    print("in EEGnet")
-    #split data into metadata and time-series data 
-    train_labels = train_data_og[0, 0, :]
-
-    #cut off metadata 
-    y_length = train_data_og.shape[1]
-
-    train_data = train_data_og[:, 3:y_length, :]
-    
-    #transpose to: (samples, time, channels)
-    train_data = np.transpose(train_data_og, (0, 2, 1))
-
+    data = np.transpose(data, (0, 2, 1))
+    print("in eegnet data type", data.dtype)
 
     #convert 3D numpy array into 4D 
-    train_data = train_data[:, np.newaxis, :, :]
+    data = data[:, np.newaxis, :, :]
     
     # Create the CNN model and set the device
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     model = EEGNet().to(device)
     
-
     # Define loss function and optimizer
     optimizer = optim.Adam(model.parameters(), lr=0.01)
     criterion = nn.BCELoss()
@@ -90,9 +82,9 @@ def run_EEGnet(train_data_og, batch_size):
     num_epochs = 1
     for epoch in range(num_epochs):
         # Use tqdm to create a progress bar for the outer loop
-        for i in tqdm(range(0, len(train_data), batch_size), desc=f"Epoch {epoch + 1}/{num_epochs}"):
-            inputs = torch.from_numpy(train_data[i:i+batch_size])
-            labels = torch.FloatTensor(np.array([train_labels[i:i+batch_size]]).T*1.0)
+        for i in tqdm(range(0, len(data), batch_size), desc=f"Epoch {epoch + 1}/{num_epochs}"):
+            inputs = torch.from_numpy(data[i:i+batch_size])
+            labels = torch.FloatTensor(np.array([labels[i:i+batch_size]]).T*1.0)
 
             # Move data to the device
             inputs, labels = inputs.to(device), labels.to(device)
@@ -107,22 +99,26 @@ def run_EEGnet(train_data_og, batch_size):
             optimizer.step()
 
     # Save the trained model
-    torch.save(model.state_dict(), 'trained_model.pth')
+    torch.save(model.state_dict(), f'trained_model{counter}.pth')
     print( "og", model)
 
-def predictions_cnn(test_data):
+def predictions_cnn(test_data, counter):
     
     load_model = EEGNet()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Load the entire model, including architecture
-    load_model.load_state_dict(torch.load('trained_model.pth', map_location = device))
-    #transpose to: (samples, time, channels)
+    # Load the weights and biases into the architecture 
+    load_model.load_state_dict(torch.load(f'trained_model{counter}.pth', map_location = device))
+
+    # #transpose to: (samples, time, channels)
     test_data_1 = np.transpose(test_data, (0, 2, 1))
-    #convert 3D numpy array into 4D 
+
+    # #convert 3D numpy array into 4D 
     test_data_2 = test_data_1[:, np.newaxis, :, :]
+
     # Ensure the model is in evaluation mode
     load_model.eval()
+
     inputs = torch.from_numpy(test_data_2)
     with torch.no_grad():  # Disable gradient computation during inference
         outputs = load_model(inputs)
@@ -134,7 +130,51 @@ def predictions_cnn(test_data):
 
     return binary_predictions, predictions
 
+#data must be in shape recordins, channels, time points 
 
+def run_EEGnetCV(strat_kfold, data, batch_size):
+    
+    
+    print("in EEGnetCV")
+    #split data into metadata and time-series data 
+    train_label = data[:, 0, 0]
+    print("train_label", train_label.shape)
 
+    #cut off metadata 
+    z_length = data.shape[2]
+    train_data = data[:, :, 3:z_length,]
+    print("train data shape", train_data.shape)
+    #transpose to: (samples, channels, timedata)
+
+    counter = 0
+    f2 = []
+    precision = []
+    accuracy = []
+    recall = []
+
+    for train_index, val_index in strat_kfold:
+        print("counter", counter)
+        X_train, x_val = train_data[train_index], train_data[val_index]
+        Y_train, y_val = train_label[train_index], train_label[val_index]
+        print(X_train.shape)
+        print(x_val.shape)
+        print("in EEGNet")
+        run_EEGnet(X_train, Y_train, batch_size, counter)
+        predictions, probas =  predictions_cnn(x_val, counter)
+        print("calculating f2 score")
+        print("predictions", predictions)
+        print("y_val", y_val)
+        f2.append(fbeta_score(predictions, y_val, beta = 2))
+        precision.append(precision_score(predictions, y_val))
+        accuracy.append(accuracy_score(predictions,y_val ))
+        recall.append(recall_score(predictions, y_val))
+        counter += 1
+
+    print("f2", f2)
+    f2_np = np.array([f2])
+    maximum = np.max(f2_np)
+    print("max", maximum)
+    arg_max  = np.argmax(f2)
+    return arg_max, f2, precision, recall, accuracy
 
 

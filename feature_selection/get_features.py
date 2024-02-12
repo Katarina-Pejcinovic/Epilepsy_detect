@@ -16,6 +16,7 @@ from scipy.signal import periodogram
 import neurokit2 as nk
 import pywt
 from collections import Counter
+from tqdm import tqdm
 import scipy.stats as stats
 
 nSamples = 75000 #number of samples per segment
@@ -32,13 +33,13 @@ wavelet_name = 'db1' # name of discrete mother wavelet used in Discrete Wavelet 
 #     - The features calculated from all of the lists of coefficients belonging to one signal
 #     - are concatenated together, since they belong to the same signal.
 
-def get_features(signals, waveletname):
+def get_features(signals, waveletname=wavelet_name):
     features_3d_array = []
 
-    for signal in signals:  # Iterate through each segment in the 3D array
+    for signal in tqdm(signals):  # Iterate through each segment in the 3D array
         features_per_channel = []
-
-        for channel in range(signal.shape[0]):  # Iterate through each channel in the segment
+            
+        for channel in tqdm(range(signal.shape[0])):  # Iterate through each channel in the segment
             time_features = get_time_features(signal[channel])
             freq_features = get_freq_features(signal[channel])
             dwt_coeff = get_dwt_coeff(signal[channel], waveletname)

@@ -1,0 +1,30 @@
+fastica__n_components: 50
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.7831325301204819
+
+fastica__n_components: 50
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.7594936708860759
+
+fastica__n_components: 10
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.8333333333333334
+
+fastica__n_components: 20
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.7333333333333334
+
+fastica__n_components: 50
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.7738095238095238
+

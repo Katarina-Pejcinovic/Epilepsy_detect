@@ -1,0 +1,40 @@
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 5
+F2 Score: 0.3676470588235293
+
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 5
+F2 Score: 0.7692307692307693
+
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 10
+F2 Score: 0.44117647058823534
+
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 5
+F2 Score: 0.5303030303030303
+
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 5
+F2 Score: 0.14285714285714285
+
