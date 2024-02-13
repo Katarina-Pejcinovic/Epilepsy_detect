@@ -262,116 +262,116 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
     svc_f2_list.append(svc_f2_test)
 
     ################################################## RF ##################################################
-    # rf_param_search = create_rf_pipeline(strat_kfold_object.split(X_train, group_train), scoring)    
-    # rf_param_search.fit(X_train, y_train)
+    rf_param_search = create_rf_pipeline(strat_kfold_object.split(X_train, group_train), scoring)    
+    rf_param_search.fit(X_train, y_train)
 
-    # # Get best set of params based on F2 scoring
-    # rf_results = rf_param_search.cv_results_
-    # rf_accuracy = rf_results['mean_test_Accuracy']
-    # rf_precision = rf_results['mean_test_Precision']
-    # rf_recall = rf_results['mean_test_Recall']
-    # rf_f2 = calc_f2_score(rf_precision, rf_recall, 2)
-    # rf_best_f2_index = np.nanargmax(rf_f2)
-    # rf_best_params = rf_results['params'][rf_best_f2_index]
+    # Get best set of params based on F2 scoring
+    rf_results = rf_param_search.cv_results_
+    rf_accuracy = rf_results['mean_test_Accuracy']
+    rf_precision = rf_results['mean_test_Precision']
+    rf_recall = rf_results['mean_test_Recall']
+    rf_f2 = calc_f2_score(rf_precision, rf_recall, 2)
+    rf_best_f2_index = np.nanargmax(rf_f2)
+    rf_best_params = rf_results['params'][rf_best_f2_index]
 
-    # # Save best set of params
-    # rf_best_params_list.append(rf_best_params)
-    # rf_param_search.best_params_ = rf_best_params
+    # Save best set of params
+    rf_best_params_list.append(rf_best_params)
+    rf_param_search.best_params_ = rf_best_params
 
-    # # Update estimator with F2 params for validation
-    # for step_name, step_params in rf_best_params.items():
-    #   step, param_name = step_name.split('__', 1)
-    #   rf_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+    # Update estimator with F2 params for validation
+    for step_name, step_params in rf_best_params.items():
+      step, param_name = step_name.split('__', 1)
+      rf_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
 
-    # best_estimator = rf_param_search.best_estimator_
+    best_estimator = rf_param_search.best_estimator_
 
-    # # Get accuracy, precision, recall, F2 score of best param set
-    # y_pred_test = best_estimator.predict(X_test)
-    # rf_accuracy_test = accuracy_score(y_test, y_pred_test)
-    # rf_precision_test = precision_score(y_test, y_pred_test)
-    # rf_recall_test = recall_score(y_test, y_pred_test)
-    # rf_f2_test = calc_f2_score(rf_precision_test, rf_recall_test, 2)
+    # Get accuracy, precision, recall, F2 score of best param set
+    y_pred_test = best_estimator.predict(X_test)
+    rf_accuracy_test = accuracy_score(y_test, y_pred_test)
+    rf_precision_test = precision_score(y_test, y_pred_test)
+    rf_recall_test = recall_score(y_test, y_pred_test)
+    rf_f2_test = calc_f2_score(rf_precision_test, rf_recall_test, 2)
 
-    # # Save metrics per fold
-    # rf_accuracy_list.append(rf_accuracy_test)
-    # rf_precision_list.append(rf_precision_test)
-    # rf_recall_list.append(rf_recall_test)
-    # rf_f2_list.append(rf_f2_test)
+    # Save metrics per fold
+    rf_accuracy_list.append(rf_accuracy_test)
+    rf_precision_list.append(rf_precision_test)
+    rf_recall_list.append(rf_recall_test)
+    rf_f2_list.append(rf_f2_test)
 
-    # ################################################## XG Boost ##################################################
-    # xg_param_search = create_xg_pipeline(strat_kfold_object.split(X_train, group_train), scoring)
+    ################################################## XG Boost ##################################################
+    xg_param_search = create_xg_pipeline(strat_kfold_object.split(X_train, group_train), scoring)
 
-    # xg_param_search.fit(X_train, y_train)
+    xg_param_search.fit(X_train, y_train)
 
-    # # Get best set of params based on F2 scoring
-    # xg_results = xg_param_search.cv_results_
-    # xg_accuracy = xg_results['mean_test_Accuracy']
-    # xg_precision = xg_results['mean_test_Precision']
-    # xg_recall = xg_results['mean_test_Recall']
-    # xg_f2 = calc_f2_score(xg_precision, xg_recall, 2)
-    # xg_best_f2_index = np.nanargmax(xg_f2)
-    # xg_best_params = xg_results['params'][xg_best_f2_index]
+    # Get best set of params based on F2 scoring
+    xg_results = xg_param_search.cv_results_
+    xg_accuracy = xg_results['mean_test_Accuracy']
+    xg_precision = xg_results['mean_test_Precision']
+    xg_recall = xg_results['mean_test_Recall']
+    xg_f2 = calc_f2_score(xg_precision, xg_recall, 2)
+    xg_best_f2_index = np.nanargmax(xg_f2)
+    xg_best_params = xg_results['params'][xg_best_f2_index]
 
-    # # Save best set of params
-    # xg_best_params_list.append(xg_best_params)
-    # xg_param_search.best_params_ = xg_best_params
+    # Save best set of params
+    xg_best_params_list.append(xg_best_params)
+    xg_param_search.best_params_ = xg_best_params
 
-    # # Update estimator with F2 params for validation
-    # for step_name, step_params in xg_best_params.items():
-    #   step, param_name = step_name.split('__', 1)
-    #   xg_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+    # Update estimator with F2 params for validation
+    for step_name, step_params in xg_best_params.items():
+      step, param_name = step_name.split('__', 1)
+      xg_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
 
-    # best_estimator = xg_param_search.best_estimator_
+    best_estimator = xg_param_search.best_estimator_
 
-    # # Get accuracy, precision, recall, F2 score of best param set
-    # y_pred_test = best_estimator.predict(X_test)
-    # xg_accuracy_test = accuracy_score(y_test, y_pred_test)
-    # xg_precision_test = precision_score(y_test, y_pred_test)
-    # xg_recall_test = recall_score(y_test, y_pred_test)
-    # xg_f2_test = calc_f2_score(xg_precision_test, xg_recall_test, 2)
+    # Get accuracy, precision, recall, F2 score of best param set
+    y_pred_test = best_estimator.predict(X_test)
+    xg_accuracy_test = accuracy_score(y_test, y_pred_test)
+    xg_precision_test = precision_score(y_test, y_pred_test)
+    xg_recall_test = recall_score(y_test, y_pred_test)
+    xg_f2_test = calc_f2_score(xg_precision_test, xg_recall_test, 2)
 
-    # # Save metrics per fold
-    # xg_accuracy_list.append(xg_accuracy_test)
-    # xg_precision_list.append(xg_precision_test)
-    # xg_recall_list.append(xg_recall_test)
-    # xg_f2_list.append(xg_f2_test)
+    # Save metrics per fold
+    xg_accuracy_list.append(xg_accuracy_test)
+    xg_precision_list.append(xg_precision_test)
+    xg_recall_list.append(xg_recall_test)
+    xg_f2_list.append(xg_f2_test)
 
-    # ################################################## GMM ##################################################
-    # gmm_param_search = create_gmm_pipeline(strat_kfold_object.split(X_train, group_train), scoring)
-    # gmm_param_search.fit(X_train, y_train)
+    ################################################## GMM ##################################################
+    gmm_param_search = create_gmm_pipeline(strat_kfold_object.split(X_train, group_train), scoring)
+    gmm_param_search.fit(X_train, y_train)
 
-    # # Get best set of params based on F2 scoring
-    # gmm_results = gmm_param_search.cv_results_
-    # gmm_accuracy = gmm_results['mean_test_Accuracy']
-    # gmm_precision = gmm_results['mean_test_Precision']
-    # gmm_recall = gmm_results['mean_test_Recall']
-    # gmm_f2 = calc_f2_score(gmm_precision, gmm_recall, 2)
-    # gmm_best_f2_index = np.nanargmax(gmm_f2)
-    # gmm_best_params = gmm_results['params'][gmm_best_f2_index]
+    # Get best set of params based on F2 scoring
+    gmm_results = gmm_param_search.cv_results_
+    gmm_accuracy = gmm_results['mean_test_Accuracy']
+    gmm_precision = gmm_results['mean_test_Precision']
+    gmm_recall = gmm_results['mean_test_Recall']
+    gmm_f2 = calc_f2_score(gmm_precision, gmm_recall, 2)
+    gmm_best_f2_index = np.nanargmax(gmm_f2)
+    gmm_best_params = gmm_results['params'][gmm_best_f2_index]
 
-    # # Save best set of params
-    # gmm_best_params_list.append(gmm_best_params)
-    # gmm_param_search.best_params_ = gmm_best_params
+    # Save best set of params
+    gmm_best_params_list.append(gmm_best_params)
+    gmm_param_search.best_params_ = gmm_best_params
 
-    # # Update estimator with F2 params for validation
-    # for step_name, step_params in gmm_best_params.items():
-    #   step, param_name = step_name.split('__', 1)
-    #   gmm_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+    # Update estimator with F2 params for validation
+    for step_name, step_params in gmm_best_params.items():
+      step, param_name = step_name.split('__', 1)
+      gmm_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
 
-    # best_estimator = gmm_param_search.best_estimator_
+    best_estimator = gmm_param_search.best_estimator_
 
-    # # Get accuracy, precision, recall, F2 score of best param set
-    # y_pred_test = best_estimator.predict(X_test)
-    # gmm_accuracy_test = accuracy_score(y_test, y_pred_test)
-    # gmm_precision_test = precision_score(y_test, y_pred_test)
-    # gmm_recall_test = recall_score(y_test, y_pred_test)
-    # gmm_f2_test = calc_f2_score(gmm_precision_test, gmm_recall_test, 2)
+    # Get accuracy, precision, recall, F2 score of best param set
+    y_pred_test = best_estimator.predict(X_test)
+    gmm_accuracy_test = accuracy_score(y_test, y_pred_test)
+    gmm_precision_test = precision_score(y_test, y_pred_test)
+    gmm_recall_test = recall_score(y_test, y_pred_test)
+    gmm_f2_test = calc_f2_score(gmm_precision_test, gmm_recall_test, 2)
 
-    # # Save metrics per fold
-    # gmm_accuracy_list.append(gmm_accuracy_test)
-    # gmm_precision_list.append(gmm_precision_test)
-    # gmm_recall_list.append(gmm_recall_test)
-    # gmm_f2_list.append(gmm_f2_test)
+    # Save metrics per fold
+    gmm_accuracy_list.append(gmm_accuracy_test)
+    gmm_precision_list.append(gmm_precision_test)
+    gmm_recall_list.append(gmm_recall_test)
+    gmm_f2_list.append(gmm_f2_test)
 
   ########################## Find best set of params from all of the outer folds ##########################
   # best_svc_model_score = np.nanargmax(svc_f2_list)
