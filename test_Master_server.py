@@ -184,12 +184,13 @@ with open('results/classical_ml_scores.pkl', 'rb') as f:
 #         f.write("%s\n" % item)
 
 # Testing
-# validate(train_data = features_3d_array, 
-#           train_labels = labels, 
-#           validation_data = features_3d_array_test, 
-#           validation_labels = labels_test, 
-#           deep_data_train = train_data, 
-#           deep_data_test = test_data, 
-#           parameters = best_model_params)
+validate(train_data = features_3d_array, 
+          train_labels = labels, 
+          test_data = features_3d_array_test, 
+          test_labels = labels_test, 
+          deep_data_train = train_data, 
+          deep_data_test = test_data, 
+          parameters = best_model_params,
+          stratCV = strat_kfold)
 
 print('Full pipeline finished')
