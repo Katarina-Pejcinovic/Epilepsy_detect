@@ -32,8 +32,8 @@ else:
 
 
 # PREPROCESSING
-base_dir = data_file_path
-master_prepro(base_dir)
+# base_dir = data_file_path
+# master_prepro(base_dir)
 
 
 # Order: Train EP, Train No EP, Test EP, Test No EP
@@ -41,51 +41,55 @@ master_prepro(base_dir)
 # label_list = list of 4 1D numpy arrays
 # patientID_list = list of 4 1D numpy arrays
 # data_file_path = 'data/'
-[data_list, label_list, patientID_list] = load_data(data_file_path)
+# [data_list, label_list, patientID_list] = load_data(data_file_path)
 
 # Check load data 
-print(len(data_list))
-print(len(label_list))
-print(len(patientID_list))
-print(len(data_list[0]))
-print(label_list[0].shape)
-print(patientID_list[0].shape)
-print("finished loading data")
+# print(len(data_list))
+# print(len(label_list))
+# print(len(patientID_list))
+# print(len(data_list[0]))
+# print(label_list[0].shape)
+# print(patientID_list[0].shape)
+# print("finished loading data")
 
 # Cut segments into 5 min slices
-result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
+# result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
 
-print(len(result_4d))
-print(result_4d[0].shape)
-print(len(label_result))
-print(label_result[0].shape)
-print(len(patientID_result))
-print(patientID_result[0].shape)
-print("-----------------")
-print(result_4d[1].shape)
-print(label_result[1].shape)
-print(patientID_result[1].shape)
-print("-----------------")
+# print(len(result_4d))
+# print(result_4d[0].shape)
+# print(len(label_result))
+# print(label_result[0].shape)
+# print(len(patientID_result))
+# print(patientID_result[0].shape)
+# print("-----------------")
+# print(result_4d[1].shape)
+# print(label_result[1].shape)
+# print(patientID_result[1].shape)
+# print("-----------------")
 
 # Create or load in full data structure
-patient_list_folder = data_file_path
-save_file_path = data_file_path
+# patient_list_folder = data_file_path
+# save_file_path = data_file_path
 
 # Run once
-full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
+# full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 # Load in data after it has been generated locally
-with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
-    full_data_array = pickle.load(f)
-print("Full data array shape:", full_data_array.shape)
+# with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
+#     full_data_array = pickle.load(f)
+# print("Full data array shape:", full_data_array.shape)
 
 # Impute function 
-data = run_impute(full_data_array)
-print("impute ran")
-print(data.shape)
+# data = run_impute(full_data_array)
+# print("impute ran")
+# print(data.shape)
 
 # Train-Test Split
-train_data, test_data = split(data, data_file_path, data_file_path)
+# train_data, test_data = split(data, data_file_path, data_file_path)
+with open(data_file_path + 'train_data.pkl', 'rb') as f:
+    train_data = pickle.load(f)
+with open(data_file_path + 'test_data.pkl', 'rb') as f:
+    test_data = pickle.load(f)
 
 # Break down train data structure
 data_full = train_data[:, 3:, :]
@@ -173,10 +177,10 @@ with open('results/rnn_results', 'w') as f:
         f.write("%s\n" % item)
 
 # Testing
-validate(train_data = features_3d_array, 
-          train_labels = labels, 
-          validation_data = features_3d_array_test, 
-          validation_labels = labels_test, 
-          deep_data_train = train_data, 
-          deep_data_test = test_data, 
-          parameters = best_model_params)
+# validate(train_data = features_3d_array, 
+#           train_labels = labels, 
+#           validation_data = features_3d_array_test, 
+#           validation_labels = labels_test, 
+#           deep_data_train = train_data, 
+#           deep_data_test = test_data, 
+#           parameters = best_model_params)
