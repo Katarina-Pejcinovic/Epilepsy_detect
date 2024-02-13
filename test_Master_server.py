@@ -24,7 +24,8 @@ from preprocessing.functions_prepro import *
 # Batch Processing
 if __name__ == "__main__":
     print('Running sample file')
-    data_file_path = '/radraid/arathi/'
+    # data_file_path = '/radraid/arathi/'
+    data_file_path = 'data/'
 else:
     print('Running batch file(s)')
     from batch_processing import data_file_batch
