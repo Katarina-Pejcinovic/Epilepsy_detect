@@ -1,20 +1,20 @@
-selectkbest__k: 30
+selectkbest__k: 10
 svc__C: 0.1
 svc__degree: 2
 svc__kernel: linear
-F2 Score: 0.641025641025641
+F2 Score: 0.5479452054794521
 
-selectkbest__k: 90
-svc__C: 0.1
+selectkbest__k: 20
+svc__C: 10
 svc__degree: 2
 svc__kernel: linear
-F2 Score: 0.6338028169014086
+F2 Score: 0.4861111111111111
 
-selectkbest__k: 50
+selectkbest__k: 10
 svc__C: 0.1
 svc__degree: 2
 svc__kernel: linear
-F2 Score: 0.684931506849315
+F2 Score: 0.763888888888889
 
 selectkbest__k: 10
 svc__C: 0.1

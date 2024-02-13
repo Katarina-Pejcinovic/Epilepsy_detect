@@ -347,7 +347,10 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
 
 
   ########################## Find best set of params from all of the outer folds ##########################
-  svc_best_score = np.nanmax(svc_f2_list)
+  try:
+    svc_best_score = np.nanmax(svc_f2_list)
+  except:
+    svc_best_score = np.nan
   best_svc_model_score = np.where(svc_f2_list == svc_best_score)
   svc_best_params = svc_best_params_list[best_svc_model_score[0][0]]
 
@@ -360,8 +363,10 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
     file.write('F2 Score: %s\n\n' % (score))
   file.close()
   
-
-  rf_best_score = np.nanmax(rf_f2_list)
+  try:
+    rf_best_score = np.nanmax(rf_f2_list)
+  except:
+    rf_best_score = np.nan
   best_rf_model_score = np.where(rf_f2_list == rf_best_score)
   rf_best_params = rf_best_params_list[best_rf_model_score[0][0]]
 
@@ -374,8 +379,10 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
     file.write('F2 Score: %s\n\n' % (score))
   file.close()
 
-
-  xg_best_score = np.nanmax(xg_f2_list)
+  try:
+    xg_best_score = np.nanmax(xg_f2_list)
+  except:
+    xg_best_score = np.nan
   best_xg_model_score = np.where(xg_f2_list == xg_best_score)
   xg_best_params = xg_best_params_list[best_xg_model_score[0][0]]
 
@@ -388,8 +395,10 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
     file.write('F2 Score: %s\n\n' % (score))
   file.close()
 
-
-  gmm_best_score = np.nanmax(gmm_f2_list)
+  try:
+    gmm_best_score = np.nanmax(gmm_f2_list)
+  except:
+    gmm_best_score = np.nan
   best_gmm_model_score = np.where(gmm_f2_list == gmm_best_score)
   gmm_best_params = gmm_best_params_list[best_gmm_model_score[0][0]]
 

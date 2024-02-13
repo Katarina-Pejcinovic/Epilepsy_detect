@@ -1,26 +1,26 @@
+fastica__n_components: 10
 svc__C: 0.1
 svc__degree: 2
 svc__kernel: linear
-fastica__n_components: 10
-F2 Score: 1
+F2 Score: 0.8860759493670887
 
 randomforestclassifier__max_depth: 2
-randomforestclassifier__min_samples_leaf: 5
-randomforestclassifier__n_estimators: 100
-selectkbest__k: 10
-F2 Score: 1
-
-xgbclassifier__learning_rate: 0.1
-xgbclassifier__max_depth: 5
-xgbclassifier__n_estimators: 50
-fastica__n_components: 10
-F2 Score: 1
-
-gaussianmixture__init_params: k-means++
-gaussianmixture__covariance_type: full
+randomforestclassifier__min_samples_leaf: 50
+randomforestclassifier__n_estimators: 8
 umap__metric: euclidean
 umap__min_dist: 0.1
-umap__n_components: 5
+umap__n_components: 3
 umap__n_neighbors: 5
-F2 Score: 1
+F2 Score: 0.8988764044943821
+
+selectkbest__k: 10
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 5
+xgbclassifier__n_estimators: 50
+F2 Score: 0.8235294117647058
+
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+selectkbest__k: 10
+F2 Score: 0.8641975308641976
 
