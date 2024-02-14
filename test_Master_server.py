@@ -170,6 +170,9 @@ with open('results/best_params_dict.pkl', 'rb') as f:
 with open('results/classical_ml_scores.pkl', 'rb') as f:
     best_model_params_scores = pickle.load(f)
 
+train_data_type = train_data.astype('float32')
+train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
+
 # Deep Learning
 cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
 rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
