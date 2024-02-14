@@ -49,6 +49,7 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
     train_data = train_df[:,3:,:]
     n_channels = train_data.shape[0]
     train_label = train_df[0,0,:]
+    patient_id = train_df[0, 1, :]
 
     val_predictions_list = {}
     val_predictions_binary_list = {}
@@ -56,6 +57,10 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
     recall_list = []
     precision_list = []
     accuracy_list = []
+    data_reshape = np.reshape(train_data, (train_data[2], n_channels, train_data[1]-3))
+
+    strat_kfold_object = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=10)
+    strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
     counter = 0
     for train_index, val_index in strat_kfold:

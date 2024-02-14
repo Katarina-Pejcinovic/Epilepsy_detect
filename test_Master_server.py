@@ -33,57 +33,57 @@ else:
 
 
 # PREPROCESSING
-# base_dir = data_file_path
-# master_prepro(base_dir)
+base_dir = data_file_path
+master_prepro(base_dir)
 
 
 # Order: Train EP, Train No EP, Test EP, Test No EP
 # data_list = list of 4 lists that contain 2D numpy arrays
 # label_list = list of 4 1D numpy arrays
 # patientID_list = list of 4 1D numpy arrays
-# data_file_path = 'data/'
-# [data_list, label_list, patientID_list] = load_data(data_file_path)
+data_file_path = 'data/'
+[data_list, label_list, patientID_list] = load_data(data_file_path)
 
 # Check load data 
-# print(len(data_list))
-# print(len(label_list))
-# print(len(patientID_list))
-# print(len(data_list[0]))
-# print(label_list[0].shape)
-# print(patientID_list[0].shape)
-# print("finished loading data")
+print(len(data_list))
+print(len(label_list))
+print(len(patientID_list))
+print(len(data_list[0]))
+print(label_list[0].shape)
+print(patientID_list[0].shape)
+print("finished loading data")
 
 # Cut segments into 5 min slices
-# result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
+result_4d, label_result, patientID_result = cut_segments(data_list, label_list, patientID_list)
 
-# print(len(result_4d))
-# print(result_4d[0].shape)
-# print(len(label_result))
-# print(label_result[0].shape)
-# print(len(patientID_result))
-# print(patientID_result[0].shape)
-# print("-----------------")
-# print(result_4d[1].shape)
-# print(label_result[1].shape)
-# print(patientID_result[1].shape)
-# print("-----------------")
+print(len(result_4d))
+print(result_4d[0].shape)
+print(len(label_result))
+print(label_result[0].shape)
+print(len(patientID_result))
+print(patientID_result[0].shape)
+print("-----------------")
+print(result_4d[1].shape)
+print(label_result[1].shape)
+print(patientID_result[1].shape)
+print("-----------------")
 
 # Create or load in full data structure
-# patient_list_folder = data_file_path
-# save_file_path = data_file_path
+patient_list_folder = data_file_path
+save_file_path = data_file_path
 
 # Run once
-# full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
+full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 # Load in data after it has been generated locally
-# with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
-#     full_data_array = pickle.load(f)
-# print("Full data array shape:", full_data_array.shape)
+with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
+     full_data_array = pickle.load(f)
+print("Full data array shape:", full_data_array.shape)
 
 # Impute function 
-# data = run_impute(full_data_array)
-# print("impute ran")
-# print(data.shape)
+data = run_impute(full_data_array)
+print("impute ran")
+print(data.shape)
 
 # Train-Test Split
 # train_data, test_data = split(data, data_file_path, data_file_path)
@@ -125,11 +125,11 @@ data_reshape_test = np.reshape(data_full_test, (num_segments_test, num_channels_
 # with open('data/features_3d_array_test.pkl', 'wb') as f:
 #     pickle.dump(features_3d_array_test, f)
 
-# Load in features after it has been generated locally
-with open('data/features_3d_array.pkl', 'rb') as f:
-    features_3d_array = pickle.load(f)
-with open('data/features_3d_array_test.pkl', 'rb') as f:
-    features_3d_array_test = pickle.load(f)
+# # Load in features after it has been generated locally
+# with open('data/features_3d_array.pkl', 'rb') as f:
+#     features_3d_array = pickle.load(f)
+# with open('data/features_3d_array_test.pkl', 'rb') as f:
+#     features_3d_array_test = pickle.load(f)
 
 #print("Train features array", features_3d_array.shape)
 #print("Test features array", features_3d_array_test.shape)
@@ -165,10 +165,10 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 #         kbest_scores, ica_params, ica_scores)
 
 # Load in best determined model params
-with open('results/best_params_dict.pkl', 'rb') as f:
-    best_model_params = pickle.load(f)
-with open('results/classical_ml_scores.pkl', 'rb') as f:
-    best_model_params_scores = pickle.load(f)
+# with open('results/best_params_dict.pkl', 'rb') as f:
+#     best_model_params = pickle.load(f)
+# with open('results/classical_ml_scores.pkl', 'rb') as f:
+#     best_model_params_scores = pickle.load(f)
 
 train_data_type = train_data.astype('float32')
 train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
@@ -194,6 +194,7 @@ validate(train_data = features_3d_array,
           deep_data_train = train_data, 
           deep_data_test = test_data, 
           parameters = best_model_params,
-          stratCV = strat_kfold)
+          stratCV = strat_kfold,
+          argmax = cnn_arg_max)
 
 print('Full pipeline finished')
