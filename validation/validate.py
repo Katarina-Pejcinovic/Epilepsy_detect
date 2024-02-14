@@ -10,6 +10,7 @@ def validate(train_data,
              train_labels,
              test_data, 
              test_labels, 
+             deep_data_train,
              deep_data_test, 
              parameters, 
              stratCV
@@ -19,12 +20,12 @@ def validate(train_data,
 
 ##DEEP LEARNING 
   #training
-  run_EEGnet(train_data, batch_size = 50)
-  rnn_model(train_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5, strat_kfold=stratCV)
+  # run_EEGnet(train_data, batch_size = 50)
+  # rnn_model(train_data, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5, strat_kfold=stratCV)
   
-  #testing
-  cnn_pred, cnn_proba= predictions_cnn(deep_data_test)
-  rnn_pred, rnn_proba = rnn_model_test(deep_data_test)
+  # #testing
+  # cnn_pred, cnn_proba= predictions_cnn(deep_data_test)
+  # rnn_pred, rnn_proba = rnn_model_test(deep_data_test)
 
 ##CLASSICAL TESTING
   svm_pred, svm_proba = svm_model(train_data, train_labels, test_data, parameters[0])

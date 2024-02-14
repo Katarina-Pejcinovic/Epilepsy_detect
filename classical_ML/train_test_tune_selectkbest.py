@@ -20,14 +20,14 @@ def create_svc_pipeline(stratified_kfold, scoring_method):
   pipeline = make_pipeline(StandardScaler(), SelectKBest(), SVC())
 
   param_grid = {
-      'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
-      'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
-      'svc__C':[0.1, 1, 10, 100],
-      'svc__degree': [2, 3, 4, 5]
-      # 'selectkbest__k':[10, 20],
-      # 'svc__kernel':['linear'],
-      # 'svc__C':[0.1],
-      # 'svc__degree': [2]
+      # 'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
+      # 'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
+      # 'svc__C':[0.1, 1, 10, 100],
+      # 'svc__degree': [2, 3, 4, 5]
+      'selectkbest__k':[10, 20],
+      'svc__kernel':['linear'],
+      'svc__C':[0.1, 10],
+      'svc__degree': [2, 3]
     }
 
   # Parameter search
@@ -48,14 +48,14 @@ def create_rf_pipeline(stratified_kfold, scoring_method):
   pipeline = make_pipeline(StandardScaler(), SelectKBest(), RandomForestClassifier())
 
   param_grid = {
-      'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
-      'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
-      'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
-      'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
-      # 'selectkbest__k':[10, 20],
-      # 'randomforestclassifier__n_estimators':[8],
-      # 'randomforestclassifier__min_samples_leaf':[50],
-      # 'randomforestclassifier__max_depth':[2],
+      # 'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
+      # 'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
+      # 'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
+      # 'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      'selectkbest__k':[10, 20],
+      'randomforestclassifier__n_estimators':[8, 16],
+      'randomforestclassifier__min_samples_leaf':[50, 200],
+      'randomforestclassifier__max_depth':[2, 10],
     }
 
   # Parameter search
@@ -70,46 +70,19 @@ def create_rf_pipeline(stratified_kfold, scoring_method):
         )
 
   return param_search
-
-
-def create_gmm_pipeline(stratified_kfold, scoring_method):
-  pipeline = make_pipeline(StandardScaler(), SelectKBest(), GaussianMixture(n_components=2))
-
-  param_grid = {
-      'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
-      'gaussianmixture__init_params':['k-means++', 'random'],
-      'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
-      # 'selectkbest__k':[10, 20],
-      # 'gaussianmixture__init_params':['k-means++'],
-      # 'gaussianmixture__covariance_type': ['full'],
-    }
-
-  # Parameter search
-  param_search = GridSearchCV(
-          estimator = pipeline,
-          param_grid = param_grid,
-          n_jobs=1,
-          scoring=scoring_method,
-          refit='Accuracy',
-          cv=stratified_kfold,
-          verbose=2
-        )
-
-  return param_search
-
 
 def create_xg_pipeline(stratified_kfold, scoring_method):
   pipeline = make_pipeline(StandardScaler(), SelectKBest(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-      'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
-      'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
-      'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
+      # 'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
+      # 'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
+      # 'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
+      # 'xgbclassifier__learning_rate': [0.01, 0.1],
+      'selectkbest__k':[10, 20],
+      'xgbclassifier__n_estimators': [50],
+      'xgbclassifier__max_depth':[3, 5],
       'xgbclassifier__learning_rate': [0.01, 0.1],
-      # 'selectkbest__k':[10, 20],
-      # 'xgbclassifier__n_estimators': [50],
-      # 'xgbclassifier__max_depth':[3],
-      # 'xgbclassifier__learning_rate': [0.01],
     }
   
   param_search = GridSearchCV(
@@ -123,6 +96,32 @@ def create_xg_pipeline(stratified_kfold, scoring_method):
         )
 
   return param_search
+
+def create_gmm_pipeline(stratified_kfold, scoring_method):
+  pipeline = make_pipeline(StandardScaler(), SelectKBest(), GaussianMixture(n_components=2))
+
+  param_grid = {
+      # 'selectkbest__k':np.linspace(10, 100, 10, endpoint=True).astype(int),
+      # 'gaussianmixture__init_params':['k-means++', 'random'],
+      # 'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
+      'selectkbest__k':[10, 20],
+      'gaussianmixture__init_params':['k-means++'],
+      'gaussianmixture__covariance_type': ['full'],
+    }
+
+  # Parameter search
+  param_search = GridSearchCV(
+          estimator = pipeline,
+          param_grid = param_grid,
+          n_jobs=1,
+          scoring=scoring_method,
+          refit='Accuracy',
+          cv=stratified_kfold,
+          verbose=2
+        )
+
+  return param_search
+
 
 def calc_f2_score(precision, recall, beta):
   num = (1 + pow(beta, 2)) * (precision) * (recall)
@@ -153,7 +152,7 @@ def train_test_tune_selectkbest(data, labels, patient_id, stratified_cv):
   data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
 
   # num_patients = np.size(np.unique(patient_id))
-  splits = 5
+  splits = 3
 
   stratified_cv = list(stratified_cv)
 
@@ -458,7 +457,10 @@ def train_test_tune_selectkbest(data, labels, patient_id, stratified_cv):
 
   ########################## Find best set of params from all of the outer folds ##########################
   # best_svc_model_score = np.nanargmax(svc_f2_list)
-  svc_best_score = np.nanmax(svc_f2_list)
+  try:
+    svc_best_score = np.nanmax(svc_f2_list)
+  except:
+    svc_best_score = np.nan
   best_svc_model_score = np.where(svc_f2_list == svc_best_score)
   svc_best_params = svc_best_params_list[best_svc_model_score[0][0]]
 
@@ -473,7 +475,10 @@ def train_test_tune_selectkbest(data, labels, patient_id, stratified_cv):
   
 
   # best_rf_model_score = np.nanargmax(rf_f2_list)
-  rf_best_score = np.nanmax(rf_f2_list)
+  try:
+    rf_best_score = np.nanmax(rf_f2_list)
+  except: 
+    rf_best_score = np.nan
   best_rf_model_score = np.where(rf_f2_list == rf_best_score)
   rf_best_params = rf_best_params_list[best_rf_model_score[0][0]]
 
@@ -488,7 +493,10 @@ def train_test_tune_selectkbest(data, labels, patient_id, stratified_cv):
 
 
   # best_xg_model_score = np.nanargmax(xg_f2_list)
-  xg_best_score = np.nanmax(xg_f2_list)
+  try:
+    xg_best_score = np.nanmax(xg_f2_list)
+  except:
+    xg_best_score = np.nan
   best_xg_model_score = np.where(xg_f2_list == xg_best_score)
   xg_best_params = xg_best_params_list[best_xg_model_score[0][0]]
 
@@ -503,7 +511,10 @@ def train_test_tune_selectkbest(data, labels, patient_id, stratified_cv):
 
 
   # best_gmm_model_score = np.nanargmax(gmm_f2_list)
-  gmm_best_score = np.nanmax(gmm_f2_list)
+  try:
+    gmm_best_score = np.nanmax(gmm_f2_list)
+  except:
+    gmm_best_score = np.nan
   best_gmm_model_score = np.where(gmm_f2_list == gmm_best_score)
   gmm_best_params = gmm_best_params_list[best_gmm_model_score[0][0]]
 
