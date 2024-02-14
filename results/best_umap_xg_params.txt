@@ -3,27 +3,47 @@ umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 10
 xgbclassifier__learning_rate: 0.1
+<<<<<<< HEAD
 xgbclassifier__max_depth: 5
 xgbclassifier__n_estimators: 50
 F2 Score: 0.2857142857142857
+=======
+xgbclassifier__max_depth: 3
+xgbclassifier__n_estimators: 50
+F2 Score: 0.41095890410958913
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 
 umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 5
+<<<<<<< HEAD
 xgbclassifier__learning_rate: 0.1
 xgbclassifier__max_depth: 3
 xgbclassifier__n_estimators: 50
 F2 Score: 0.7432432432432433
+=======
+xgbclassifier__learning_rate: 0.01
+xgbclassifier__max_depth: 5
+xgbclassifier__n_estimators: 50
+F2 Score: 0.4861111111111111
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 
 umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 10
+<<<<<<< HEAD
 xgbclassifier__learning_rate: 0.01
 xgbclassifier__max_depth: 5
 xgbclassifier__n_estimators: 50
 F2 Score: 0.3174603174603174
+=======
+xgbclassifier__learning_rate: 0.1
+xgbclassifier__max_depth: 5
+xgbclassifier__n_estimators: 50
+F2 Score: 0.3125
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 
 umap__metric: euclidean
 umap__min_dist: 0.1
@@ -32,14 +52,26 @@ umap__n_neighbors: 5
 xgbclassifier__learning_rate: 0.01
 xgbclassifier__max_depth: 5
 xgbclassifier__n_estimators: 50
+<<<<<<< HEAD
 F2 Score: 0.24590163934426226
+=======
+F2 Score: 0.234375
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 
 umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
+<<<<<<< HEAD
 umap__n_neighbors: 10
 xgbclassifier__learning_rate: 0.01
 xgbclassifier__max_depth: 5
 xgbclassifier__n_estimators: 50
 F2 Score: 0.7142857142857143
+=======
+umap__n_neighbors: 5
+xgbclassifier__learning_rate: 0.1
+xgbclassifier__max_depth: 5
+xgbclassifier__n_estimators: 50
+F2 Score: 0.6493506493506493
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 

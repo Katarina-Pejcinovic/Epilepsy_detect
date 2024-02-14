@@ -142,9 +142,9 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 # Tune classical parameters
 
 # Run once when training models
-#umap_params_scores, umap_best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
-#kbest_params_scores, kbest_best_params = train_test_tune_selectkbest(features_3d_array, labels, patient_id, strat_kfold)
-#ica_params_scores, ica_best_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
+# umap_scores, umap_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
+# kbest_scores, kbest_params = train_test_tune_selectkbest(features_3d_array, labels, patient_id, strat_kfold)
+# ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
 # Load in locally generated
 # with open('results/best_umap_params_dict.pkl', 'rb') as f:
@@ -153,42 +153,44 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 #     kbest_params = pickle.load(f)
 # with open('results/best_ica_params_dict.pkl', 'rb') as f:
 #     ica_params = pickle.load(f)
-# with open('results/best_umap_scores_dict.pkl', 'rb') as f:
+# with open('results/best_umap_scores.pkl', 'rb') as f:
 #     umap_scores = pickle.load(f)
-# with open('results/best_kbest_scores_dict.pkl', 'rb') as f:
+# with open('results/best_kbest_scores.pkl', 'rb') as f:
 #     kbest_scores = pickle.load(f)
-# with open('results/best_ica_scores_dict.pkl', 'rb') as f:
+# with open('results/best_ica_scores.pkl', 'rb') as f:
 #     ica_scores = pickle.load(f)
 
 # Find best feature selection method and keep those parameters
 # best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, kbest_params,
 #         kbest_scores, ica_params, ica_scores)
 
-
-#print data types 
-train_data_dtype = train_data.astype('float32')
-train_data_dtype.dtype
-train_data_cnn = np.transpose(train_data_dtype, (2, 0, 1))
-print("train data before EEG", train_data_dtype.shape)
+# Load in best determined model params
+with open('results/best_params_dict.pkl', 'rb') as f:
+    best_model_params = pickle.load(f)
+with open('results/classical_ml_scores.pkl', 'rb') as f:
+    best_model_params_scores = pickle.load(f)
 
 # Deep Learning
 cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
 rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
         learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=strat_kfold)
 
-with open('results/cnn_results', 'w') as f:
-    for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
-        f.write("%s\n" % item)
+# with open('results/cnn_results', 'w') as f:
+#     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
+#         f.write("%s\n" % item)
 
-with open('results/rnn_results', 'w') as f:
-    for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
-        f.write("%s\n" % item)
+# with open('results/rnn_results', 'w') as f:
+#     for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
+#         f.write("%s\n" % item)
 
 # Testing
-# validate(train_data = features_3d_array, 
-#           train_labels = labels, 
-#           validation_data = features_3d_array_test, 
-#           validation_labels = labels_test, 
-#           deep_data_train = train_data, 
-#           deep_data_test = test_data, 
-#           parameters = best_model_params)
+validate(train_data = features_3d_array, 
+          train_labels = labels, 
+          test_data = features_3d_array_test, 
+          test_labels = labels_test, 
+          deep_data_train = train_data, 
+          deep_data_test = test_data, 
+          parameters = best_model_params,
+          stratCV = strat_kfold)
+
+print('Full pipeline finished')

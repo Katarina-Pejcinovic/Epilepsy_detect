@@ -4,7 +4,11 @@ umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 5
+<<<<<<< HEAD
 F2 Score: 0.7051282051282052
+=======
+F2 Score: 0.641025641025641
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 
 gaussianmixture__covariance_type: full
 gaussianmixture__init_params: k-means++
@@ -12,6 +16,7 @@ umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 5
+<<<<<<< HEAD
 F2 Score: 0.684931506849315
 
 gaussianmixture__covariance_type: full
@@ -21,6 +26,9 @@ umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 5
 F2 Score: 0.5797101449275363
+=======
+F2 Score: 0.0847457627118644
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 
 gaussianmixture__covariance_type: full
 gaussianmixture__init_params: k-means++
@@ -28,6 +36,17 @@ umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 10
+<<<<<<< HEAD
+=======
+F2 Score: 0.5555555555555556
+
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 10
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
 F2 Score: 0.5303030303030303
 
 gaussianmixture__covariance_type: full
