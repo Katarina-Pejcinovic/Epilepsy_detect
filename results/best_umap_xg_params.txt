@@ -1,45 +1,45 @@
 umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
+umap__n_neighbors: 10
+xgbclassifier__learning_rate: 0.1
+xgbclassifier__max_depth: 5
+xgbclassifier__n_estimators: 50
+F2 Score: 0.2857142857142857
+
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
 umap__n_neighbors: 5
-xgbclassifier__learning_rate: 0.01
+xgbclassifier__learning_rate: 0.1
 xgbclassifier__max_depth: 3
 xgbclassifier__n_estimators: 50
-F2 Score: 0.6962025316455696
+F2 Score: 0.7432432432432433
 
 umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 10
 xgbclassifier__learning_rate: 0.01
-xgbclassifier__max_depth: 3
+xgbclassifier__max_depth: 5
 xgbclassifier__n_estimators: 50
-F2 Score: 0.44776119402985076
+F2 Score: 0.3174603174603174
 
 umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 5
 xgbclassifier__learning_rate: 0.01
-xgbclassifier__max_depth: 3
+xgbclassifier__max_depth: 5
 xgbclassifier__n_estimators: 50
-F2 Score: 0.23809523809523808
+F2 Score: 0.24590163934426226
 
 umap__metric: euclidean
 umap__min_dist: 0.1
 umap__n_components: 3
 umap__n_neighbors: 10
 xgbclassifier__learning_rate: 0.01
-xgbclassifier__max_depth: 3
+xgbclassifier__max_depth: 5
 xgbclassifier__n_estimators: 50
-F2 Score: 0.3076923076923077
-
-umap__metric: euclidean
-umap__min_dist: 0.1
-umap__n_components: 5
-umap__n_neighbors: 5
-xgbclassifier__learning_rate: 0.01
-xgbclassifier__max_depth: 3
-xgbclassifier__n_estimators: 50
-F2 Score: 0.75
+F2 Score: 0.7142857142857143
 

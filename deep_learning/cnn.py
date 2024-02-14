@@ -83,8 +83,9 @@ def run_EEGnet(data, labels, batch_size, counter):
     for epoch in range(num_epochs):
         # Use tqdm to create a progress bar for the outer loop
         for i in tqdm(range(0, len(data), batch_size), desc=f"Epoch {epoch + 1}/{num_epochs}"):
-            inputs = torch.from_numpy(data[i:i+batch_size])
-            labels = torch.FloatTensor(np.array([labels[i:i+batch_size]]).T*1.0)
+            inputs = torch.from_numpy(data[i*batch_size:i*batch_size+batch_size])
+            labels = torch.FloatTensor(np.array([labels[i*batch_size:i*batch_size+batch_size]]).T*1.0)
+            labels = labels.view(-1, 1)
 
             # Move data to the device
             inputs, labels = inputs.to(device), labels.to(device)
@@ -133,7 +134,8 @@ def predictions_cnn(test_data, counter):
 #data must be in shape recordins, channels, time points 
 
 def run_EEGnetCV(strat_kfold, data, batch_size):
-    
+    #transpose to: (samples, channels, timedata)
+    #data = np.transpose(data, (2, 0, 1))
     
     print("in EEGnetCV")
     #split data into metadata and time-series data 
@@ -144,7 +146,6 @@ def run_EEGnetCV(strat_kfold, data, batch_size):
     z_length = data.shape[2]
     train_data = data[:, :, 3:z_length,]
     print("train data shape", train_data.shape)
-    #transpose to: (samples, channels, timedata)
 
     counter = 0
     f2 = []
@@ -156,8 +157,8 @@ def run_EEGnetCV(strat_kfold, data, batch_size):
         print("counter", counter)
         X_train, x_val = train_data[train_index], train_data[val_index]
         Y_train, y_val = train_label[train_index], train_label[val_index]
-        print(X_train.shape)
-        print(x_val.shape)
+        print("X_train shape", X_train.shape)
+        print("x_val shape", x_val.shape)
         print("in EEGNet")
         run_EEGnet(X_train, Y_train, batch_size, counter)
         predictions, probas =  predictions_cnn(x_val, counter)

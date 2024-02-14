@@ -100,8 +100,8 @@ num_segments = train_data.shape[2]
 num_channels = train_data.shape[0]
 num_data = train_data.shape[1] - 3
 data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
-print("Train data reshape ran")
-print(data_reshape.shape)
+#print("Train data reshape ran")
+#print(data_reshape.shape)
 
 # Break down test data structure
 data_full_test = test_data[:, 3:, :]
@@ -111,8 +111,8 @@ num_segments_test = test_data.shape[2]
 num_channels_test = test_data.shape[0]
 num_data_test = test_data.shape[1] - 3
 data_reshape_test = np.reshape(data_full_test, (num_segments_test, num_channels_test, num_data_test))
-print("Train data reshape ran")
-print(data_reshape_test.shape)
+#print("Train data reshape ran")
+#print(data_reshape_test.shape)
 
 # # Extract features
 
@@ -131,41 +131,48 @@ with open('data/features_3d_array.pkl', 'rb') as f:
 with open('data/features_3d_array_test.pkl', 'rb') as f:
     features_3d_array_test = pickle.load(f)
 
-print("Train features array", features_3d_array.shape)
-print("Test features array", features_3d_array_test.shape)
+#print("Train features array", features_3d_array.shape)
+#print("Test features array", features_3d_array_test.shape)
 
 # Create Stratified Cross Validation object
-splits = 5
+splits = 3
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 # Tune classical parameters
 
 # Run once when training models
-umap_params_scores, umap_best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
-kbest_params_scores, kbest_best_params = train_test_tune_selectkbest(features_3d_array, labels, patient_id, strat_kfold)
-ica_params_scores, ica_best_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
+#umap_params_scores, umap_best_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
+#kbest_params_scores, kbest_best_params = train_test_tune_selectkbest(features_3d_array, labels, patient_id, strat_kfold)
+#ica_params_scores, ica_best_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
 # Load in locally generated
-with open('results/best_umap_params_dict.pkl', 'rb') as f:
-    umap_params = pickle.load(f)
-with open('results/best_kbest_params_dict.pkl', 'rb') as f:
-    kbest_params = pickle.load(f)
-with open('results/best_ica_params_dict.pkl', 'rb') as f:
-    ica_params = pickle.load(f)
-with open('results/best_umap_scores_dict.pkl', 'rb') as f:
-    umap_scores = pickle.load(f)
-with open('results/best_kbest_scores_dict.pkl', 'rb') as f:
-    kbest_scores = pickle.load(f)
-with open('results/best_ica_scores_dict.pkl', 'rb') as f:
-    ica_scores = pickle.load(f)
+# with open('results/best_umap_params_dict.pkl', 'rb') as f:
+#     umap_params = pickle.load(f)
+# with open('results/best_kbest_params_dict.pkl', 'rb') as f:
+#     kbest_params = pickle.load(f)
+# with open('results/best_ica_params_dict.pkl', 'rb') as f:
+#     ica_params = pickle.load(f)
+# with open('results/best_umap_scores_dict.pkl', 'rb') as f:
+#     umap_scores = pickle.load(f)
+# with open('results/best_kbest_scores_dict.pkl', 'rb') as f:
+#     kbest_scores = pickle.load(f)
+# with open('results/best_ica_scores_dict.pkl', 'rb') as f:
+#     ica_scores = pickle.load(f)
 
 # Find best feature selection method and keep those parameters
-best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, kbest_params,
-        kbest_scores, ica_params, ica_scores)
+# best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, kbest_params,
+#         kbest_scores, ica_params, ica_scores)
+
+
+#print data types 
+train_data_dtype = train_data.astype('float32')
+train_data_dtype.dtype
+train_data_cnn = np.transpose(train_data_dtype, (2, 0, 1))
+print("train data before EEG", train_data_dtype.shape)
 
 # Deep Learning
-cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy = run_EEGnet(train_data, batch_size = 50)
+cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
 rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
         learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=32, n_splits=splits, strat_kfold=strat_kfold)
 
