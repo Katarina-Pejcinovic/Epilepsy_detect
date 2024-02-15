@@ -86,10 +86,10 @@ def master_prepro(base_dir):
     #    subject_ids_no_epilepsy = file.read().splitlines()
     
     ####CHANGES BY AKASH####
-    with open(os.path.join(base_dir, '00_subject_ids_epilepsy.list'), 'r') as file:
+    with open(os.path.join(base_dir, 'subject_ids_epilepsy.txt'), 'r') as file:
         subject_ids_epilepsy = [line.split()[0] for line in file.read().splitlines()]
 
-    with open(os.path.join(base_dir, '01_subject_ids_no_epilepsy.list'), 'r') as file:
+    with open(os.path.join(base_dir, 'subject_ids_no_epilepsy.txt'), 'r') as file:
         subject_ids_no_epilepsy = [line.split()[0] for line in file.read().splitlines()]
     ######
 
@@ -98,7 +98,7 @@ def master_prepro(base_dir):
 
     ###### Changed 'epilepsy_edf' to '00_epilepsy'...same for 'no_epilepsy_edf' - Akash
     # Process each patient's files
-    for label, subject_ids in [('00_epilepsy/', subject_ids_epilepsy), ('01_no_epilepsy/', subject_ids_no_epilepsy)]:
+    for label, subject_ids in [('epilepsy_edf', subject_ids_epilepsy), ('no_epilepsy_edf', subject_ids_no_epilepsy)]:
         for patient_id in subject_ids:
             patient_path = os.path.join(base_dir, label, patient_id)
             if os.path.exists(patient_path):

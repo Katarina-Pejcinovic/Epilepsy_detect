@@ -5,6 +5,7 @@ from deep_learning.cnn import *
 import numpy as np
 from sklearn.metrics import fbeta_score
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from tabulate import tabulate
 
 def validate(train_data, 
              train_labels,
@@ -38,7 +39,8 @@ def validate(train_data,
 
 
   # run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
-
+  cnn_pred, cnn_proba = predictions_cnn(test_data)
+  rnn_pred, rnn_proba = rnn_model_test(test_data)
   
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
   svm_f2_score = fbeta_score(test_labels, svm_pred, average='weighted', beta=2)
@@ -97,7 +99,11 @@ def validate(train_data,
 
   # Confusion matrices
   confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
-  matrics = []
+  metrics = []
+  precisions = []
+  accuracies = []
+  recalls = []
+
 
   for i, matrix in enumerate(confusion_matrices):
     true_positives = matrix[1][1]
@@ -116,6 +122,10 @@ def validate(train_data,
     accuracy = (true_positives + true_negatives) / (true_positives + false_positives + false_negatives + true_negatives)
     recall = true_positives / (true_positives + false_negatives)
 
+    precisions.append(precision)
+    accuracies.append(accuracy)
+    recalls.append(recall)
+
     # Print the results
     print(matrix)
     print(f"Precision: {precision:.2f}")
@@ -129,17 +139,19 @@ def validate(train_data,
         f.write(f'Accuracy: {accuracy}\n')
         f.write(f'Recall: {recall}\n\n')
 
-    for i in range(len(model_names)):
-        model_data = [
-            model_names[i],
-            matrices[i],
-            precisions[i],
-            accuracies[i],
-            recalls[i]
-        ]
-        metrics.append(model_data)
+  for i in range(len(model_names)):
+      model_data = [
+          model_names[i],
+          confusion_matrices[i],
+          precisions[i],
+          accuracies[i],
+          recalls[i],
+          results_f2_score[i]
+      ]
+      metrics.append(model_data)
 
-  table = tabulate(data, headers, tablefmt='grid')
+  headers = ["Model Name", "Confusion Matrix", "Precision", "Accuracy", "Recall", 'F2-Score']
+  table = tabulate(metrics, headers, tablefmt='grid')
   with open('validation_results/figure_list.txt', 'a') as f:
     f.write(table)
     
