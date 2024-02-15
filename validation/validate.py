@@ -14,7 +14,8 @@ def validate(train_data,
              deep_data_train,
              deep_data_test, 
              parameters, 
-             stratCV
+             stratCV,
+             argmax
 ):
 
   y_true = test_labels
@@ -39,7 +40,7 @@ def validate(train_data,
 
 
   # run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
-  cnn_pred, cnn_proba = predictions_cnn(test_data)
+  cnn_pred, cnn_proba = predictions_cnn(test_data, counter = argmax)
   rnn_pred, rnn_proba = rnn_model_test(test_data)
   
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
