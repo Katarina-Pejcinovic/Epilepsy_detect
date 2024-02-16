@@ -12,7 +12,7 @@ data/full_3d_array.pkl
 .pth
 data/preprocessed_data_bipolar_OG
 .npy
-
+deep_learning/rnn_saved_model
 data/test_data.pkl
 data/train_data.pkl
 .pkl

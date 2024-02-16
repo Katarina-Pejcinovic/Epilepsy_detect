@@ -22,18 +22,18 @@ from preprocessing.functions_prepro import *
 
 # data/
 # Batch Processing
-# if __name__ == "__main__":
-#     print('Running sample file')
-#     # data_file_path = '/radraid/arathi/'
-#     data_file_path = 'data/'
+if __name__ == "__main__":
+    print('Running sample file')
+    data_file_path = '/radraid/arathi/'
+    data_file_path = 'data/'
 # else:
-#     print('Running batch file(s)')
-#     from batch_processing import data_file_batch
-#     data_file_path = data_file_batch
+    print('Running batch file(s)')
+    from batch_processing import data_file_batch
+    data_file_path = data_file_batch
 
 
 # # PREPROCESSING
-# base_dir = data_file_path
+base_dir = data_file_path
 # master_prepro(base_dir)
 
 
@@ -76,9 +76,9 @@ from preprocessing.functions_prepro import *
 # full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 # Load in data after it has been generated locally
-with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
-     full_data_array = pickle.load(f)
-print("Full data array shape:", full_data_array.shape)
+# with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
+#      full_data_array = pickle.load(f)
+# print("Full data array shape:", full_data_array.shape)
 
 # Impute function 
 data = run_impute(full_data_array)
@@ -117,22 +117,22 @@ print(data_reshape_test.shape)
 # # Extract features
 
 # Run once
-features_3d_array = get_features(data_reshape)
-with open('data/features_3d_array.pkl', 'wb') as f:
-    pickle.dump(features_3d_array, f)
+# features_3d_array = get_features(data_reshape)
+# with open('data/features_3d_array.pkl', 'wb') as f:
+#     pickle.dump(features_3d_array, f)
 
-features_3d_array_test = get_features(data_reshape_test)
-with open('data/features_3d_array_test.pkl', 'wb') as f:
-    pickle.dump(features_3d_array_test, f)
+# features_3d_array_test = get_features(data_reshape_test)
+# with open('data/features_3d_array_test.pkl', 'wb') as f:
+#     pickle.dump(features_3d_array_test, f)
 
 # # Load in features after it has been generated locally
-with open('data/features_3d_array.pkl', 'rb') as f:
-    features_3d_array = pickle.load(f)
-with open('data/features_3d_array_test.pkl', 'rb') as f:
-    features_3d_array_test = pickle.load(f)
+# with open('data/features_3d_array.pkl', 'rb') as f:
+#     features_3d_array = pickle.load(f)
+# with open('data/features_3d_array_test.pkl', 'rb') as f:
+#     features_3d_array_test = pickle.load(f)
 
-print("Train features array", features_3d_array.shape)
-print("Test features array", features_3d_array_test.shape)
+# print("Train features array", features_3d_array.shape)
+# print("Test features array", features_3d_array_test.shape)
 
 # Create Stratified Cross Validation object
 splits = 3
@@ -178,9 +178,9 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
         learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
 
-with open('results/cnn_results', 'w') as f:
-    for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
-        f.write("%s\n" % item)
+# with open('results/cnn_results', 'w') as f:
+#     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
+#         f.write("%s\n" % item)
 
 with open('results/rnn_results', 'w') as f:
     for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
