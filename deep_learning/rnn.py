@@ -45,6 +45,7 @@ from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 
 def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
+    strat_kfold = strat_kfold
     model_save_path = 'deep_learning/rnn_saved_model'
     train_data = train_df[:,3:,:]
     n_channels = train_data.shape[0]
@@ -57,17 +58,13 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
     recall_list = []
     precision_list = []
     accuracy_list = []
-    data_reshape = np.reshape(train_data, (train_data[2], n_channels, train_data[1]-3))
-
-    strat_kfold_object = StratifiedKFold(n_splits=n_splits, shuffle=True, random_state=10)
-    strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
     counter = 0
     for train_index, val_index in strat_kfold:
 
         counter+=1
 
-        X_train, X_val = train_data[train_index], train_data[val_index]
+        X_train, X_val = train_data[:,:,train_index], train_data[:,:,val_index]
         y_train, y_val = train_label[train_index], train_label[val_index]
 
         X_train_reshaped = X_train.reshape(X_train.shape[2], n_channels, X_train.shape[1])
@@ -90,7 +87,7 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
             verbose=1  # Set verbose to 0 to suppress output during training
         )
 
-        X_val_reshaped = X_val.reshape(X_val.shape[0], n_channels, X_val.shape[2])
+        X_val_reshaped = X_val.reshape(X_val.shape[2], n_channels, X_val.shape[1])
 
         val_predictions = model.predict(X_val_reshaped)
         val_predictions_list[f'fold{counter}'] = val_predictions
@@ -119,7 +116,7 @@ def rnn_model_test(test_df):
     test_data = test_df[:,:,3:]
     n_channels = test_data.shape[1]
     # Evaluate the model on the test data
-    X_test_reshaped = test_data.reshape(test_data.shape[0], n_channels, test_data.shape[2])
+    X_test_reshaped = test_data.reshape(test_data.shape[2], n_channels, test_data.shape[1])
     test_predictions = model.predict(X_test_reshaped)
     preds_proba.append(test_predictions)
 
@@ -128,3 +125,8 @@ def rnn_model_test(test_df):
     predictions.extend(test_predictions_binary)
 
     return predictions, preds_proba
+
+
+
+
+    
