@@ -117,7 +117,8 @@ def find_adjacent_channels(channel):
 # if found:
 #     print('All found')
 
-# test = adjacent_channels('T3')
-# print('Found: ', test)
-# test1 = adjacent_channels('T1')
-# print('Not found: ', test1)
+test = find_adjacent_channels('T3')
+print('Found: ', test)
+print(type(test))
+test1 = find_adjacent_channels('T1')
+print('Not found: ', test1)
