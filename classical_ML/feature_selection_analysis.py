@@ -44,6 +44,9 @@ data_reshape_test = np.reshape(data_full_test, (num_segments_test, num_channels_
 print("Train data reshape ran")
 print(data_reshape_test.shape)
 
+splits = 5
+strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
+strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 channel_1 = features_3d_array[:, 0, :]
 print(channel_1.shape)
