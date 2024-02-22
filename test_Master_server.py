@@ -176,8 +176,8 @@ train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
 
 # # Deep Learning
 # cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy, counter = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
-# rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
-#         learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
+rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
+        learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
 
 # with open('results/cnn_results', 'w') as f:
 #     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
