@@ -1,22 +1,34 @@
 import numpy as np
 import pickle
 
-def find_best_feat_select(umap_params, umap_scores, kbest_params, kbest_scores, ica_params, ica_scores):
+def find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores):
 
     # Param list has 4 dicts that contain param set for each model
     # Score list has 4 F2 scores, one for each model
 
-    svc_scores = [umap_scores[0], kbest_scores[0], ica_scores[0]]
-    svc_params = [umap_params[0], kbest_params[0], ica_params[0]]
+    # svc_scores = [umap_scores[0], kbest_scores[0], ica_scores[0]]
+    # svc_params = [umap_params[0], kbest_params[0], ica_params[0]]
 
-    rf_scores = [umap_scores[1], kbest_scores[1], ica_scores[1]]
-    rf_params = [umap_params[1], kbest_params[1], ica_params[1]]
+    # rf_scores = [umap_scores[1], kbest_scores[1], ica_scores[1]]
+    # rf_params = [umap_params[1], kbest_params[1], ica_params[1]]
 
-    xg_scores = [umap_scores[2], kbest_scores[2], ica_scores[2]]
-    xg_params = [umap_params[2], kbest_params[2], ica_params[2]]
+    # xg_scores = [umap_scores[2], kbest_scores[2], ica_scores[2]]
+    # xg_params = [umap_params[2], kbest_params[2], ica_params[2]]
 
-    gmm_scores = [umap_scores[3], kbest_scores[3], ica_scores[3]]
-    gmm_params = [umap_params[3], kbest_params[3], ica_params[3]]
+    # gmm_scores = [umap_scores[3], kbest_scores[3], ica_scores[3]]
+    # gmm_params = [umap_params[3], kbest_params[3], ica_params[3]]
+
+    svc_scores = [umap_scores[0], ica_scores[0]]
+    svc_params = [umap_params[0], ica_params[0]]
+
+    rf_scores = [umap_scores[1], ica_scores[1]]
+    rf_params = [umap_params[1], ica_params[1]]
+
+    xg_scores = [umap_scores[2], ica_scores[2]]
+    xg_params = [umap_params[2], ica_params[2]]
+
+    gmm_scores = [umap_scores[3], ica_scores[3]]
+    gmm_params = [umap_params[3], ica_params[3]]
 
     best_svc_idx = np.argmax(svc_scores)
     best_svc_params = svc_params[best_svc_idx]
