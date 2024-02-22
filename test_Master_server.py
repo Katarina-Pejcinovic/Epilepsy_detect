@@ -142,7 +142,7 @@ print("Train features array", features_3d_array.shape)
 print("Test features array", features_3d_array_test.shape)
 
 # Create Stratified Cross Validation object
-splits = 3
+splits = 5
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 

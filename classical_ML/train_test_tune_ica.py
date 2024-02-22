@@ -151,7 +151,7 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
 
   # num_patients = np.size(np.unique(patient_id))
-  splits = 3
+  splits = 5
 
   stratified_cv = list(stratified_cv)
 
