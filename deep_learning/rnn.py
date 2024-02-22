@@ -104,8 +104,8 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
         precision_list.append(p)
         recall_list.append(r)
         accuracy_list.append(a)
-        if max(f2_score_list) == f:
-            model.save(model_save_path)
+        #if max(f2_score_list) == f:
+         #   model.save(model_save_path)
 
     return val_predictions_binary_list, val_predictions_list, f2_score_list, precision_list, recall_list, accuracy_list
         
@@ -113,7 +113,7 @@ def rnn_model_test(test_df):
     predictions = []
     preds_proba = []
     model = load_model('deep_learning/rnn_saved_model')
-    test_data = test_df[:,:,3:]
+    test_data = test_df[:,3:,:]
     n_channels = test_data.shape[1]
     # Evaluate the model on the test data
     X_test_reshaped = test_data.reshape(test_data.shape[2], n_channels, test_data.shape[1])
