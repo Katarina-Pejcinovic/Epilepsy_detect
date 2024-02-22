@@ -89,28 +89,31 @@ def validate(train_data,
   formatted_datetime = current_datetime.strftime("%Y-%m-%D %H:%M:%S")
 
   with open('validation_results/figure_list.txt', 'w') as f:
-     f.write(f"New Run: {formatted_datetime}\n")
+     f.write(f"New Run: {formatted_datetime}\n\n")
 
   for i,score in enumerate(results_f2_score):
     print("f2 score for ", model_names[i], ": ", score, sep = '')
     with open('validation_results/figure_list.txt', 'a') as f:
-     f.write(f"\nThe f2 score for {model_names[i]} is {score}")
+     f.write(f"The f2 score for {model_names[i]} is {score}\n")
   
   with open('validation_results/figure_list.txt', 'a') as f:
      f.write(f"The highest f2 score is {max(results_f2_score, key=lambda x: x)} \n\n")
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
-  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
+  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba, cnn_proba, rnn_proba]):
   #for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba]):
 
     if i < 4:
       #  print("ostensible 1")
        pred = np.amax(pred, axis =1)
        fpr, tpr, _ = roc_curve(test_labels, pred)
-    else:
-      # print(i)
-      # print(pred)
+    elif i == 4:
       fpr, tpr, _ = roc_curve(y_true, pred)
+    else:
+      shape = np.shape(pred)
+      pred = np.reshape(pred, (shape[1]))
+      fpr, tpr, _ = roc_curve(y_true, pred)
+    
     roc_auc = auc(fpr, tpr)
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = {:.2f})'.format(roc_auc))
@@ -157,6 +160,7 @@ def validate(train_data,
 
     with open('validation_results/figure_list.txt', 'a') as f:
         f.write(model_names[i])
+        f.write(f'\n')
         f.write(str(matrix))
         f.write(f'\n Precision: {precision}\n')
         f.write(f'Accuracy: {accuracy}\n')

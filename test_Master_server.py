@@ -153,17 +153,17 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 # ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
 #Load in locally generated
-with open('results/best_umap_params_dict.pkl', 'rb') as f:
-    umap_params = pickle.load(f)
-with open('results/best_ica_params_dict.pkl', 'rb') as f:
-    ica_params = pickle.load(f)
-with open('results/best_umap_scores.pkl', 'rb') as f:
-    umap_scores = pickle.load(f)
-with open('results/best_ica_scores.pkl', 'rb') as f:
-    ica_scores = pickle.load(f)
+# with open('results/best_umap_params_dict.pkl', 'rb') as f:
+#     umap_params = pickle.load(f)
+# with open('results/best_ica_params_dict.pkl', 'rb') as f:
+#     ica_params = pickle.load(f)
+# with open('results/best_umap_scores.pkl', 'rb') as f:
+#     umap_scores = pickle.load(f)
+# with open('results/best_ica_scores.pkl', 'rb') as f:
+#     ica_scores = pickle.load(f)
 
 # Find best feature selection method and keep those parameters
-best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores)
+# best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores)
 
 #Load in best determined model params
 with open('results/best_params_dict.pkl', 'rb') as f:
