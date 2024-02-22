@@ -6,6 +6,7 @@ import numpy as np
 from sklearn.metrics import fbeta_score
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tabulate import tabulate
+from datetime import date
 
 def validate(train_data, 
              train_labels,
@@ -55,6 +56,12 @@ def validate(train_data,
   cnn_f2_score = fbeta_score(y_true, cnn_pred, average='weighted', beta=2)
   #rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
 
+  if gmm_f2_score < 0.5:
+     gmm_f2_score = 1 - gmm_f2_score
+     flip_gmm = True 
+  else:
+    flip_gmm = False
+
   # Compare using confusion matrices
   svm_cm = confusion_matrix(test_labels, svm_pred)
   rf_cm = confusion_matrix(test_labels, rf_pred)
@@ -62,6 +69,11 @@ def validate(train_data,
   gmm_cm = confusion_matrix(test_labels, gmm_pred)
   cnn_cm = confusion_matrix(y_true, cnn_pred)
   #rnn_cm = confusion_matrix(y_true, rnn_pred)
+
+  if flip_gmm:
+     gmm_new_1 = np.array([gmm_cm[0][1], gmm_cm[0][0]])
+     gmm_new_2 = np.array([gmm_cm[1][1], gmm_cm[1][0]])
+     gmm_cm = np.array([gmm_new_1, gmm_new_2])
 
   # Compare using ROC curves
   #model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
@@ -73,10 +85,14 @@ def validate(train_data,
 
   print("The highest f2 score is ", max(results_f2_score, key=lambda x: x))
 
+  today = date.today()
+  with open('validation_results/figure_list.txt', 'w') as f:
+     f.write(f"New Run: {today}\n")
+
   for i,score in enumerate(results_f2_score):
     print("f2 score for ", model_names[i], ": ", score, sep = '')
     with open('validation_results/figure_list.txt', 'a') as f:
-     f.write(f"The f2 score for {model_names[i]} is {score}")
+     f.write(f"\nThe f2 score for {model_names[i]} is {score}")
   
   with open('validation_results/figure_list.txt', 'a') as f:
      f.write(f"The highest f2 score is {max(results_f2_score, key=lambda x: x)} \n\n")
@@ -163,6 +179,7 @@ def validate(train_data,
   table = tabulate(metrics, headers, tablefmt='grid')
   with open('validation_results/figure_list.txt', 'a') as f:
     f.write(table)
+    f.write('\n\n')
     
   for i, matrix in enumerate(confusion_matrices):
     disp = ConfusionMatrixDisplay(confusion_matrix=matrix, 
