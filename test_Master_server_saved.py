@@ -82,17 +82,6 @@ splits = 3
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
-
-#Load in locally generated
-with open('results/best_umap_params_dict.pkl', 'rb') as f:
-    umap_params = pickle.load(f)
-with open('results/best_ica_params_dict.pkl', 'rb') as f:
-    ica_params = pickle.load(f)
-with open('results/best_umap_scores.pkl', 'rb') as f:
-    umap_scores = pickle.load(f)
-with open('results/best_ica_scores.pkl', 'rb') as f:
-    ica_scores = pickle.load(f)
-
 #Load in best determined model params
 with open('results/best_params_dict.pkl', 'rb') as f:
     best_model_params = pickle.load(f)
