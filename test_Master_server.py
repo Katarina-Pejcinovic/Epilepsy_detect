@@ -183,9 +183,9 @@ rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall
 #     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
 #         f.write("%s\n" % item)
 
-# with open('results/rnn_results', 'w') as f:
-#     for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
-#         f.write("%s\n" % item)
+with open('results/rnn_results', 'w') as f:
+    for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
+        f.write("%s\n" % item)
 
 # with open('results/cnn_results.txt', 'w') as f:
 #     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:

@@ -46,7 +46,7 @@ def validate(train_data,
   # run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
   cnn_pred, cnn_proba = predictions_cnn(deep_data_test_cnn, counter = argmax)
   print("cnn_pred", cnn_pred, cnn_proba)
-  #rnn_pred, rnn_proba = rnn_model_test(test_data)
+  rnn_pred, rnn_proba = rnn_model_test(deep_data_test)
   
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
   svm_f2_score = fbeta_score(test_labels, svm_pred, average='weighted', beta=2)
@@ -54,7 +54,7 @@ def validate(train_data,
   xg_f2_score = fbeta_score(test_labels, xg_pred, average='weighted', beta=2)
   gmm_f2_score = fbeta_score(test_labels, gmm_pred, average='weighted', beta=2)
   cnn_f2_score = fbeta_score(y_true, cnn_pred, average='weighted', beta=2)
-  #rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
+  rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
 
   if gmm_f2_score < 0.5:
      gmm_f2_score = 1 - gmm_f2_score
@@ -68,7 +68,7 @@ def validate(train_data,
   xg_cm = confusion_matrix(test_labels, xg_pred)
   gmm_cm = confusion_matrix(test_labels, gmm_pred)
   cnn_cm = confusion_matrix(y_true, cnn_pred)
-  #rnn_cm = confusion_matrix(y_true, rnn_pred)
+  rnn_cm = confusion_matrix(y_true, rnn_pred)
 
   if flip_gmm:
      gmm_new_1 = np.array([gmm_cm[0][1], gmm_cm[0][0]])
@@ -76,12 +76,12 @@ def validate(train_data,
      gmm_cm = np.array([gmm_new_1, gmm_new_2])
 
   # Compare using ROC curves
-  #model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
-  model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN',]
+  model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
+  #model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN',]
 
   # F2 Highest Score
-  #results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
-  results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score]
+  results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
+  #results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score]
 
   print("The highest f2 score is ", max(results_f2_score, key=lambda x: x))
 
@@ -98,8 +98,8 @@ def validate(train_data,
      f.write(f"The highest f2 score is {max(results_f2_score, key=lambda x: x)} \n\n")
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
-  #for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
-  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba]):
+  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
+  #for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba]):
 
     if i < 4:
       #  print("ostensible 1")
