@@ -45,7 +45,7 @@ def validate(train_data,
   # run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
   cnn_pred, cnn_proba = predictions_cnn(deep_data_test_cnn, counter = argmax)
   print("cnn_pred", cnn_pred, cnn_proba)
-  rnn_pred, rnn_proba = rnn_model_test(test_data)
+  rnn_pred, rnn_proba = rnn_model_test(deep_data_test)
   
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
   svm_f2_score = fbeta_score(test_labels, svm_pred, average='weighted', beta=2)
