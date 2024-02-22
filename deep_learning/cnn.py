@@ -176,6 +176,6 @@ def run_EEGnetCV(strat_kfold, data, batch_size):
     maximum = np.max(f2_np)
     print("max", maximum)
     arg_max  = np.argmax(f2)
-    return arg_max, f2, precision, recall, accuracy
+    return arg_max, f2, precision, recall, accuracy, counter
 
 
