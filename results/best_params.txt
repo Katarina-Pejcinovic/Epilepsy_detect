@@ -13,14 +13,17 @@ umap__n_components: 3
 umap__n_neighbors: 5
 F2 Score: 0.8988764044943821
 
-selectkbest__k: 10
+fastica__n_components: 20
 xgbclassifier__learning_rate: 0.01
-xgbclassifier__max_depth: 5
+xgbclassifier__max_depth: 3
 xgbclassifier__n_estimators: 50
-F2 Score: 0.8235294117647058
+F2 Score: 0.7738095238095237
 
 gaussianmixture__covariance_type: full
 gaussianmixture__init_params: k-means++
-selectkbest__k: 10
-F2 Score: 0.8641975308641976
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 5
+F2 Score: 0.7051282051282052
 

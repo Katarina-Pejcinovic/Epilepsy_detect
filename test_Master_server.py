@@ -152,18 +152,18 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 # umap_scores, umap_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
 # ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
-# Load in locally generated
-# with open('results/best_umap_params_dict.pkl', 'rb') as f:
-#     umap_params = pickle.load(f)
-# with open('results/best_ica_params_dict.pkl', 'rb') as f:
-#     ica_params = pickle.load(f)
-# with open('results/best_umap_scores.pkl', 'rb') as f:
-#     umap_scores = pickle.load(f)
-# with open('results/best_ica_scores.pkl', 'rb') as f:
-#     ica_scores = pickle.load(f)
+#Load in locally generated
+with open('results/best_umap_params_dict.pkl', 'rb') as f:
+    umap_params = pickle.load(f)
+with open('results/best_ica_params_dict.pkl', 'rb') as f:
+    ica_params = pickle.load(f)
+with open('results/best_umap_scores.pkl', 'rb') as f:
+    umap_scores = pickle.load(f)
+with open('results/best_ica_scores.pkl', 'rb') as f:
+    ica_scores = pickle.load(f)
 
 # Find best feature selection method and keep those parameters
-# best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores)
+best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores)
 
 #Load in best determined model params
 with open('results/best_params_dict.pkl', 'rb') as f:
@@ -191,9 +191,9 @@ train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
 #     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
 #         f.write("%s\n" % item)
 
-with open('results/rnn_results.txt', 'w') as f:
-    for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
-        f.write("%s\n" % item)
+# with open('results/rnn_results.txt', 'w') as f:
+#     for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
+#         f.write("%s\n" % item)
 
 with open('results/cnn_results.txt', 'r') as file:
     cnn_arg_max = file.readline().strip()
@@ -205,8 +205,8 @@ validate(train_data = features_3d_array,
           train_labels = labels, 
           test_data = features_3d_array_test, 
           test_labels = labels_test, 
-          deep_data_train = train_data, 
-          deep_data_test = test_data, 
+          deep_data_train = data_full, 
+          deep_data_test = data_full_test, 
           parameters = best_model_params,
           stratCV = strat_kfold,
           argmax = cnn_arg_max)
