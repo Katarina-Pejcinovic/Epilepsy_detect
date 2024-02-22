@@ -30,6 +30,14 @@ else:
     print('Running batch file(s)')
     from batch_processing import data_file_batch
     data_file_path = data_file_batch
+if __name__ == "__main__":
+    print('Running sample file')
+    # data_file_path = '/radraid/arathi/'
+    data_file_path = 'data/'
+else:
+    print('Running batch file(s)')
+    from batch_processing import data_file_batch
+    data_file_path = data_file_batch
 
 
 # # PREPROCESSING
@@ -75,17 +83,17 @@ else:
 # full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 # Load in data after it has been generated locally
-with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
-     full_data_array = pickle.load(f)
-print("Full data array shape:", full_data_array.shape)
+# with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
+#      full_data_array = pickle.load(f)
+# print("Full data array shape:", full_data_array.shape)
 
-# Impute function 
-data = run_impute(full_data_array)
-print("impute ran")
-print(data.shape)
+# # Impute function 
+# data = run_impute(full_data_array)
+# print("impute ran")
+# print(data.shape)
 
 # Train-Test Split
-train_data, test_data = split(data, data_file_path, data_file_path)
+# train_data, test_data = split(data, data_file_path, data_file_path)
 with open(data_file_path + 'train_data.pkl', 'rb') as f:
     train_data = pickle.load(f)
 with open(data_file_path + 'test_data.pkl', 'rb') as f:
@@ -142,26 +150,20 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 # Run once when training models
 # umap_scores, umap_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
-# kbest_scores, kbest_params = train_test_tune_selectkbest(features_3d_array, labels, patient_id, strat_kfold)
 # ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
 # Load in locally generated
 # with open('results/best_umap_params_dict.pkl', 'rb') as f:
 #     umap_params = pickle.load(f)
-# with open('results/best_kbest_params_dict.pkl', 'rb') as f:
-#     kbest_params = pickle.load(f)
 # with open('results/best_ica_params_dict.pkl', 'rb') as f:
 #     ica_params = pickle.load(f)
 # with open('results/best_umap_scores.pkl', 'rb') as f:
 #     umap_scores = pickle.load(f)
-# with open('results/best_kbest_scores.pkl', 'rb') as f:
-#     kbest_scores = pickle.load(f)
 # with open('results/best_ica_scores.pkl', 'rb') as f:
 #     ica_scores = pickle.load(f)
 
 # Find best feature selection method and keep those parameters
-# best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, kbest_params,
-#         kbest_scores, ica_params, ica_scores)
+# best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores)
 
 #Load in best determined model params
 with open('results/best_params_dict.pkl', 'rb') as f:
@@ -169,8 +171,8 @@ with open('results/best_params_dict.pkl', 'rb') as f:
 with open('results/classical_ml_scores.pkl', 'rb') as f:
     best_model_params_scores = pickle.load(f)
 
-# train_data_type = train_data.astype('float32')
-# train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
+train_data_type = train_data.astype('float32')
+train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
 
 # # Deep Learning
 # cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy, counter = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
@@ -185,14 +187,18 @@ with open('results/classical_ml_scores.pkl', 'rb') as f:
 #     for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
 #         f.write("%s\n" % item)
 
-#load in arg_max
-# Open the file in read mode
-with open('results/cnn_results', 'r') as file:
-    # Read the first line
+# with open('results/cnn_results.txt', 'w') as f:
+#     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
+#         f.write("%s\n" % item)
+
+with open('results/rnn_results.txt', 'w') as f:
+    for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
+        f.write("%s\n" % item)
+
+with open('results/cnn_results.txt', 'r') as file:
     cnn_arg_max = file.readline().strip()
 
-# Now, 'first_line' contains the content of the first line from the file
-#print("First line:", first_line)
+# print("CNN Arg Max: ", cnn_arg_max)
 
 # Testing
 validate(train_data = features_3d_array, 

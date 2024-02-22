@@ -20,21 +20,21 @@ def create_svc_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), SVC())
 
   param_grid = {
-      # 'umap__metric':['euclidean'],
-      # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-      # # 'umap__n_neighbors':np.linspace(10, 20, 2, endpoint=True),
-      # 'umap__n_neighbors':[5, 10],
-      # 'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
-      # 'svc__C':[0.1, 1, 10, 100],
-      # 'svc__degree': [2, 3, 4, 5],
       'umap__metric':['euclidean'],
-      'umap__n_components':[3],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      # 'umap__n_neighbors':np.linspace(10, 20, 2, endpoint=True),
       'umap__n_neighbors':[5, 10],
-      'umap__min_dist': [0.1],
-      'svc__kernel':['linear'],
-      'svc__C':[0.1, 10],
-      'svc__degree': [2, 3]
+      'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
+      'svc__C':[0.1, 1, 10, 100],
+      'svc__degree': [2, 3, 4, 5],
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3],
+      # 'umap__n_neighbors':[5, 10],
+      # 'umap__min_dist': [0.1],
+      # 'svc__kernel':['linear'],
+      # 'svc__C':[0.1, 10],
+      # 'svc__degree': [2, 3]
     }
 
   # Parameter search
@@ -55,21 +55,21 @@ def create_rf_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
-      # 'umap__metric':['euclidean'],
-      # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-      # # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__n_neighbors':[5, 10],
-      # 'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
-      # 'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
-      # 'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
       'umap__metric':['euclidean'],
-      'umap__n_components':[3],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
       'umap__n_neighbors':[5, 10],
-      'umap__min_dist': [0.1],
-      'randomforestclassifier__n_estimators':[8, 16],
-      'randomforestclassifier__min_samples_leaf':[50, 200],
-      'randomforestclassifier__max_depth':[2, 10],
+      'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
+      'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
+      'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3],
+      # 'umap__n_neighbors':[5, 10],
+      # 'umap__min_dist': [0.1],
+      # 'randomforestclassifier__n_estimators':[8, 16],
+      # 'randomforestclassifier__min_samples_leaf':[50, 200],
+      # 'randomforestclassifier__max_depth':[2, 10],
     }
 
   # Parameter search
@@ -90,21 +90,21 @@ def create_xg_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-      # 'umap__metric':['euclidean'],
-      # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-      # # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__n_neighbors':[5, 10],
-      # 'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
-      # 'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
-      # 'xgbclassifier__learning_rate': [0.01, 0.1],
       'umap__metric':['euclidean'],
-      'umap__n_components':[3],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
       'umap__n_neighbors':[5, 10],
-      'umap__min_dist': [0.1],
-      'xgbclassifier__n_estimators': [50],
-      'xgbclassifier__max_depth':[3, 5],
+      'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
+      'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
       'xgbclassifier__learning_rate': [0.01, 0.1],
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3],
+      # 'umap__n_neighbors':[5, 10],
+      # 'umap__min_dist': [0.1],
+      # 'xgbclassifier__n_estimators': [50],
+      # 'xgbclassifier__max_depth':[3, 5],
+      # 'xgbclassifier__learning_rate': [0.01, 0.1],
     }
   
   param_search = GridSearchCV(
@@ -124,19 +124,19 @@ def create_gmm_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
-      # 'umap__metric':['euclidean'],
-      # 'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
-      # # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      # 'umap__n_neighbors':[5, 10],
-      # 'gaussianmixture__init_params':['k-means++', 'random'],
-      # 'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
       'umap__metric':['euclidean'],
-      'umap__n_components':[3],
+      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
+      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
       'umap__n_neighbors':[5, 10],
-      'umap__min_dist': [0.1],
-      'gaussianmixture__init_params':['k-means++'],
-      'gaussianmixture__covariance_type': ['full'],
+      'gaussianmixture__init_params':['k-means++', 'random'],
+      'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
+      # 'umap__metric':['euclidean'],
+      # 'umap__n_components':[3],
+      # 'umap__n_neighbors':[5, 10],
+      # 'umap__min_dist': [0.1],
+      # 'gaussianmixture__init_params':['k-means++'],
+      # 'gaussianmixture__covariance_type': ['full'],
     }
 
   # Parameter search
