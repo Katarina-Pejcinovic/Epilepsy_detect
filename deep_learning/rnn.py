@@ -113,8 +113,8 @@ def rnn_model_test(test_df):
     predictions = []
     preds_proba = []
     model = load_model('deep_learning/rnn_saved_model')
-    test_data = test_df[:,:,3:]
-    n_channels = test_data.shape[1]
+    test_data = test_df[:,:,:]
+    n_channels = test_data.shape[0]
     # Evaluate the model on the test data
     X_test_reshaped = test_data.reshape(test_data.shape[2], n_channels, test_data.shape[1])
     test_predictions = model.predict(X_test_reshaped)

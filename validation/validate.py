@@ -11,7 +11,6 @@ def validate(train_data,
              train_labels,
              test_data, 
              test_labels, 
-             deep_data_train,
              deep_data_test, 
              parameters, 
              stratCV,
@@ -66,9 +65,12 @@ def validate(train_data,
 
   # Compare using ROC curves
   model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
+  #model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN',]
 
   # F2 Highest Score
   results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
+  #results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score]
+
   print("The highest f2 score is ", max(results_f2_score, key=lambda x: x))
 
   for i,score in enumerate(results_f2_score):
@@ -81,6 +83,8 @@ def validate(train_data,
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
   for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
+  #for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba]):
+
     if i < 4:
       #  print("ostensible 1")
        pred = np.amax(pred, axis =1)
@@ -104,7 +108,8 @@ def validate(train_data,
         f.write('validation_results/{}_roc_auc.jpg\n'.format(model_names[i]))
 
   # Confusion matrices
-  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
+  #confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
+  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm]
   metrics = []
   precisions = []
   accuracies = []
@@ -142,7 +147,7 @@ def validate(train_data,
   for i in range(len(model_names)):
       model_data = [
           model_names[i],
-          confusion_matrices[i],
+          #confusion_matrices[i],
           precisions[i],
           accuracies[i],
           recalls[i],
@@ -150,7 +155,11 @@ def validate(train_data,
       ]
       metrics.append(model_data)
 
-  headers = ["Model Name", "Confusion Matrix", "Precision", "Accuracy", "Recall", 'F2-Score']
+  #headers = ["Model Name", "Confusion Matrix", "Precision", "Accuracy", "Recall", 'F2-Score']
+  headers = ["Model Name", "Precision", "Accuracy", "Recall", 'F2-Score']
+  print("headers" '\n', len(headers))
+  print("metrics" '\n', len(metrics))
+ 
   table = tabulate(metrics, headers, tablefmt='grid')
   with open('validation_results/figure_list.txt', 'a') as f:
     f.write(table)

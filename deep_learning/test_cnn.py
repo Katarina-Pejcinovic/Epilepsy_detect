@@ -79,11 +79,17 @@ strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state
 strat_kfold = strat_kfold_object.split(X_train, patient_id)
 
 print("size right before call", X_train.shape)
-arg_max, f2, precision, accuracy, recall = run_EEGnetCV(strat_kfold, X_train, batch_size)
+# arg_max, f2, precision, accuracy, recall = run_EEGnetCV(strat_kfold, X_train, batch_size)
 
-print(arg_max)
-print(f2)
-print(precision)
-print(accuracy)
-print(recall)
+# print(arg_max)
+# print(f2)
+# print(precision)
+# print(accuracy)
+# print(recall)
+
+binary, proba = predictions_cnn(X_train, 1)
+
+print(proba)
+
+
 # run_EEGnet(X_train, batch_size = batch_size)
