@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.metrics import fbeta_score
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tabulate import tabulate
-from datetime import date
+from datetime import datetime
 
 def validate(train_data, 
              train_labels,
@@ -85,9 +85,11 @@ def validate(train_data,
 
   print("The highest f2 score is ", max(results_f2_score, key=lambda x: x))
 
-  today = date.today()
+  current_datetime = datetime.now()
+  formatted_datetime = current_datetime.strftime("%Y-%m-%D %H:%M:%S")
+
   with open('validation_results/figure_list.txt', 'w') as f:
-     f.write(f"New Run: {today}\n")
+     f.write(f"New Run: {formatted_datetime}\n")
 
   for i,score in enumerate(results_f2_score):
     print("f2 score for ", model_names[i], ": ", score, sep = '')
@@ -124,8 +126,8 @@ def validate(train_data,
         f.write('validation_results/{}_roc_auc.jpg\n'.format(model_names[i]))
 
   # Confusion matrices
-  #confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
-  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm]
+  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
+  # confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm]
   metrics = []
   precisions = []
   accuracies = []
