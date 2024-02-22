@@ -11,7 +11,6 @@ def validate(train_data,
              train_labels,
              test_data, 
              test_labels, 
-             deep_data_train,
              deep_data_test, 
              parameters, 
              stratCV,
@@ -46,7 +45,7 @@ def validate(train_data,
   # run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
   cnn_pred, cnn_proba = predictions_cnn(deep_data_test_cnn, counter = argmax)
   print("cnn_pred", cnn_pred, cnn_proba)
-  rnn_pred, rnn_proba = rnn_model_test(test_data)
+  #rnn_pred, rnn_proba = rnn_model_test(test_data)
   
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
   svm_f2_score = fbeta_score(test_labels, svm_pred, average='weighted', beta=2)
@@ -54,7 +53,7 @@ def validate(train_data,
   xg_f2_score = fbeta_score(test_labels, xg_pred, average='weighted', beta=2)
   gmm_f2_score = fbeta_score(test_labels, gmm_pred, average='weighted', beta=2)
   cnn_f2_score = fbeta_score(y_true, cnn_pred, average='weighted', beta=2)
-  rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
+  #rnn_f2_score = fbeta_score(y_true, rnn_pred, average='weighted', beta=2)
 
   # Compare using confusion matrices
   svm_cm = confusion_matrix(test_labels, svm_pred)
@@ -62,13 +61,16 @@ def validate(train_data,
   xg_cm = confusion_matrix(test_labels, xg_pred)
   gmm_cm = confusion_matrix(test_labels, gmm_pred)
   cnn_cm = confusion_matrix(y_true, cnn_pred)
-  rnn_cm = confusion_matrix(y_true, rnn_pred)
+  #rnn_cm = confusion_matrix(y_true, rnn_pred)
 
   # Compare using ROC curves
-  model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
+  #model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN','RNN']
+  model_names = ['SVM', 'Random Forest', 'XG Boost', 'Gaussian Mixture', 'CNN',]
 
   # F2 Highest Score
-  results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
+  #results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score, rnn_f2_score]
+  results_f2_score = [svm_f2_score, rf_f2_score, xg_f2_score, gmm_f2_score, cnn_f2_score]
+
   print("The highest f2 score is ", max(results_f2_score, key=lambda x: x))
 
   for i,score in enumerate(results_f2_score):
@@ -80,7 +82,9 @@ def validate(train_data,
      f.write(f"The highest f2 score is {max(results_f2_score, key=lambda x: x)} \n\n")
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
-  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
+  #for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
+  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba]):
+
     if i < 4:
       #  print("ostensible 1")
        pred = np.amax(pred, axis =1)
@@ -104,7 +108,8 @@ def validate(train_data,
         f.write('validation_results/{}_roc_auc.jpg\n'.format(model_names[i]))
 
   # Confusion matrices
-  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
+  #confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm, rnn_cm]
+  confusion_matrices = [svm_cm, rf_cm, xg_cm, gmm_cm,cnn_cm]
   metrics = []
   precisions = []
   accuracies = []
@@ -148,7 +153,7 @@ def validate(train_data,
   for i in range(len(model_names)):
       model_data = [
           model_names[i],
-          confusion_matrices[i],
+          #confusion_matrices[i],
           precisions[i],
           accuracies[i],
           recalls[i],
@@ -156,7 +161,11 @@ def validate(train_data,
       ]
       metrics.append(model_data)
 
-  headers = ["Model Name", "Confusion Matrix", "Precision", "Accuracy", "Recall", 'F2-Score']
+  #headers = ["Model Name", "Confusion Matrix", "Precision", "Accuracy", "Recall", 'F2-Score']
+  headers = ["Model Name", "Precision", "Accuracy", "Recall", 'F2-Score']
+  print("headers" '\n', len(headers))
+  print("metrics" '\n', len(metrics))
+ 
   table = tabulate(metrics, headers, tablefmt='grid')
   with open('validation_results/figure_list.txt', 'a') as f:
     f.write(table)
