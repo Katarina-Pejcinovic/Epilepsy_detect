@@ -104,6 +104,7 @@ def run_EEGnet(data, labels, batch_size, counter):
     print( "og", model)
 
 def predictions_cnn(test_data, counter):
+    print("data type", test_data.dtype)
     
     load_model = EEGNet()
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -128,7 +129,7 @@ def predictions_cnn(test_data, counter):
     # Convert predictions to binary values (0 or 1) based on a threshold (e.g., 0.5 for sigmoid)
     threshold = 0.5
     binary_predictions = (predictions > threshold).astype(int)
-
+    print("predictions", predictions)
     return binary_predictions, predictions
 
 #data must be in shape recordins, channels, time points 

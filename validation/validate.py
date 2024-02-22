@@ -38,9 +38,14 @@ def validate(train_data,
 
   gmm_pred, gmm_proba = gmm_model(train_data, train_labels, test_data, parameters[3])
 
+  deep_data_test_cnn = deep_data_test.astype('float32')
+  print("data type", deep_data_test_cnn.dtype)
+  deep_data_test_cnn = np.transpose(deep_data_test_cnn, (2, 0, 1))
+  print("running cnn model in validate")
 
   # run cnn model and obtain the model instance, predictions on test datset (1, 0), and probabilities (decimals)
-  cnn_pred, cnn_proba = predictions_cnn(test_data, counter = argmax)
+  cnn_pred, cnn_proba = predictions_cnn(deep_data_test_cnn, counter = argmax)
+  print("cnn_pred", cnn_pred, cnn_proba)
   rnn_pred, rnn_proba = rnn_model_test(test_data)
   
   # Compare using F2 scoring (beta > 1 gives more weight to recall)
