@@ -12,8 +12,6 @@ data/full_3d_array.pkl
 .pth
 data/preprocessed_data_bipolar_OG
 .npy
-validation_results/
-
 data/test_data.pkl
 data/train_data.pkl
 .pkl
