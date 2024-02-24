@@ -24,6 +24,7 @@ f2_data = pd.DataFrame({
 
 plt.clf()
 
+sns.set_palette("viridis")
 f2_melted_data = pd.melt(f2_data, id_vars='Fold', value_name='F2 Score')
 sns.barplot(x='Fold', y='F2 Score', hue='variable', data=f2_melted_data)
 plt.xlabel('Fold')
@@ -41,7 +42,7 @@ precision_data = pd.DataFrame({
     'RNN': rnn_scores[1]
 })
 
-
+sns.set_palette("viridis")
 precision_melted_data = pd.melt(precision_data, id_vars='Fold', value_name='Precision')
 sns.barplot(x='Fold', y='Precision', hue='variable', data=precision_melted_data)
 plt.xlabel('Fold')
@@ -60,14 +61,13 @@ recall_data = pd.DataFrame({
     'RNN': rnn_scores[2]
 })
 
-
+sns.set_palette("viridis")
 recall_melted_data = pd.melt(recall_data, id_vars='Fold', value_name='Recall')
 sns.barplot(x='Fold', y='Recall', hue='variable', data=recall_melted_data)
 plt.xlabel('Fold')
 plt.ylabel('Recall')
 plt.title('Recall Across Folds')
 plt.legend(title='Model', fontsize='small')
-plt.show()
 
 plt.clf()
 
@@ -79,7 +79,7 @@ accuracy_data = pd.DataFrame({
     'RNN': rnn_scores[3]
 })
 
-
+sns.set_palette("viridis")
 accuracy_melted_data = pd.melt(recall_data, id_vars='Fold', value_name='Accuracy')
 sns.barplot(x='Fold', y='Accuracy', hue='variable', data=accuracy_melted_data)
 plt.xlabel('Fold')
