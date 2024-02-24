@@ -25,7 +25,7 @@ from preprocessing.functions_prepro import *
 if __name__ == "__main__":
     print('Running sample file')
     # data_file_path = '/radraid/arathi/'
-    data_file_path = 'tuep2/'
+    data_file_path = 'data/'
 else:
     print('Running batch file(s)')
     from batch_processing import data_file_batch
@@ -33,7 +33,7 @@ else:
 if __name__ == "__main__":
     print('Running sample file')
     # data_file_path = '/radraid/arathi/'
-    data_file_path = 'tuep2/'
+    data_file_path = 'data/'
 else:
     print('Running batch file(s)')
     from batch_processing import data_file_batch
@@ -48,8 +48,8 @@ else:
 # # data_list = list of 4 lists that contain 2D numpy arrays
 # # label_list = list of 4 1D numpy arrays
 # # patientID_list = list of 4 1D numpy arrays
-data_file_path = 'tuep2/'
-[data_list, label_list, patientID_list] = load_data(data_file_path)
+# data_file_path = 'data/'
+# [data_list, label_list, patientID_list] = load_data(data_file_path)
 
 # # Check load data 
 # print(len(data_list))
@@ -83,43 +83,43 @@ data_file_path = 'tuep2/'
 # full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 # Load in data after it has been generated locally
-# with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
-#      full_data_array = pickle.load(f)
-# print("Full data array shape:", full_data_array.shape)
+with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
+     full_data_array = pickle.load(f)
+print("Full data array shape:", full_data_array.shape)
 
 # # Impute function 
-# data = run_impute(full_data_array)
-# print("impute ran")
-# print(data.shape)
+data = run_impute(full_data_array)
+print("impute ran")
+print(data.shape)
 
 # Train-Test Split
-# train_data, test_data = split(data, data_file_path, data_file_path)
-# with open(data_file_path + 'train_data.pkl', 'rb') as f:
-#     train_data = pickle.load(f)
-# with open(data_file_path + 'test_data.pkl', 'rb') as f:
-#     test_data = pickle.load(f)
+train_data, test_data = split(data, data_file_path, data_file_path)
+with open(data_file_path + 'train_data.pkl', 'rb') as f:
+    train_data = pickle.load(f)
+with open(data_file_path + 'test_data.pkl', 'rb') as f:
+    test_data = pickle.load(f)
 
 # Break down train data structure
-# data_full = train_data[:, 3:, :]
-# labels = train_data[0, 0, :]
-# patient_id = train_data[0, 1, :]
-# num_segments = train_data.shape[2]
-# num_channels = train_data.shape[0]
-# num_data = train_data.shape[1] - 3
-# data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
-# print("Train data reshape ran")
-# print(data_reshape.shape)
+data_full = train_data[:, 3:, :]
+labels = train_data[0, 0, :]
+patient_id = train_data[0, 1, :]
+num_segments = train_data.shape[2]
+num_channels = train_data.shape[0]
+num_data = train_data.shape[1] - 3
+data_reshape = np.reshape(data_full, (num_segments, num_channels, num_data))
+print("Train data reshape ran")
+print(data_reshape.shape)
 
 # Break down test data structure
-# data_full_test = test_data[:, 3:, :]
-# labels_test = test_data[0, 0, :]
-# patient_id_test = test_data[0, 1, :]
-# num_segments_test = test_data.shape[2]
-# num_channels_test = test_data.shape[0]
-# num_data_test = test_data.shape[1] - 3
-# data_reshape_test = np.reshape(data_full_test, (num_segments_test, num_channels_test, num_data_test))
-# print("Train data reshape ran")
-# print(data_reshape_test.shape)
+data_full_test = test_data[:, 3:, :]
+labels_test = test_data[0, 0, :]
+patient_id_test = test_data[0, 1, :]
+num_segments_test = test_data.shape[2]
+num_channels_test = test_data.shape[0]
+num_data_test = test_data.shape[1] - 3
+data_reshape_test = np.reshape(data_full_test, (num_segments_test, num_channels_test, num_data_test))
+print("Train data reshape ran")
+print(data_reshape_test.shape)
 
 # # Extract features
 
@@ -142,9 +142,9 @@ data_file_path = 'tuep2/'
 # print("Test features array", features_3d_array_test.shape)
 
 # Create Stratified Cross Validation object
-# splits = 5
-# strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
-# strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
+splits = 5
+strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
+strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 # Tune classical parameters
 
@@ -175,9 +175,15 @@ data_file_path = 'tuep2/'
 # train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
 
 # # Deep Learning
-# cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy, counter = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
-# rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
-#         learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
+#cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy, counter = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
+rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
+        learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
+
+# with open('results/cnn_results.pkl', 'wb') as f:
+#      pickle.dump([cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy], f)
+
+with open('results/rnn_results.pkl', 'wb') as f:
+     pickle.dump([rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list], f)
 
 # with open('results/cnn_results', 'w') as f:
 #     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
