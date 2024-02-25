@@ -3,7 +3,7 @@
 .idea
 .ipynb_checkpoints
 .pyc
-.jpg
+validation_results/*.jpg
 .txt
 .csv
 __pycache__/
