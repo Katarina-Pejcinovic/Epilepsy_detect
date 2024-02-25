@@ -197,8 +197,8 @@ def validate(train_data,
 
   
   #Generate Plots for Metrics Across Folds
-  results_list = ['ica_scores.pkl','kbest_scores.pkl','umap_scores.pkl','rnn_results.pkl']
-  models = ['ica_scores','kbest_scores','umap_scores','rnn_scores']
+  results_list = ['ica_scores.pkl','kbest_scores.pkl','umap_scores.pkl','rnn_results.pkl', 'cnn_results.pkl']
+  models = ['ica_scores','kbest_scores','umap_scores','rnn_scores','cnn_scores']
 
 
 
@@ -213,11 +213,12 @@ def validate(train_data,
       'ICA': ica_scores[0][0],
       'KBest': kbest_scores[0][0],
       'UMap': umap_scores[0][0],
-      'RNN': rnn_scores[0]
+      'RNN': rnn_scores[0],
+      'CNN': cnn_scores[0]
   })
 
   plt.clf()
-  
+
   sns.set_palette("viridis")
   f2_melted_data = pd.melt(f2_data, id_vars='Fold', value_name='F2 Score')
   sns.barplot(x='Fold', y='F2 Score', hue='variable', data=f2_melted_data)
@@ -234,7 +235,8 @@ def validate(train_data,
       'ICA': ica_scores[0][1],
       'KBest': kbest_scores[0][1],
       'UMap': umap_scores[0][1],
-      'RNN': rnn_scores[1]
+      'RNN': rnn_scores[1],
+      'CNN': cnn_scores[1]
   })
 
   sns.set_palette("viridis")
@@ -254,7 +256,8 @@ def validate(train_data,
       'ICA': ica_scores[0][2],
       'KBest': kbest_scores[0][2],
       'UMap': umap_scores[0][2],
-      'RNN': rnn_scores[2]
+      'RNN': rnn_scores[2],
+      'CNN': cnn_scores[2]
   })
 
   sns.set_palette("viridis")
@@ -273,7 +276,8 @@ def validate(train_data,
       'ICA': ica_scores[0][3],
       'KBest': kbest_scores[0][3],
       'UMap': umap_scores[0][3],
-      'RNN': rnn_scores[3]
+      'RNN': rnn_scores[3],
+      'CNN': cnn_scores[3]
   })
 
   sns.set_palette("viridis")
