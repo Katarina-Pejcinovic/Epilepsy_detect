@@ -133,10 +133,10 @@ print(data_reshape_test.shape)
 #     pickle.dump(features_3d_array_test, f)
 
 # # Load in features after it has been generated locally
-# with open('data/features_3d_array.pkl', 'rb') as f:
-#     features_3d_array = pickle.load(f)
-# with open('data/features_3d_array_test.pkl', 'rb') as f:
-#     features_3d_array_test = pickle.load(f)
+with open('data/features_3d_array.pkl', 'rb') as f:
+    features_3d_array = pickle.load(f)
+with open('data/features_3d_array_test.pkl', 'rb') as f:
+    features_3d_array_test = pickle.load(f)
 
 # print("Train features array", features_3d_array.shape)
 # print("Test features array", features_3d_array_test.shape)
@@ -206,14 +206,14 @@ with open('results/rnn_results.pkl', 'wb') as f:
 
 # print("CNN Arg Max: ", cnn_arg_max)
 
-# Testing
-# validate(train_data = features_3d_array, 
-#           train_labels = labels, 
-#           test_data = features_3d_array_test, 
-#           test_labels = labels_test, 
-#           deep_data_test = data_full_test, 
-#           parameters = best_model_params,
-#           stratCV = strat_kfold,
-#           argmax = cnn_arg_max)
+Testing
+validate(train_data = features_3d_array, 
+          train_labels = labels, 
+          test_data = features_3d_array_test, 
+          test_labels = labels_test, 
+          deep_data_test = data_full_test, 
+          parameters = best_model_params,
+          stratCV = strat_kfold,
+          argmax = cnn_arg_max)
 
 print('Full pipeline finished')
