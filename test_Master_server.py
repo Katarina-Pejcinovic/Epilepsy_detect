@@ -83,17 +83,17 @@ else:
 # full_data_array = new_data_struct(result_4d, label_result, patientID_result, patient_list_folder, save_file_path)
 
 # Load in data after it has been generated locally
-# with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
-#      full_data_array = pickle.load(f)
-# print("Full data array shape:", full_data_array.shape)
+with open(data_file_path + 'full_3d_array.pkl', 'rb') as f:
+     full_data_array = pickle.load(f)
+print("Full data array shape:", full_data_array.shape)
 
 # # Impute function 
-# data = run_impute(full_data_array)
-# print("impute ran")
-# print(data.shape)
+data = run_impute(full_data_array)
+print("impute ran")
+print(data.shape)
 
 # Train-Test Split
-# train_data, test_data = split(data, data_file_path, data_file_path)
+train_data, test_data = split(data, data_file_path, data_file_path)
 with open(data_file_path + 'train_data.pkl', 'rb') as f:
     train_data = pickle.load(f)
 with open(data_file_path + 'test_data.pkl', 'rb') as f:
@@ -133,13 +133,13 @@ print(data_reshape_test.shape)
 #     pickle.dump(features_3d_array_test, f)
 
 # # Load in features after it has been generated locally
-with open('data/features_3d_array.pkl', 'rb') as f:
-    features_3d_array = pickle.load(f)
-with open('data/features_3d_array_test.pkl', 'rb') as f:
-    features_3d_array_test = pickle.load(f)
+# with open('data/features_3d_array.pkl', 'rb') as f:
+#     features_3d_array = pickle.load(f)
+# with open('data/features_3d_array_test.pkl', 'rb') as f:
+#     features_3d_array_test = pickle.load(f)
 
-print("Train features array", features_3d_array.shape)
-print("Test features array", features_3d_array_test.shape)
+# print("Train features array", features_3d_array.shape)
+# print("Test features array", features_3d_array_test.shape)
 
 # Create Stratified Cross Validation object
 splits = 5
@@ -153,31 +153,37 @@ strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 # ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
 #Load in locally generated
-with open('results/best_umap_params_dict.pkl', 'rb') as f:
-    umap_params = pickle.load(f)
-with open('results/best_ica_params_dict.pkl', 'rb') as f:
-    ica_params = pickle.load(f)
-with open('results/best_umap_scores.pkl', 'rb') as f:
-    umap_scores = pickle.load(f)
-with open('results/best_ica_scores.pkl', 'rb') as f:
-    ica_scores = pickle.load(f)
+# with open('results/best_umap_params_dict.pkl', 'rb') as f:
+#     umap_params = pickle.load(f)
+# with open('results/best_ica_params_dict.pkl', 'rb') as f:
+#     ica_params = pickle.load(f)
+# with open('results/best_umap_scores.pkl', 'rb') as f:
+#     umap_scores = pickle.load(f)
+# with open('results/best_ica_scores.pkl', 'rb') as f:
+#     ica_scores = pickle.load(f)
 
 # Find best feature selection method and keep those parameters
-best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores)
+# best_model_params, best_model_params_scores = find_best_feat_select(umap_params, umap_scores, ica_params, ica_scores)
 
 #Load in best determined model params
-with open('results/best_params_dict.pkl', 'rb') as f:
-    best_model_params = pickle.load(f)
-with open('results/classical_ml_scores.pkl', 'rb') as f:
-    best_model_params_scores = pickle.load(f)
+# with open('results/best_params_dict.pkl', 'rb') as f:
+#     best_model_params = pickle.load(f)
+# with open('results/classical_ml_scores.pkl', 'rb') as f:
+#     best_model_params_scores = pickle.load(f)
 
-train_data_type = train_data.astype('float32')
-train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
+# train_data_type = train_data.astype('float32')
+# train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
 
 # # Deep Learning
 # cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy, counter = run_EEGnetCV(strat_kfold, train_data_cnn, batch_size = 42)
 #rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
         #learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
+
+# with open('results/cnn_results.pkl', 'wb') as f:
+#      pickle.dump([cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy], f)
+
+with open('results/rnn_results.pkl', 'wb') as f:
+     pickle.dump([rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list], f)
 
 # with open('results/cnn_results', 'w') as f:
 #     for item in [cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy]:
@@ -195,19 +201,19 @@ train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
 #     for item in [rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list]:
 #         f.write("%s\n" % item)
 
-with open('results/cnn_results.txt', 'r') as file:
-    cnn_arg_max = file.readline().strip()
+# with open('results/cnn_results.txt', 'r') as file:
+#     cnn_arg_max = file.readline().strip()
 
 # print("CNN Arg Max: ", cnn_arg_max)
 
 # Testing
-validate(train_data = features_3d_array, 
-          train_labels = labels, 
-          test_data = features_3d_array_test, 
-          test_labels = labels_test, 
-          deep_data_test = data_full_test, 
-          parameters = best_model_params,
-          stratCV = strat_kfold,
-          argmax = cnn_arg_max)
+# validate(train_data = features_3d_array, 
+#           train_labels = labels, 
+#           test_data = features_3d_array_test, 
+#           test_labels = labels_test, 
+#           deep_data_test = data_full_test, 
+#           parameters = best_model_params,
+#           stratCV = strat_kfold,
+#           argmax = cnn_arg_max)
 
 print('Full pipeline finished')

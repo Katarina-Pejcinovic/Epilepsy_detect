@@ -7,6 +7,7 @@ from sklearn.metrics import fbeta_score
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tabulate import tabulate
 from datetime import datetime
+import seaborn as sns
 
 def validate(train_data, 
              train_labels,
@@ -89,28 +90,31 @@ def validate(train_data,
   formatted_datetime = current_datetime.strftime("%Y-%m-%D %H:%M:%S")
 
   with open('validation_results/figure_list.txt', 'w') as f:
-     f.write(f"New Run: {formatted_datetime}\n")
+     f.write(f"New Run: {formatted_datetime}\n\n")
 
   for i,score in enumerate(results_f2_score):
     print("f2 score for ", model_names[i], ": ", score, sep = '')
     with open('validation_results/figure_list.txt', 'a') as f:
-     f.write(f"\nThe f2 score for {model_names[i]} is {score}")
+     f.write(f"The f2 score for {model_names[i]} is {score}\n")
   
   with open('validation_results/figure_list.txt', 'a') as f:
      f.write(f"The highest f2 score is {max(results_f2_score, key=lambda x: x)} \n\n")
 
   # for i, pred in enumerate([svm_pred, rf_pred, hmm_pred, kmeans_pred, cnn_pred, rnn_pred]):
-  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba, rnn_proba]):
+  for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba, cnn_proba, rnn_proba]):
   #for i, pred in enumerate([svm_proba, rf_proba, xg_proba, gmm_proba,cnn_proba]):
 
     if i < 4:
       #  print("ostensible 1")
        pred = np.amax(pred, axis =1)
        fpr, tpr, _ = roc_curve(test_labels, pred)
-    else:
-      # print(i)
-      # print(pred)
+    elif i == 4:
       fpr, tpr, _ = roc_curve(y_true, pred)
+    else:
+      shape = np.shape(pred)
+      pred = np.reshape(pred, (shape[1]))
+      fpr, tpr, _ = roc_curve(y_true, pred)
+    
     roc_auc = auc(fpr, tpr)
     plt.figure()
     plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = {:.2f})'.format(roc_auc))
@@ -157,6 +161,7 @@ def validate(train_data,
 
     with open('validation_results/figure_list.txt', 'a') as f:
         f.write(model_names[i])
+        f.write(f'\n')
         f.write(str(matrix))
         f.write(f'\n Precision: {precision}\n')
         f.write(f'Accuracy: {accuracy}\n')
@@ -189,3 +194,93 @@ def validate(train_data,
     disp.plot()
     plt.title(f'{model_names[i]}')
     plt.savefig("validation_results/{}_cm_heatmap.jpg".format(model_names[i]))
+
+  
+  #Generate Plots for Metrics Across Folds
+  results_list = ['ica_scores.pkl','kbest_scores.pkl','umap_scores.pkl','rnn_results.pkl']
+  models = ['ica_scores','kbest_scores','umap_scores','rnn_scores']
+
+
+
+  for name, result in zip(models, results_list):
+        with open('results/'+result, 'rb') as f:
+              scores = pickle.load(f)
+              globals()[name] = scores
+
+
+  f2_data = pd.DataFrame({
+      'Fold': [f'Fold {i+1}' for i in range(0,5)],
+      'ICA': ica_scores[0][0],
+      'KBest': kbest_scores[0][0],
+      'UMap': umap_scores[0][0],
+      'RNN': rnn_scores[0]
+  })
+
+  plt.clf()
+  
+  sns.set_palette("viridis")
+  f2_melted_data = pd.melt(f2_data, id_vars='Fold', value_name='F2 Score')
+  sns.barplot(x='Fold', y='F2 Score', hue='variable', data=f2_melted_data)
+  plt.xlabel('Fold')
+  plt.ylabel('F2 Score')
+  plt.title('F2 Score Across Folds')
+  plt.legend(title='Model', fontsize='small')
+  plt.savefig("validation_results/f2_fold_fig.jpg")
+
+  plt.clf()
+
+  precision_data = pd.DataFrame({
+      'Fold': [f'Fold {i+1}' for i in range(0,5)],
+      'ICA': ica_scores[0][1],
+      'KBest': kbest_scores[0][1],
+      'UMap': umap_scores[0][1],
+      'RNN': rnn_scores[1]
+  })
+
+  sns.set_palette("viridis")
+  precision_melted_data = pd.melt(precision_data, id_vars='Fold', value_name='Precision')
+  sns.barplot(x='Fold', y='Precision', hue='variable', data=precision_melted_data)
+  plt.xlabel('Fold')
+  plt.ylabel('Precision')
+  plt.title('Precision Across Folds')
+  plt.legend(title='Model', fontsize='small')
+  plt.savefig("validation_results/precision_fold_fig.jpg")
+
+
+  plt.clf()
+
+  recall_data = pd.DataFrame({
+      'Fold': [f'Fold {i+1}' for i in range(0,5)],
+      'ICA': ica_scores[0][2],
+      'KBest': kbest_scores[0][2],
+      'UMap': umap_scores[0][2],
+      'RNN': rnn_scores[2]
+  })
+
+  sns.set_palette("viridis")
+  recall_melted_data = pd.melt(recall_data, id_vars='Fold', value_name='Recall')
+  sns.barplot(x='Fold', y='Recall', hue='variable', data=recall_melted_data)
+  plt.xlabel('Fold')
+  plt.ylabel('Recall')
+  plt.title('Recall Across Folds')
+  plt.legend(title='Model', fontsize='small')
+  plt.savefig("validation_results/recall_fold_fig.jpg")
+
+  plt.clf()
+
+  accuracy_data = pd.DataFrame({
+      'Fold': [f'Fold {i+1}' for i in range(0,5)],
+      'ICA': ica_scores[0][3],
+      'KBest': kbest_scores[0][3],
+      'UMap': umap_scores[0][3],
+      'RNN': rnn_scores[3]
+  })
+
+  sns.set_palette("viridis")
+  accuracy_melted_data = pd.melt(recall_data, id_vars='Fold', value_name='Accuracy')
+  sns.barplot(x='Fold', y='Accuracy', hue='variable', data=accuracy_melted_data)
+  plt.xlabel('Fold')
+  plt.ylabel('Accuracy')
+  plt.title('Accuracy Across Folds')
+  plt.legend(title='Model', fontsize='small')
+  plt.savefig("validation_results/accuracy_fold_fig.jpg")

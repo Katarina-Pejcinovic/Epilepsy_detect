@@ -16,3 +16,4 @@ data/test_data.pkl
 data/train_data.pkl
 .pkl
 rnn_saved_model/
+tuep/
