@@ -109,10 +109,34 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
 
     return val_predictions_binary_list, val_predictions_list, f2_score_list, precision_list, recall_list, accuracy_list
         
+def rnn_model_train(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
+    model_save_path = 'deep_learning/rnn_saved_model_final'
+    train_data = train_df[:,3:,:]
+    n_channels = train_data.shape[0]
+    train_label = train_df[0,0,:]
+    patient_id = train_df[0, 1, :]
+    model = load_model('deep_learning/rnn_saved_model')
+    X_train_reshaped = train_data.reshape(train_data.shape[2], n_channels, train_data.shape[1])
+    y_train = train_label
+    opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
+    model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+
+    history = model.fit(
+        X_train_reshaped,
+        y_train,
+        batch_size=batch_size,
+        epochs=epochs,
+        verbose=1
+    )
+
+    model.save(model_save_path)
+
+
+
 def rnn_model_test(test_df):
     predictions = []
     preds_proba = []
-    model = load_model('deep_learning/rnn_saved_model')
+    model = load_model('deep_learning/rnn_saved_model_final')
     test_data = test_df[:,:,:]
     n_channels = test_data.shape[0]
     # Evaluate the model on the test data
