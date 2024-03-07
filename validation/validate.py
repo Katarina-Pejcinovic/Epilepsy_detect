@@ -8,6 +8,8 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tabulate import tabulate
 from datetime import datetime
 import seaborn as sns
+import pickle
+
 
 def validate(train_data, 
              train_labels,

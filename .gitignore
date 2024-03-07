@@ -17,3 +17,5 @@ data/train_data.pkl
 .pkl
 rnn_saved_model/
 tuep/
+data/features_3d_array_test.pkl
+data/features 3d_array.pkl
