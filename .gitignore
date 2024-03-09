@@ -19,3 +19,8 @@ rnn_saved_model/
 tuep/
 data/features_3d_array_test.pkl
 data/features 3d_array.pkl
+trained_model0.pth 
+trained_model1.pth 
+trained_model2.pth
+trained_model3.pth 
+trained_model4.pth 

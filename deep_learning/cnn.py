@@ -84,18 +84,20 @@ def run_EEGnet(data, labels, batch_size, counter):
         # Use tqdm to create a progress bar for the outer loop
         for i in tqdm(range(0, len(data), batch_size), desc=f"Epoch {epoch + 1}/{num_epochs}"):
             inputs = torch.from_numpy(data[i*batch_size:i*batch_size+batch_size])
-            labels = torch.FloatTensor(np.array([labels[i*batch_size:i*batch_size+batch_size]]).T*1.0)
-            labels = labels.view(-1, 1)
+            labels_batch = torch.FloatTensor(np.array([labels[i*batch_size:i*batch_size+batch_size]]).T).to('cpu') * 1.0
+            print(type(labels))
+            labels_batch = labels_batch.view(-1, 1)
+
 
             # Move data to the device
-            inputs, labels = inputs.to(device), labels.to(device)
+            inputs, labels_batch = inputs.to(device), labels_batch.to(device)
 
             # Zero the parameter gradients
             optimizer.zero_grad()
 
             # Forward + backward + optimize
             outputs = model(inputs)
-            loss = criterion(outputs, labels)
+            loss = criterion(outputs, labels_batch)
             loss.backward()
             optimizer.step()
 
