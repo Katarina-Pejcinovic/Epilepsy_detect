@@ -43,6 +43,7 @@ from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
+from tensorflow.python.keras import backend as K
 
 def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
     strat_kfold = strat_kfold
@@ -61,7 +62,7 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
 
     counter = 0
     for train_index, val_index in strat_kfold:
-
+        K.clear_session()
         counter+=1
 
         X_train, X_val = train_data[:,:,train_index], train_data[:,:,val_index]
