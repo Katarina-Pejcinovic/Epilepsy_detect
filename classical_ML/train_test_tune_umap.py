@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import precision_score, recall_score, accuracy_score
 from xgboost import XGBClassifier
 from sklearn.mixture import GaussianMixture
-import umap.umap_ as umap
+import umap as umap
 import pickle
 
 

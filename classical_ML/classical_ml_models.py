@@ -17,7 +17,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.mixture import GaussianMixture
 from xgboost import XGBClassifier
 import pandas as pd
-import umap.umap_ as umap
+import umap as umap
 from sklearn.metrics import make_scorer,fbeta_score
 from sklearn.feature_selection import SelectKBest
 from sklearn.decomposition import FastICA
