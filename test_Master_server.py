@@ -194,7 +194,7 @@ train_data_cnn = np.transpose(train_data_type, (2, 0, 1))
 #     pickle.dump([cnn_arg_max, cnn_f2, cnn_precision, cnn_recall, cnn_accuracy], f)
 
 rnn_val_preds_binary, rnn_val_preds, rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list = rnn_model(train_data, 
-        learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
+        learning_rate=0.001, gradient_threshold=1, batch_size=1, epochs=1, n_splits=splits, strat_kfold=strat_kfold)
 
 with open('results/rnn_results.pkl', 'wb') as f:
      pickle.dump([rnn_f2_list, rnn_precision_list, rnn_recall_list, rnn_accuracy_list], f)

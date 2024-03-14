@@ -44,6 +44,20 @@ import numpy as np
 from sklearn.model_selection import StratifiedKFold
 from sklearn.metrics import accuracy_score
 from tensorflow.python.keras import backend as K
+from sklearn.model_selection import GridSearchCV
+from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+
+
+def create_model(learning_rate=0.001, gradient_threshold=1):
+    model = Sequential()
+    model.add(Bidirectional(LSTM(200, return_sequences=False), input_shape=(n_channels, X_train.shape[1])))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dense(1, activation='sigmoid'))
+    opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
+    model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
+    return model
 
 def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2, n_splits=5):
     strat_kfold = strat_kfold
@@ -59,6 +73,19 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
     recall_list = []
     precision_list = []
     accuracy_list = []
+
+    # Grid Search
+    X = train_data.transpose((2, 0, 1))
+    y = train_label
+    param_grid = {
+    'learning_rate': [0.001, 0.01, 0.1],
+    'gradient_threshold': [1, 5, 10]
+    }
+    model = KerasClassifier(build_fn=create_model, epochs=epochs, batch_size=batch_size, verbose=0)
+    grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=strat_kfold)
+    grid_result = grid_search.fit(X, y)
+    best_model = grid_result.best_estimator_.model
+    best_params = grid_result.best_params_
 
     counter = 0
     for train_index, val_index in strat_kfold:
@@ -77,7 +104,7 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
         model.add(Dense(32, activation='relu'))
         model.add(Dense(1, activation='sigmoid'))
 
-        opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
+        opt = Adam(learning_rate=best_params.learning_rate, clipnorm=best_params.gradient_threshold)
         model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
 
         history = model.fit(
@@ -106,38 +133,14 @@ def rnn_model(train_df, strat_kfold, learning_rate=0.001, gradient_threshold=1, 
         recall_list.append(r)
         accuracy_list.append(a)
         if max(f2_score_list) == f:
-            model.save(model_save_path)
+            model.save(model_save_path, include_optimizer=False)
 
     return val_predictions_binary_list, val_predictions_list, f2_score_list, precision_list, recall_list, accuracy_list
-        
-def rnn_model_train(train_df, learning_rate=0.001, gradient_threshold=1, batch_size=32, epochs=2):
-    model_save_path = 'deep_learning/rnn_saved_model_final'
-    train_data = train_df[:,3:,:]
-    n_channels = train_data.shape[0]
-    train_label = train_df[0,0,:]
-    patient_id = train_df[0, 1, :]
-    model = load_model('deep_learning/rnn_saved_model')
-    X_train_reshaped = train_data.reshape(train_data.shape[2], n_channels, train_data.shape[1])
-    y_train = train_label
-    opt = Adam(learning_rate=learning_rate, clipnorm=gradient_threshold)
-    model.compile(optimizer=opt, loss='binary_crossentropy', metrics=['accuracy'])
-
-    history = model.fit(
-        X_train_reshaped,
-        y_train,
-        batch_size=batch_size,
-        epochs=epochs,
-        verbose=1
-    )
-
-    model.save(model_save_path)
-
-
 
 def rnn_model_test(test_df):
     predictions = []
     preds_proba = []
-    model = load_model('deep_learning/rnn_saved_model_final')
+    model = load_model('deep_learning/rnn_saved_model')
     test_data = test_df[:,:,:]
     n_channels = test_data.shape[0]
     # Evaluate the model on the test data
