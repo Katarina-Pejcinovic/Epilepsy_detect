@@ -7,11 +7,11 @@ import pandas as pd
 # from data_organization.new_data_struct import *
 # from data_organization.patient_id_dict import *
 # from preprocessing.impute import * 
-from classical_ML.train_test_tune_umap import * 
+# from classical_ML.train_test_tune_umap import * 
 # from classical_ML.train_test_tune_selectkbest import * 
-from classical_ML.train_test_tune_ica import * 
-from classical_ML.find_best_feat_select import * 
-from classical_ML.load_best_params import *
+# from classical_ML.train_test_tune_ica import * 
+# from classical_ML.find_best_feat_select import * 
+# from classical_ML.load_best_params import *
 # from feature_selection.get_features import *
 # from feature_selection.cut_segments import *
 # from deep_learning.cnn import *
@@ -19,6 +19,8 @@ from classical_ML.load_best_params import *
 # from validation.validate import *
 # from preprocessing.train_test_split import *
 # from preprocessing.functions_prepro import *
+import pickle
+from sklearn.model_selection import StratifiedKFold
 
 # data/
 # Batch Processing
@@ -93,13 +95,13 @@ with open('/raid/smtam/results/labels.pkl', 'rb') as f:
 # print(data_reshape_test.shape)
 
 # # Load in features after it has been generated locally
-print("Loading in features")
-with open(data_file_path + 'features_3d_array.pkl', 'rb') as f:
-    features_3d_array = pickle.load(f)
+# print("Loading in features")
+# with open(data_file_path + 'features_3d_array.pkl', 'rb') as f:
+#     features_3d_array = pickle.load(f)
 # with open('/radraid/kpejcinovic/data/features_3d_array_test.pkl', 'rb') as f:
 #     features_3d_array_test = pickle.load(f)
 
-print("Train features array", features_3d_array.shape)
+# print("Train features array", features_3d_array.shape)
 # print("Test features array", features_3d_array_test.shape)
 
 # Create Stratified Cross Validation object
@@ -107,9 +109,26 @@ splits = 5
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
+for i, (train_index, test_index) in enumerate(strat_kfold_object.split(data_reshape, patient_id)):
+    train_classes = labels[train_index].tolist()
+    test_classes = labels[test_index].tolist()
+    positive_counts = train_classes.count(1)
+    negative_counts = train_classes.count(0)
+    test_positive_counts = test_classes.count(1)
+    test_negative_counts = test_classes.count(0)
+    print(f"Train size: {len(train_classes)}")
+    print(f"Test size: {len(test_classes)}")
+    print(f"Train epilepsy segment count: {positive_counts}")
+    print(f"Train no epilepsy segment count: {negative_counts}")
+    print(f"Test epilepsy segment count: {test_positive_counts}")
+    print(f"Test no epilepsy segment count: {test_negative_counts}")
+    print("")
+    
+print('Done')
+
 # Run once when training models
-ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 # umap_scores, umap_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
+# ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
 
 #Load in locally generated
 # with open('results/best_umap_params_dict.pkl', 'rb') as f:

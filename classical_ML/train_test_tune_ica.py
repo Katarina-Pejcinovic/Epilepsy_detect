@@ -13,6 +13,7 @@ from sklearn.mixture import GaussianMixture
 from sklearn.decomposition import FastICA
 import pickle
 from sklearn.metrics import precision_score, recall_score, accuracy_score
+from tqdm import tqdm
 
 
 def create_svc_pipeline(stratified_kfold, scoring_methods):
@@ -151,7 +152,7 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
 
   # num_patients = np.size(np.unique(patient_id))
-  splits = 5
+  splits = 3
 
   stratified_cv = list(stratified_cv)
 
@@ -182,7 +183,7 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   gmm_recall_list = []
   gmm_f2_list = []
 
-  for i, (train_idx, test_idx) in enumerate(stratified_cv):
+  for i, (train_idx, test_idx) in enumerate(tqdm(stratified_cv)):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     group_train = patient_id[train_idx]
@@ -355,7 +356,7 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   svc_best_params = svc_best_params_list[best_svc_model_score[0][0]]
 
   # Save svc params to text file
-  file = open('results/best_ica_svc_params.txt','w')
+  file = open('/raid/smtam/results/best_ica_svc_params.txt','w')
   for item, score in zip(svc_best_params_list, svc_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -371,7 +372,7 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   rf_best_params = rf_best_params_list[best_rf_model_score[0][0]]
 
   # Save rf params to text file
-  file = open('results/best_ica_rf_params.txt','w')
+  file = open('/raid/smtam/results/best_ica_rf_params.txt','w')
   for item, score in zip(rf_best_params_list, rf_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -387,7 +388,7 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   xg_best_params = xg_best_params_list[best_xg_model_score[0][0]]
 
   # Save xg params to text file
-  file = open('results/best_ica_xg_params.txt','w')
+  file = open('/raid/smtam/results/best_ica_xg_params.txt','w')
   for item, score in zip(xg_best_params_list, xg_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -403,7 +404,7 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   gmm_best_params = gmm_best_params_list[best_gmm_model_score[0][0]]
 
   # Save gmm params to text file
-  file = open('results/best_ica_gmm_params.txt','w')
+  file = open('/raid/smtam/results/best_ica_gmm_params.txt','w')
   for item, score in zip(gmm_best_params_list, gmm_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -423,15 +424,15 @@ def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   all_scores = [svc_scores_list, rf_scores_list, xg_scores_list, gmm_scores_list]
 
   # Save best params to load later
-  with open('results/best_ica_params_dict.pkl', 'wb') as f:
+  with open('/raid/smtam/results/best_ica_params_dict.pkl', 'wb') as f:
     pickle.dump(param_best, f)
 
   # Save best params scores to load later
-  with open('results/best_ica_scores.pkl', 'wb') as f:
+  with open('/raid/smtam/results/best_ica_scores.pkl', 'wb') as f:
     pickle.dump(param_scores, f)
 
   # Save all scores to load later
-  with open('results/ica_scores.pkl', 'wb') as f:
+  with open('/raid/smtam/results/ica_scores.pkl', 'wb') as f:
     pickle.dump(all_scores, f)
 
   # Return

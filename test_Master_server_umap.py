@@ -108,8 +108,8 @@ strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
 
 # Run once when training models
-ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
-# umap_scores, umap_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
+# ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold)
+umap_scores, umap_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold)
 
 #Load in locally generated
 # with open('results/best_umap_params_dict.pkl', 'rb') as f:

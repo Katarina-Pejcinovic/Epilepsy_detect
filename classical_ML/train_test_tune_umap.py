@@ -13,6 +13,7 @@ from xgboost import XGBClassifier
 from sklearn.mixture import GaussianMixture
 import umap as umap
 import pickle
+from tqdm import tqdm
 
 
 def create_svc_pipeline(stratified_kfold, scoring_methods):
@@ -21,10 +22,10 @@ def create_svc_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_components':[10, 50],
+      'umap__min_dist': [0.1],
       # 'umap__n_neighbors':np.linspace(10, 20, 2, endpoint=True),
-      'umap__n_neighbors':[5, 10],
+      'umap__n_neighbors':[10],
       'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
       'svc__C':[0.1, 1, 10, 100],
       'svc__degree': [2, 3, 4, 5],
@@ -56,10 +57,10 @@ def create_rf_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_components':[10, 50],
+      'umap__min_dist': [0.1],
       # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      'umap__n_neighbors':[5, 10],
+      'umap__n_neighbors':[10],
       'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
       'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
       'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
@@ -80,7 +81,7 @@ def create_rf_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=2,
         )
 
   return param_search
@@ -91,10 +92,10 @@ def create_xg_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_components':[10, 50],
+      'umap__min_dist': [0.1],
       # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      'umap__n_neighbors':[5, 10],
+      'umap__n_neighbors':[10],
       'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
       'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
       'xgbclassifier__learning_rate': [0.01, 0.1],
@@ -114,7 +115,7 @@ def create_xg_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=2,
         )
 
   return param_search
@@ -125,10 +126,10 @@ def create_gmm_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':np.linspace(10, 100, 10, endpoint=True),
-      'umap__min_dist': [0.0, 0.1, 0.25, 0.5, 0.8, 0.99],
+      'umap__n_components':[10, 50],
+      'umap__min_dist': [0.1],
       # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      'umap__n_neighbors':[5, 10],
+      'umap__n_neighbors':[10],
       'gaussianmixture__init_params':['k-means++', 'random'],
       'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
       # 'umap__metric':['euclidean'],
@@ -147,7 +148,7 @@ def create_gmm_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=2,
         )
 
   return param_search
@@ -183,7 +184,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
 
   # num_patients = np.size(np.unique(patient_id))
-  splits = 5
+  splits = 3
 
   stratified_cv = list(stratified_cv)
 
@@ -213,7 +214,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   gmm_recall_list = []
   gmm_f2_list = []
 
-  for i, (train_idx, test_idx) in enumerate(stratified_cv):
+  for i, (train_idx, test_idx) in enumerate(tqdm(stratified_cv)):
     X_train, X_test = data_reshape[train_idx], data_reshape[test_idx]
     y_train, y_test = labels[train_idx], labels[test_idx]
     group_train = patient_id[train_idx]
@@ -387,7 +388,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   svc_best_params = svc_best_params_list[best_svc_model_score[0][0]]
 
   # Save svc params to text file
-  file = open('results/best_umap_svc_params.txt','w')
+  file = open('/raid/smtam/results/best_umap_svc_params.txt','w')
   for item, score in zip(svc_best_params_list, svc_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -405,7 +406,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   rf_best_params = rf_best_params_list[best_rf_model_score[0][0]]
 
   # Save rf params to text file
-  file = open('results/best_umap_rf_params.txt','w')
+  file = open('/raid/smtam/results/best_umap_rf_params.txt','w')
   for item, score in zip(rf_best_params_list, rf_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -423,7 +424,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   xg_best_params = xg_best_params_list[best_xg_model_score[0][0]]
 
   # Save xg params to text file
-  file = open('results/best_umap_xg_params.txt','w')
+  file = open('/raid/smtam/results/best_umap_xg_params.txt','w')
   for item, score in zip(xg_best_params_list, xg_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -441,7 +442,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   gmm_best_params = gmm_best_params_list[best_gmm_model_score[0][0]]
 
   # Save gmm params to text file
-  file = open('results/best_umap_gmm_params.txt','w')
+  file = open('/raid/smtam/results/best_umap_gmm_params.txt','w')
   for item, score in zip(gmm_best_params_list, gmm_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -461,15 +462,15 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   all_scores = [svc_scores_list, rf_scores_list, xg_scores_list, gmm_scores_list]
 
   # Save best params to load later
-  with open('results/best_umap_params_dict.pkl', 'wb') as f:
+  with open('/raid/smtam/results/best_umap_params_dict.pkl', 'wb') as f:
     pickle.dump(param_best, f)
 
   # Save best params scores to load later
-  with open('results/best_umap_scores.pkl', 'wb') as f:
+  with open('/raid/smtam/results/best_umap_scores.pkl', 'wb') as f:
     pickle.dump(param_scores, f)
 
   # Save all scores to load later
-  with open('results/umap_scores.pkl', 'wb') as f:
+  with open('/raid/smtam/results/umap_scores.pkl', 'wb') as f:
     pickle.dump(all_scores, f)
 
   # Return
