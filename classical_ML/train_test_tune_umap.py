@@ -14,7 +14,15 @@ from sklearn.mixture import GaussianMixture
 import umap as umap
 import pickle
 from tqdm import tqdm
+from joblib import dump, load
 
+def calc_f2_score(precision, recall, beta):
+  num = (1 + pow(beta, 2)) * (precision) * (recall)
+  denom = (pow(beta, 2) * precision) + recall
+  f2_score = num/denom
+  return f2_score
+
+################################################## SVM ##################################################
 
 def create_svc_pipeline(stratified_kfold, scoring_methods):
 
@@ -22,10 +30,9 @@ def create_svc_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[10, 50],
-      'umap__min_dist': [0.1],
-      # 'umap__n_neighbors':np.linspace(10, 20, 2, endpoint=True),
-      'umap__n_neighbors':[10],
+      'umap__n_components':[20, 40, 60, 80, 100],
+      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
+      'umap__n_neighbors':[5, 10],
       'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
       'svc__C':[0.1, 1, 10, 100],
       'svc__degree': [2, 3, 4, 5],
@@ -51,19 +58,69 @@ def create_svc_pipeline(stratified_kfold, scoring_methods):
   
   return param_search
 
+def train_test_tune_umap_svc(data, labels, patient_id, stratified_cv, save_file):
+
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  svc_param_search = create_svc_pipeline(stratified_cv, scoring)
+  svc_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  svc_results = svc_param_search.cv_results_
+  svc_accuracy = svc_results['mean_test_Accuracy']
+  svc_precision = svc_results['mean_test_Precision']
+  svc_recall = svc_results['mean_test_Recall']
+  svc_f2 = calc_f2_score(svc_precision, svc_recall, 2)
+  best_f2_index = np.nanargmax(svc_f2)
+  svc_best_params = svc_results['params'][best_f2_index]
+  svc_best_score = [svc_f2[best_f2_index], svc_precision[best_f2_index], svc_recall[best_f2_index], svc_accuracy[best_f2_index]]
+
+  # Save best set of params
+  svc_param_search.best_params_ = svc_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in svc_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    svc_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = svc_param_search.best_estimator_
+
+  with open(save_file + 'svc_best_params_umap.pkl', 'wb') as f:
+    pickle.dump(svc_best_params, f)
+
+  with open(save_file + 'svc_best_scores_umap.pkl', 'wb') as f:
+    pickle.dump(svc_best_score, f)
+
+  dump(best_estimator, save_file + 'svc_best_estimator_umap.joblib')
+
+  return svc_best_params, svc_best_score, best_estimator
+
+
+################################################## RF ##################################################
 
 def create_rf_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), RandomForestClassifier())
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[10, 50],
-      'umap__min_dist': [0.1],
-      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      'umap__n_neighbors':[10],
-      'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
-      'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
-      'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      'umap__n_components':[20, 40, 60, 80, 100],
+      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
+      'umap__n_neighbors':[5, 10],
+      # 'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
+      'randomforestclassifier__n_estimators':[2, 8, 64, 100],
+      # 'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
+      'randomforestclassifier__min_samples_leaf':[100, 200, 300, 400],
+      # 'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      'randomforestclassifier__max_depth':[5, 10, 15, 20],
       # 'umap__metric':['euclidean'],
       # 'umap__n_components':[3],
       # 'umap__n_neighbors':[5, 10],
@@ -86,17 +143,65 @@ def create_rf_pipeline(stratified_kfold, scoring_methods):
 
   return param_search
 
+def train_test_tune_umap_rf(data, labels, patient_id, stratified_cv, save_file):
+  
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  rf_param_search = create_rf_pipeline(stratified_cv, scoring)
+  rf_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  rf_results = rf_param_search.cv_results_
+  rf_accuracy = rf_results['mean_test_Accuracy']
+  rf_precision = rf_results['mean_test_Precision']
+  rf_recall = rf_results['mean_test_Recall']
+  rf_f2 = calc_f2_score(rf_precision, rf_recall, 2)
+  best_f2_index = np.nanargmax(rf_f2)
+  rf_best_params = rf_results['params'][best_f2_index]
+  rf_best_score = [rf_f2[best_f2_index], rf_precision[best_f2_index], rf_recall[best_f2_index], rf_accuracy[best_f2_index]]
+
+  # Save best set of params
+  rf_param_search.best_params_ = rf_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in rf_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    rf_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = rf_param_search.best_estimator_
+
+  with open(save_file + 'rf_best_params_umap.pkl', 'wb') as f:
+    pickle.dump(rf_best_params, f)
+
+  with open(save_file + 'rf_best_scores_umap.pkl', 'wb') as f:
+    pickle.dump(rf_best_score, f)
+
+  dump(best_estimator, save_file + 'rf_best_estimator_umap.joblib')
+
+  return rf_best_params, rf_best_score, best_estimator
+
+
+################################################## XG ##################################################
 
 def create_xg_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[10, 50],
-      'umap__min_dist': [0.1],
-      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      'umap__n_neighbors':[10],
-      'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
+      'umap__n_components':[20, 40, 60, 80, 100],
+      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
+      'umap__n_neighbors':[5, 10],
+      # 'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
+      'xgbclassifier__max_depth':[4, 6, 8, 10],
       'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
       'xgbclassifier__learning_rate': [0.01, 0.1],
       # 'umap__metric':['euclidean'],
@@ -120,16 +225,63 @@ def create_xg_pipeline(stratified_kfold, scoring_methods):
 
   return param_search
 
+def train_test_tune_umap_xg(data, labels, patient_id, stratified_cv, save_file):
+    
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  xg_param_search = create_xg_pipeline(stratified_cv, scoring)
+  xg_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  xg_results = xg_param_search.cv_results_
+  xg_accuracy = xg_results['mean_test_Accuracy']
+  xg_precision = xg_results['mean_test_Precision']
+  xg_recall = xg_results['mean_test_Recall']
+  xg_f2 = calc_f2_score(xg_precision, xg_recall, 2)
+  best_f2_index = np.nanargmax(xg_f2)
+  xg_best_params = xg_results['params'][best_f2_index]
+  xg_best_score = [xg_f2[best_f2_index], xg_precision[best_f2_index], xg_recall[best_f2_index], xg_accuracy[best_f2_index]]
+
+  # Save best set of params
+  xg_param_search.best_params_ = xg_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in xg_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    xg_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = xg_param_search.best_estimator_
+
+  with open(save_file + 'xg_best_params_umap.pkl', 'wb') as f:
+    pickle.dump(xg_best_params, f)
+
+  with open(save_file + 'xg_best_scores_umap.pkl', 'wb') as f:
+    pickle.dump(xg_best_score, f)
+
+  dump(best_estimator, save_file + 'xg_best_estimator_umap.joblib')
+
+  return xg_best_params, xg_best_score, best_estimator
+
+
+################################################## GMM ##################################################
 
 def create_gmm_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), umap.UMAP(), GaussianMixture(n_components=2))
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[10, 50],
-      'umap__min_dist': [0.1],
-      # 'umap__n_neighbors':np.linspace(10, 100, 10, endpoint=True),
-      'umap__n_neighbors':[10],
+      'umap__n_components':[20, 40, 60, 80, 100],
+      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
+      'umap__n_neighbors':[5, 10],
       'gaussianmixture__init_params':['k-means++', 'random'],
       'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
       # 'umap__metric':['euclidean'],
@@ -153,15 +305,87 @@ def create_gmm_pipeline(stratified_kfold, scoring_methods):
 
   return param_search
 
+def train_test_tune_umap_gmm(data, labels, patient_id, stratified_cv, save_file):
+    
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
 
-def calc_f2_score(precision, recall, beta):
-  num = (1 + pow(beta, 2)) * (precision) * (recall)
-  denom = (pow(beta, 2) * precision) + recall
-  f2_score = num/denom
-  return f2_score
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  gmm_param_search = create_gmm_pipeline(stratified_cv, scoring)
+  gmm_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  gmm_results = gmm_param_search.cv_results_
+  gmm_accuracy = gmm_results['mean_test_Accuracy']
+  gmm_precision = gmm_results['mean_test_Precision']
+  gmm_recall = gmm_results['mean_test_Recall']
+  gmm_f2 = calc_f2_score(gmm_precision, gmm_recall, 2)
+  best_f2_index = np.nanargmax(gmm_f2)
+  gmm_best_params = gmm_results['params'][best_f2_index]
+  gmm_best_score = [gmm_f2[best_f2_index], gmm_precision[best_f2_index], gmm_recall[best_f2_index], gmm_accuracy[best_f2_index]]
+
+  # Save best set of params
+  gmm_param_search.best_params_ = gmm_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in gmm_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    gmm_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = gmm_param_search.best_estimator_
+
+  with open(save_file + 'gmm_best_params_umap.pkl', 'wb') as f:
+    pickle.dump(gmm_best_params, f)
+
+  with open(save_file + 'gmm_best_scores_umap.pkl', 'wb') as f:
+    pickle.dump(gmm_best_score, f)
+
+  dump(best_estimator, save_file + 'gmm_best_estimator_umap.joblib')
+
+  return gmm_best_params, gmm_best_score, best_estimator
 
 
-def train_test_tune_umap(data, labels, patient_id, stratified_cv):
+################################################## COMBINED ##################################################
+
+def combine_best_scores_umap(save_file):
+  
+  # Load in results
+  with open(save_file + 'tuning_results/svc_tuning_results_umap.pkl', 'rb') as f:
+    svc_results = pickle.load(f)
+
+  with open(save_file + 'tuning_results/rf_tuning_results_umap.pkl', 'rb') as f:
+    rf_results = pickle.load(f)
+
+  with open(save_file + 'tuning_results/xg_tuning_results_umap.pkl', 'rb') as f:
+    xg_results = pickle.load(f)
+
+  with open(save_file + 'tuning_results/gmm_tuning_results_umap.pkl', 'rb') as f:
+    gmm_results = pickle.load(f)
+
+  param_best = [svc_results[0], rf_results[0], xg_results[0], gmm_results[0]]
+  param_scores = [svc_results[1], rf_results[1], xg_results[1], gmm_results[1]]
+  all_scores = [svc_results[2], rf_results[2], xg_results[2], gmm_results[2]]
+
+  # Save best params to load later (one per model, best fold)
+  with open(save_file + 'tuning_results/best_umap_params_dict.pkl', 'wb') as f:
+    pickle.dump(param_best, f)
+
+  # Save best params scores to load later
+  with open(save_file + 'tuning_results/best_umap_scores.pkl', 'wb') as f:
+    pickle.dump(param_scores, f)
+
+  # Save all scores to load later
+  with open(save_file + 'tuning_results/umap_scores.pkl', 'wb') as f:
+    pickle.dump(all_scores, f)
+
+def train_test_tune_umap(data, labels, patient_id, stratified_cv, save_file):
   # Reshape data
   # Cross validate loop
   # Inside loop - UMAP + model
@@ -224,13 +448,11 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
     scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
     # strat_kfold_inner = strat_kfold_object.split(X_train, group_train)
 
-    # for j, (train_index, test_index) in enumerate(strat_kfold_inner):
-    #     print(f"Fold {j}:")
-    #     print(f"  Train: index={train_index}")
-    #     print(f"  Test:  index={test_index}")
-
     ################################################## SVC ##################################################
     svc_param_search = create_svc_pipeline(strat_kfold_object.split(X_train, group_train), scoring)
+    file = open(save_file + 'gridsearch_progress_umap.txt','w')
+    file.write('Running SVM in Fold: %s\n' % (i))
+    file.close()
     svc_param_search.fit(X_train, y_train)
 
     # Get best set of params based on F2 scoring
@@ -267,7 +489,10 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
     svc_f2_list.append(svc_f2_test)
 
     ################################################## RF ##################################################
-    rf_param_search = create_rf_pipeline(strat_kfold_object.split(X_train, group_train), scoring)    
+    rf_param_search = create_rf_pipeline(strat_kfold_object.split(X_train, group_train), scoring)  
+    file = open(save_file + 'gridsearch_progress_umap.txt','w')
+    file.write('Running RF in Fold: %s\n' % (i))
+    file.close()  
     rf_param_search.fit(X_train, y_train)
 
     # Get best set of params based on F2 scoring
@@ -305,7 +530,9 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
 
     ################################################## XG Boost ##################################################
     xg_param_search = create_xg_pipeline(strat_kfold_object.split(X_train, group_train), scoring)
-
+    file = open(save_file + 'gridsearch_progress_umap.txt','w')
+    file.write('Running XGBoost in Fold: %s\n' % (i))
+    file.close()  
     xg_param_search.fit(X_train, y_train)
 
     # Get best set of params based on F2 scoring
@@ -343,6 +570,9 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
 
     ################################################## GMM ##################################################
     gmm_param_search = create_gmm_pipeline(strat_kfold_object.split(X_train, group_train), scoring)
+    file = open(save_file + 'gridsearch_progress_umap.txt','w')
+    file.write('Running GMM in Fold: %s\n' % (i))
+    file.close()
     gmm_param_search.fit(X_train, y_train)
 
     # Get best set of params based on F2 scoring
@@ -387,8 +617,8 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   best_svc_model_score = np.where(svc_f2_list == svc_best_score)
   svc_best_params = svc_best_params_list[best_svc_model_score[0][0]]
 
-  # Save svc params to text file
-  file = open('/raid/smtam/results/best_umap_svc_params.txt','w')
+  # Save svc params to text file (5 total - best in each fold)
+  file = open(save_file + 'best_umap_svc_params.txt','w')
   for item, score in zip(svc_best_params_list, svc_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -406,7 +636,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   rf_best_params = rf_best_params_list[best_rf_model_score[0][0]]
 
   # Save rf params to text file
-  file = open('/raid/smtam/results/best_umap_rf_params.txt','w')
+  file = open(save_file + 'best_umap_rf_params.txt','w')
   for item, score in zip(rf_best_params_list, rf_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -424,7 +654,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   xg_best_params = xg_best_params_list[best_xg_model_score[0][0]]
 
   # Save xg params to text file
-  file = open('/raid/smtam/results/best_umap_xg_params.txt','w')
+  file = open(save_file + 'best_umap_xg_params.txt','w')
   for item, score in zip(xg_best_params_list, xg_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -442,7 +672,7 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   gmm_best_params = gmm_best_params_list[best_gmm_model_score[0][0]]
 
   # Save gmm params to text file
-  file = open('/raid/smtam/results/best_umap_gmm_params.txt','w')
+  file = open(save_file + 'best_umap_gmm_params.txt','w')
   for item, score in zip(gmm_best_params_list, gmm_f2_list):
     for key, value in item.items():
       file.write('%s: %s\n' % (key, value))
@@ -461,16 +691,16 @@ def train_test_tune_umap(data, labels, patient_id, stratified_cv):
   param_best = [svc_best_params, rf_best_params, xg_best_params, gmm_best_params]
   all_scores = [svc_scores_list, rf_scores_list, xg_scores_list, gmm_scores_list]
 
-  # Save best params to load later
-  with open('/raid/smtam/results/best_umap_params_dict.pkl', 'wb') as f:
+  # Save best params to load later (one per model, best fold)
+  with open(save_file + 'best_umap_params_dict.pkl', 'wb') as f:
     pickle.dump(param_best, f)
 
   # Save best params scores to load later
-  with open('/raid/smtam/results/best_umap_scores.pkl', 'wb') as f:
+  with open(save_file + 'best_umap_scores.pkl', 'wb') as f:
     pickle.dump(param_scores, f)
 
   # Save all scores to load later
-  with open('/raid/smtam/results/umap_scores.pkl', 'wb') as f:
+  with open(save_file + 'umap_scores.pkl', 'wb') as f:
     pickle.dump(all_scores, f)
 
   # Return

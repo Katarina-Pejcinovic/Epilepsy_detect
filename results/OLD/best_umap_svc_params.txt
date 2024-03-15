@@ -1,0 +1,73 @@
+svc__C: 10
+svc__degree: 2
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 10
+F2 Score: 0.4605263157894736
+
+<<<<<<< HEAD
+svc__C: 0.1
+svc__degree: 2
+=======
+svc__C: 10
+svc__degree: 3
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+<<<<<<< HEAD
+umap__n_neighbors: 5
+F2 Score: 0.7692307692307693
+
+svc__C: 10
+=======
+umap__n_neighbors: 10
+F2 Score: 0.7692307692307693
+
+svc__C: 0.1
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
+svc__degree: 2
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 10
+F2 Score: 0.44117647058823534
+
+<<<<<<< HEAD
+svc__C: 10
+svc__degree: 3
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 10
+F2 Score: 0.49295774647887325
+
+=======
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
+svc__C: 0.1
+svc__degree: 3
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 10
+<<<<<<< HEAD
+F2 Score: 0.8536585365853658
+=======
+F2 Score: 0.36764705882352944
+
+svc__C: 10
+svc__degree: 2
+svc__kernel: linear
+umap__metric: euclidean
+umap__min_dist: 0.1
+umap__n_components: 3
+umap__n_neighbors: 10
+F2 Score: 0.7926829268292683
+>>>>>>> 46795baf62a4bb7a20bfd24176f0882a58270964
+
