@@ -30,9 +30,9 @@ def create_svc_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[20, 40, 60, 80, 100],
-      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
-      'umap__n_neighbors':[5, 10],
+      'umap__n_components':[20, 60],
+      'umap__min_dist': [0.1, 0.5],
+      'umap__n_neighbors':[10],
       'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
       'svc__C':[0.1, 1, 10, 100],
       'svc__degree': [2, 3, 4, 5],
@@ -53,7 +53,7 @@ def create_svc_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2,
+          verbose=10,
         )
   
   return param_search
@@ -112,9 +112,9 @@ def create_rf_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[20, 40, 60, 80, 100],
-      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
-      'umap__n_neighbors':[5, 10],
+      'umap__n_components':[20, 60],
+      'umap__min_dist': [0.1, 0.5],
+      'umap__n_neighbors':[10],
       # 'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
       'randomforestclassifier__n_estimators':[2, 8, 64, 100],
       # 'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
@@ -138,7 +138,7 @@ def create_rf_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2,
+          verbose=10,
         )
 
   return param_search
@@ -197,9 +197,9 @@ def create_xg_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[20, 40, 60, 80, 100],
-      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
-      'umap__n_neighbors':[5, 10],
+      'umap__n_components':[20, 60],
+      'umap__min_dist': [0.1, 0.5],
+      'umap__n_neighbors':[10],
       # 'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
       'xgbclassifier__max_depth':[4, 6, 8, 10],
       'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
@@ -220,7 +220,7 @@ def create_xg_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2,
+          verbose=10,
         )
 
   return param_search
@@ -279,9 +279,9 @@ def create_gmm_pipeline(stratified_kfold, scoring_methods):
 
   param_grid = {
       'umap__metric':['euclidean'],
-      'umap__n_components':[20, 40, 60, 80, 100],
-      'umap__min_dist': [0.1, 0.25, 0.5, 0.99],
-      'umap__n_neighbors':[5, 10],
+      'umap__n_components':[20, 60],
+      'umap__min_dist': [0.1, 0.5],
+      'umap__n_neighbors':[10],
       'gaussianmixture__init_params':['k-means++', 'random'],
       'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
       # 'umap__metric':['euclidean'],
@@ -300,7 +300,7 @@ def create_gmm_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2,
+          verbose=10,
         )
 
   return param_search

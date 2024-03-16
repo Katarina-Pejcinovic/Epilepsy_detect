@@ -1,4 +1,3 @@
-
 #only import stuff you call in this file 
 import os
 import numpy as np
@@ -55,10 +54,11 @@ tuning_path = save_path + 'tuning_results/'
 
 # ica_scores, ica_params = train_test_tune_ica(features_3d_array, labels, patient_id, strat_kfold, save_file)
 # umap_scores, umap_params = train_test_tune_umap(features_3d_array, labels, patient_id, strat_kfold, save_path)
-# svc_umap_params, svc_umap_scores, svc_umap_estimator = train_test_tune_umap_svc(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
-# rf_umap_params, rf_umap_scores, rf_umap_estimator = train_test_tune_umap_rf(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
-# xg_umap_params, xg_umap_scores, xg_umap_estimator = train_test_tune_umap_xg(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
-gmm_umap_params, gmm_umap_scores, gmm_umap_estimator = train_test_tune_umap_gmm(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
+
+svc_ica_params, svc_ica_scores, svc_ica_estimator = train_test_tune_ica_svc(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
+# rf_ica_params, rf_ica_scores, rf_ica_estimator = train_test_tune_ica_rf(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
+# xg_ica_params, xg_ica_scores, xg_ica_estimator = train_test_tune_ica_xg(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
+# gmm_ica_params, gmm_ica_scores, gmm_ica_estimator = train_test_tune_ica_gmm(features_3d_array, labels, patient_id, strat_kfold, tuning_path)
 
 #Load in locally generated
 # with open('results/best_umap_params_dict.pkl', 'rb') as f:

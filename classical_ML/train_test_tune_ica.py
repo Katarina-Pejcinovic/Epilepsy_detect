@@ -14,17 +14,25 @@ from sklearn.decomposition import FastICA
 import pickle
 from sklearn.metrics import precision_score, recall_score, accuracy_score
 from tqdm import tqdm
+from joblib import dump, load
 
+def calc_f2_score(precision, recall, beta):
+  num = (1 + pow(beta, 2)) * (precision) * (recall)
+  denom = (pow(beta, 2) * precision) + recall
+  f2_score = num/denom
+  return f2_score
+
+################################################## SVM ##################################################
 
 def create_svc_pipeline(stratified_kfold, scoring_methods):
 
   pipeline = make_pipeline(StandardScaler(), FastICA(), SVC())
 
   param_grid = {
-      'fastica__n_components':np.linspace(10, 100, 10, endpoint=True).astype(int),
+      'fastica__n_components':[25, 50, 75],
       'svc__kernel':['linear', 'rbf', 'poly', 'sigmoid'],
-      'svc__C':[0.1, 1, 10, 100],
-      'svc__degree': [2, 3, 4, 5],
+      'svc__C':[0.1, 1, 10],
+      'svc__degree': [2, 3],
       # 'fastica__n_components':[10, 20],
       # 'svc__kernel':['linear'],
       # 'svc__C':[0.1, 10],
@@ -39,20 +47,70 @@ def create_svc_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=10,
         )
   
   return param_search
 
+def train_test_tune_ica_svc(data, labels, patient_id, stratified_cv, save_file):
+
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  svc_param_search = create_svc_pipeline(stratified_cv, scoring)
+  svc_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  svc_results = svc_param_search.cv_results_
+  svc_accuracy = svc_results['mean_test_Accuracy']
+  svc_precision = svc_results['mean_test_Precision']
+  svc_recall = svc_results['mean_test_Recall']
+  svc_f2 = calc_f2_score(svc_precision, svc_recall, 2)
+  best_f2_index = np.nanargmax(svc_f2)
+  svc_best_params = svc_results['params'][best_f2_index]
+  svc_best_score = [svc_f2[best_f2_index], svc_precision[best_f2_index], svc_recall[best_f2_index], svc_accuracy[best_f2_index]]
+
+  # Save best set of params
+  svc_param_search.best_params_ = svc_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in svc_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    svc_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = svc_param_search.best_estimator_
+
+  with open(save_file + 'svc_best_params_ica.pkl', 'wb') as f:
+    pickle.dump(svc_best_params, f)
+
+  with open(save_file + 'svc_best_scores_ica.pkl', 'wb') as f:
+    pickle.dump(svc_best_score, f)
+
+  dump(best_estimator, save_file + 'svc_best_estimator_ica.joblib')
+
+  return svc_best_params, svc_best_score, best_estimator
+
+################################################## RF ##################################################
 
 def create_rf_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), FastICA(), RandomForestClassifier())
 
   param_grid = {
-      'fastica__n_components':np.linspace(10, 100, 10, endpoint=True).astype(int),
-      'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
-      'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
-      'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      'fastica__n_components':[25, 50, 75],
+      # 'randomforestclassifier__n_estimators':[1, 2, 4, 8, 16, 32, 64, 100],
+      'randomforestclassifier__n_estimators':[2, 8],
+      # 'randomforestclassifier__min_samples_leaf':np.linspace(50, 400, 8, endpoint=True),
+      'randomforestclassifier__min_samples_leaf':[100, 300],
+      # 'randomforestclassifier__max_depth':np.linspace(2, 20, 10, endpoint=True),
+      'randomforestclassifier__max_depth':[5, 15],
       # 'fastica__n_components':[10, 20],
       # 'randomforestclassifier__n_estimators':[8, 16],
       # 'randomforestclassifier__min_samples_leaf':[50, 200],
@@ -67,18 +125,67 @@ def create_rf_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=10,
         )
 
   return param_search
+
+def train_test_tune_ica_rf(data, labels, patient_id, stratified_cv, save_file):
+  
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  rf_param_search = create_rf_pipeline(stratified_cv, scoring)
+  rf_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  rf_results = rf_param_search.cv_results_
+  rf_accuracy = rf_results['mean_test_Accuracy']
+  rf_precision = rf_results['mean_test_Precision']
+  rf_recall = rf_results['mean_test_Recall']
+  rf_f2 = calc_f2_score(rf_precision, rf_recall, 2)
+  best_f2_index = np.nanargmax(rf_f2)
+  rf_best_params = rf_results['params'][best_f2_index]
+  rf_best_score = [rf_f2[best_f2_index], rf_precision[best_f2_index], rf_recall[best_f2_index], rf_accuracy[best_f2_index]]
+
+  # Save best set of params
+  rf_param_search.best_params_ = rf_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in rf_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    rf_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = rf_param_search.best_estimator_
+
+  with open(save_file + 'rf_best_params_ica.pkl', 'wb') as f:
+    pickle.dump(rf_best_params, f)
+
+  with open(save_file + 'rf_best_scores_ica.pkl', 'wb') as f:
+    pickle.dump(rf_best_score, f)
+
+  dump(best_estimator, save_file + 'rf_best_estimator_ica.joblib')
+
+  return rf_best_params, rf_best_score, best_estimator
+
+################################################## XG ##################################################
 
 def create_xg_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), FastICA(), XGBClassifier(objective= 'binary:logistic'))
 
   param_grid = {
-      'fastica__n_components':np.linspace(10, 100, 10, endpoint=True).astype(int),
-      'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
-      'xgbclassifier__n_estimators': np.linspace(100, 500, 5, endpoint=True),
+      'fastica__n_components':[25, 50, 75],
+      # 'xgbclassifier__max_depth':np.linspace(3, 10, 8, endpoint=True),
+      'xgbclassifier__max_depth':[4, 8],
+      'xgbclassifier__n_estimators': [100, 300],
       'xgbclassifier__learning_rate': [0.01, 0.1],
       # 'fastica__n_components':[10, 20],
       # 'xgbclassifier__n_estimators': [50],
@@ -93,16 +200,64 @@ def create_xg_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=10,
         )
 
   return param_search
+
+def train_test_tune_ica_xg(data, labels, patient_id, stratified_cv, save_file):
+    
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  xg_param_search = create_xg_pipeline(stratified_cv, scoring)
+  xg_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  xg_results = xg_param_search.cv_results_
+  xg_accuracy = xg_results['mean_test_Accuracy']
+  xg_precision = xg_results['mean_test_Precision']
+  xg_recall = xg_results['mean_test_Recall']
+  xg_f2 = calc_f2_score(xg_precision, xg_recall, 2)
+  best_f2_index = np.nanargmax(xg_f2)
+  xg_best_params = xg_results['params'][best_f2_index]
+  xg_best_score = [xg_f2[best_f2_index], xg_precision[best_f2_index], xg_recall[best_f2_index], xg_accuracy[best_f2_index]]
+
+  # Save best set of params
+  xg_param_search.best_params_ = xg_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in xg_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    xg_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = xg_param_search.best_estimator_
+
+  with open(save_file + 'xg_best_params_ica.pkl', 'wb') as f:
+    pickle.dump(xg_best_params, f)
+
+  with open(save_file + 'xg_best_scores_ica.pkl', 'wb') as f:
+    pickle.dump(xg_best_score, f)
+
+  dump(best_estimator, save_file + 'xg_best_estimator_ica.joblib')
+
+  return xg_best_params, xg_best_score, best_estimator
+
+################################################## GMM ##################################################
 
 def create_gmm_pipeline(stratified_kfold, scoring_methods):
   pipeline = make_pipeline(StandardScaler(), FastICA(), GaussianMixture(n_components=2))
 
   param_grid = {
-      'fastica__n_components':np.linspace(10, 100, 10, endpoint=True).astype(int),
+      'fastica__n_components':[25, 50, 75],
       'gaussianmixture__init_params':['k-means++', 'random'],
       'gaussianmixture__covariance_type': ['full', 'tied', 'diag', 'spherical'],
       # 'fastica__n_components':[10, 20],
@@ -118,16 +273,58 @@ def create_gmm_pipeline(stratified_kfold, scoring_methods):
           scoring=scoring_methods,
           refit='Accuracy',
           cv=stratified_kfold,
-          verbose=2
+          verbose=10,
         )
 
   return param_search
 
-def calc_f2_score(precision, recall, beta):
-  num = (1 + pow(beta, 2)) * (precision) * (recall)
-  denom = (pow(beta, 2) * precision) + recall
-  f2_score = num/denom
-  return f2_score
+def train_test_tune_ica_gmm(data, labels, patient_id, stratified_cv, save_file):
+    
+  ## Reshape data
+  num_segments = data.shape[0]
+  num_channels = data.shape[1]
+  num_features = data.shape[2]
+
+  data_reshape = np.reshape(data, (num_segments, num_channels*num_features))
+
+  stratified_cv = list(stratified_cv)
+
+  scoring = {"Precision": 'precision', "Recall": 'recall', "Accuracy": 'balanced_accuracy'}
+
+  gmm_param_search = create_gmm_pipeline(stratified_cv, scoring)
+  gmm_param_search.fit(data_reshape, labels)
+
+  # Get best set of params based on F2 scoring
+  gmm_results = gmm_param_search.cv_results_
+  gmm_accuracy = gmm_results['mean_test_Accuracy']
+  gmm_precision = gmm_results['mean_test_Precision']
+  gmm_recall = gmm_results['mean_test_Recall']
+  gmm_f2 = calc_f2_score(gmm_precision, gmm_recall, 2)
+  best_f2_index = np.nanargmax(gmm_f2)
+  gmm_best_params = gmm_results['params'][best_f2_index]
+  gmm_best_score = [gmm_f2[best_f2_index], gmm_precision[best_f2_index], gmm_recall[best_f2_index], gmm_accuracy[best_f2_index]]
+
+  # Save best set of params
+  gmm_param_search.best_params_ = gmm_best_params
+
+  # Update estimator with F2 params for validation
+  for step_name, step_params in gmm_best_params.items():
+    step, param_name = step_name.split('__', 1)
+    gmm_param_search.best_estimator_.named_steps[step].set_params(**{param_name: step_params})
+
+  best_estimator = gmm_param_search.best_estimator_
+
+  with open(save_file + 'gmm_best_params_ica.pkl', 'wb') as f:
+    pickle.dump(gmm_best_params, f)
+
+  with open(save_file + 'gmm_best_scores_ica.pkl', 'wb') as f:
+    pickle.dump(gmm_best_score, f)
+
+  dump(best_estimator, save_file + 'gmm_best_estimator_ica.joblib')
+
+  return gmm_best_params, gmm_best_score, best_estimator
+
+################################################## END ##################################################
 
 def train_test_tune_ica(data, labels, patient_id, stratified_cv):
   # Reshape data
