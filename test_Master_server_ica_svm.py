@@ -6,23 +6,23 @@ import pandas as pd
 from classical_ML.train_test_tune_umap import * 
 from classical_ML.train_test_tune_ica import * 
 from classical_ML.find_best_feat_select import * 
-from classical_ML.load_best_params import *
+# from classical_ML.load_best_params import *
 
 
 # data/
 # Batch Processing
 if __name__ == "__main__":
     print('Running sample file')
-    # data_file_path = 'data/'
-    data_file_path = '/radraid/kpejcinovic/data/'
+    data_file_path = 'data/'
+    # data_file_path = '/radraid/kpejcinovic/data/'
     
 else:
     print('Running batch file(s)')
     from batch_processing import data_file_batch
     data_file_path = data_file_batch
 
-save_path = '/raid/smtam/results/'
-# save_path = 'results/tuning_results/'
+# save_path = '/raid/smtam/results/'
+save_path = 'results/'
 
 
 

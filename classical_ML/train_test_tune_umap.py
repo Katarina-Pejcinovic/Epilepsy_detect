@@ -84,6 +84,18 @@ def train_test_tune_umap_svc(data, labels, patient_id, stratified_cv, save_file)
   svc_best_params = svc_results['params'][best_f2_index]
   svc_best_score = [svc_f2[best_f2_index], svc_precision[best_f2_index], svc_recall[best_f2_index], svc_accuracy[best_f2_index]]
 
+  # Get F2 scores per fold
+  svc_f2_split0 = calc_f2_score(svc_results['split0_test_Precision'], svc_results['split0_test_Recall'], 2)[best_f2_index]
+  svc_f2_split1 = calc_f2_score(svc_results['split1_test_Precision'], svc_results['split1_test_Recall'], 2)[best_f2_index]
+  svc_f2_split2 = calc_f2_score(svc_results['split2_test_Precision'], svc_results['split2_test_Recall'], 2)[best_f2_index]
+  svc_f2_split3 = calc_f2_score(svc_results['split3_test_Precision'], svc_results['split3_test_Recall'], 2)[best_f2_index]
+  svc_f2_split4 = calc_f2_score(svc_results['split4_test_Precision'], svc_results['split4_test_Recall'], 2)[best_f2_index]
+  
+  svc_f2_split = [svc_f2_split0, svc_f2_split1, svc_f2_split2, svc_f2_split3, svc_f2_split4]
+
+  with open(save_file + 'svc_f2_splits_umap.pkl', 'wb') as f:
+    pickle.dump(svc_f2_split, f)
+
   # Save best set of params
   svc_param_search.best_params_ = svc_best_params
 
@@ -99,6 +111,9 @@ def train_test_tune_umap_svc(data, labels, patient_id, stratified_cv, save_file)
 
   with open(save_file + 'svc_best_scores_umap.pkl', 'wb') as f:
     pickle.dump(svc_best_score, f)
+
+  with open(save_file + 'svc_cv_results_umap.pkl', 'wb') as f:
+    pickle.dump(svc_results, f)
 
   dump(best_estimator, save_file + 'svc_best_estimator_umap.joblib')
 
@@ -169,6 +184,18 @@ def train_test_tune_umap_rf(data, labels, patient_id, stratified_cv, save_file):
   rf_best_params = rf_results['params'][best_f2_index]
   rf_best_score = [rf_f2[best_f2_index], rf_precision[best_f2_index], rf_recall[best_f2_index], rf_accuracy[best_f2_index]]
 
+  # Get F2 scores per fold
+  rf_f2_split0 = calc_f2_score(rf_results['split0_test_Precision'], rf_results['split0_test_Recall'], 2)[best_f2_index]
+  rf_f2_split1 = calc_f2_score(rf_results['split1_test_Precision'], rf_results['split1_test_Recall'], 2)[best_f2_index]
+  rf_f2_split2 = calc_f2_score(rf_results['split2_test_Precision'], rf_results['split2_test_Recall'], 2)[best_f2_index]
+  rf_f2_split3 = calc_f2_score(rf_results['split3_test_Precision'], rf_results['split3_test_Recall'], 2)[best_f2_index]
+  rf_f2_split4 = calc_f2_score(rf_results['split4_test_Precision'], rf_results['split4_test_Recall'], 2)[best_f2_index]
+  
+  rf_f2_split = [rf_f2_split0, rf_f2_split1, rf_f2_split2, rf_f2_split3, rf_f2_split4]
+
+  with open(save_file + 'rf_f2_splits_umap.pkl', 'wb') as f:
+    pickle.dump(rf_f2_split, f)
+
   # Save best set of params
   rf_param_search.best_params_ = rf_best_params
 
@@ -184,6 +211,9 @@ def train_test_tune_umap_rf(data, labels, patient_id, stratified_cv, save_file):
 
   with open(save_file + 'rf_best_scores_umap.pkl', 'wb') as f:
     pickle.dump(rf_best_score, f)
+
+  with open(save_file + 'rf_cv_results_umap.pkl', 'wb') as f:
+    pickle.dump(rf_results, f)
 
   dump(best_estimator, save_file + 'rf_best_estimator_umap.joblib')
 
@@ -251,6 +281,18 @@ def train_test_tune_umap_xg(data, labels, patient_id, stratified_cv, save_file):
   xg_best_params = xg_results['params'][best_f2_index]
   xg_best_score = [xg_f2[best_f2_index], xg_precision[best_f2_index], xg_recall[best_f2_index], xg_accuracy[best_f2_index]]
 
+  # Get F2 scores per fold
+  xg_f2_split0 = calc_f2_score(xg_results['split0_test_Precision'], xg_results['split0_test_Recall'], 2)[best_f2_index]
+  xg_f2_split1 = calc_f2_score(xg_results['split1_test_Precision'], xg_results['split1_test_Recall'], 2)[best_f2_index]
+  xg_f2_split2 = calc_f2_score(xg_results['split2_test_Precision'], xg_results['split2_test_Recall'], 2)[best_f2_index]
+  xg_f2_split3 = calc_f2_score(xg_results['split3_test_Precision'], xg_results['split3_test_Recall'], 2)[best_f2_index]
+  xg_f2_split4 = calc_f2_score(xg_results['split4_test_Precision'], xg_results['split4_test_Recall'], 2)[best_f2_index]
+  
+  xg_f2_split = [xg_f2_split0, xg_f2_split1, xg_f2_split2, xg_f2_split3, xg_f2_split4]
+
+  with open(save_file + 'xg_f2_splits_umap.pkl', 'wb') as f:
+    pickle.dump(xg_f2_split, f)
+
   # Save best set of params
   xg_param_search.best_params_ = xg_best_params
 
@@ -266,6 +308,9 @@ def train_test_tune_umap_xg(data, labels, patient_id, stratified_cv, save_file):
 
   with open(save_file + 'xg_best_scores_umap.pkl', 'wb') as f:
     pickle.dump(xg_best_score, f)
+
+  with open(save_file + 'xg_cv_results_umap.pkl', 'wb') as f:
+    pickle.dump(xg_results, f)
 
   dump(best_estimator, save_file + 'xg_best_estimator_umap.joblib')
 
@@ -331,6 +376,18 @@ def train_test_tune_umap_gmm(data, labels, patient_id, stratified_cv, save_file)
   gmm_best_params = gmm_results['params'][best_f2_index]
   gmm_best_score = [gmm_f2[best_f2_index], gmm_precision[best_f2_index], gmm_recall[best_f2_index], gmm_accuracy[best_f2_index]]
 
+  # Get F2 scores per fold
+  gmm_f2_split0 = calc_f2_score(gmm_results['split0_test_Precision'], gmm_results['split0_test_Recall'], 2)[best_f2_index]
+  gmm_f2_split1 = calc_f2_score(gmm_results['split1_test_Precision'], gmm_results['split1_test_Recall'], 2)[best_f2_index]
+  gmm_f2_split2 = calc_f2_score(gmm_results['split2_test_Precision'], gmm_results['split2_test_Recall'], 2)[best_f2_index]
+  gmm_f2_split3 = calc_f2_score(gmm_results['split3_test_Precision'], gmm_results['split3_test_Recall'], 2)[best_f2_index]
+  gmm_f2_split4 = calc_f2_score(gmm_results['split4_test_Precision'], gmm_results['split4_test_Recall'], 2)[best_f2_index]
+  
+  gmm_f2_split = [gmm_f2_split0, gmm_f2_split1, gmm_f2_split2, gmm_f2_split3, gmm_f2_split4]
+
+  with open(save_file + 'gmm_f2_splits_umap.pkl', 'wb') as f:
+    pickle.dump(gmm_f2_split, f)
+
   # Save best set of params
   gmm_param_search.best_params_ = gmm_best_params
 
@@ -346,6 +403,9 @@ def train_test_tune_umap_gmm(data, labels, patient_id, stratified_cv, save_file)
 
   with open(save_file + 'gmm_best_scores_umap.pkl', 'wb') as f:
     pickle.dump(gmm_best_score, f)
+
+  with open(save_file + 'gmm_cv_results_umap.pkl', 'wb') as f:
+    pickle.dump(gmm_results, f)
 
   dump(best_estimator, save_file + 'gmm_best_estimator_umap.joblib')
 
