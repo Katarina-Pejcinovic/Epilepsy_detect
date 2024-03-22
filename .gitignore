@@ -24,3 +24,4 @@ trained_model1.pth
 trained_model2.pth
 trained_model3.pth 
 trained_model4.pth 
+results/data_reshape.pkl
