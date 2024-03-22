@@ -1,0 +1,25 @@
+fastica__n_components: 20
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+F2 Score: nan
+
+fastica__n_components: 20
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+F2 Score: 0.16393442622950818
+
+fastica__n_components: 20
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+F2 Score: nan
+
+fastica__n_components: 10
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+F2 Score: nan
+
+fastica__n_components: 10
+gaussianmixture__covariance_type: full
+gaussianmixture__init_params: k-means++
+F2 Score: nan
+

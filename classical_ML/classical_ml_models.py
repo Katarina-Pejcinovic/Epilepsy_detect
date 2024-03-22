@@ -489,7 +489,7 @@ def gmm_model(data, labels, val_data, gmm_param):
   if any('fastica' in item for item in keys):
     gmm_init = gmm_param["gaussianmixture__init_params"]
     gmm_cov = gmm_param["gaussianmixture__covariance_type"]
-    fastica_n_components = rf_param["fastica__n_components"]
+    fastica_n_components = gmm_param["fastica__n_components"]
 
     # Pipeline w/ ICA + Gaussian Mixture
 
