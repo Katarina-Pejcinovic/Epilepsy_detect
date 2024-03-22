@@ -6,7 +6,7 @@ import pandas as pd
 from classical_ML.train_test_tune_umap import * 
 from classical_ML.train_test_tune_ica import * 
 from classical_ML.find_best_feat_select import * 
-from classical_ML.load_best_params import *
+# from classical_ML.load_best_params import *
 
 
 # data/
@@ -48,6 +48,9 @@ print("Train features array", features_3d_array.shape)
 splits = 5
 strat_kfold_object = StratifiedKFold(n_splits=splits, shuffle=True, random_state=10)
 strat_kfold = strat_kfold_object.split(data_reshape, patient_id)
+
+# with open(data_file_path + 'strat_kfold.pkl', 'wb') as f:
+#     pickle.dump(strat_kfold, f)
 
 tuning_path = save_path + 'tuning_results/'
 # Run once when training models

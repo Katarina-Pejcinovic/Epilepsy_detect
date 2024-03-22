@@ -70,6 +70,10 @@ def train_test_tune_ica_svc(data, labels, patient_id, stratified_cv, save_file):
 
   # Get best set of params based on F2 scoring
   svc_results = svc_param_search.cv_results_
+
+  with open(save_file + 'svc_cv_results_ica.pkl', 'wb') as f:
+    pickle.dump(svc_results, f)
+  
   svc_accuracy = svc_results['mean_test_Accuracy']
   svc_precision = svc_results['mean_test_Precision']
   svc_recall = svc_results['mean_test_Recall']
@@ -106,8 +110,8 @@ def train_test_tune_ica_svc(data, labels, patient_id, stratified_cv, save_file):
   with open(save_file + 'svc_best_scores_ica.pkl', 'wb') as f:
     pickle.dump(svc_best_score, f)
 
-  with open(save_file + 'svc_cv_results_ica.pkl', 'wb') as f:
-    pickle.dump(svc_results, f)
+  # with open(save_file + 'svc_cv_results_ica.pkl', 'wb') as f:
+  #   pickle.dump(svc_results, f)
 
   dump(best_estimator, save_file + 'svc_best_estimator_ica.joblib')
 
@@ -163,6 +167,10 @@ def train_test_tune_ica_rf(data, labels, patient_id, stratified_cv, save_file):
 
   # Get best set of params based on F2 scoring
   rf_results = rf_param_search.cv_results_
+
+  with open(save_file + 'rf_cv_results_ica.pkl', 'wb') as f:
+    pickle.dump(rf_results, f)
+
   rf_accuracy = rf_results['mean_test_Accuracy']
   rf_precision = rf_results['mean_test_Precision']
   rf_recall = rf_results['mean_test_Recall']
@@ -199,8 +207,8 @@ def train_test_tune_ica_rf(data, labels, patient_id, stratified_cv, save_file):
   with open(save_file + 'rf_best_scores_ica.pkl', 'wb') as f:
     pickle.dump(rf_best_score, f)
 
-  with open(save_file + 'rf_cv_results_ica.pkl', 'wb') as f:
-    pickle.dump(rf_results, f)
+  # with open(save_file + 'rf_cv_results_ica.pkl', 'wb') as f:
+  #   pickle.dump(rf_results, f)
 
   dump(best_estimator, save_file + 'rf_best_estimator_ica.joblib')
 
@@ -253,6 +261,10 @@ def train_test_tune_ica_xg(data, labels, patient_id, stratified_cv, save_file):
 
   # Get best set of params based on F2 scoring
   xg_results = xg_param_search.cv_results_
+
+  with open(save_file + 'xg_cv_results_ica.pkl', 'wb') as f:
+    pickle.dump(xg_results, f)
+
   xg_accuracy = xg_results['mean_test_Accuracy']
   xg_precision = xg_results['mean_test_Precision']
   xg_recall = xg_results['mean_test_Recall']
@@ -289,8 +301,8 @@ def train_test_tune_ica_xg(data, labels, patient_id, stratified_cv, save_file):
   with open(save_file + 'xg_best_scores_ica.pkl', 'wb') as f:
     pickle.dump(xg_best_score, f)
 
-  with open(save_file + 'xg_cv_results_ica.pkl', 'wb') as f:
-    pickle.dump(xg_results, f)
+  # with open(save_file + 'xg_cv_results_ica.pkl', 'wb') as f:
+  #   pickle.dump(xg_results, f)
 
   dump(best_estimator, save_file + 'xg_best_estimator_ica.joblib')
 
@@ -341,6 +353,10 @@ def train_test_tune_ica_gmm(data, labels, patient_id, stratified_cv, save_file):
 
   # Get best set of params based on F2 scoring
   gmm_results = gmm_param_search.cv_results_
+
+  with open(save_file + 'gmm_cv_results_ica.pkl', 'wb') as f:
+    pickle.dump(gmm_results, f)
+
   gmm_accuracy = gmm_results['mean_test_Accuracy']
   gmm_precision = gmm_results['mean_test_Precision']
   gmm_recall = gmm_results['mean_test_Recall']
@@ -377,8 +393,8 @@ def train_test_tune_ica_gmm(data, labels, patient_id, stratified_cv, save_file):
   with open(save_file + 'gmm_best_scores_ica.pkl', 'wb') as f:
     pickle.dump(gmm_best_score, f)
 
-  with open(save_file + 'gmm_cv_results_ica.pkl', 'wb') as f:
-    pickle.dump(gmm_results, f)
+  # with open(save_file + 'gmm_cv_results_ica.pkl', 'wb') as f:
+  #   pickle.dump(gmm_results, f)
 
   dump(best_estimator, save_file + 'gmm_best_estimator_ica.joblib')
 
